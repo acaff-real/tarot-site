@@ -295,9 +295,12 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
 </section>
 
 <script>
-  // DOM References
-  const form = document.getElementById('chart-form') as HTMLFormElement;
-  const citySelect = document.getElementById('chart-city-select') as HTMLSelectElement;
+  function initBirthChartCalculator() {
+    // DOM References
+    const form = document.getElementById('chart-form') as HTMLFormElement;
+    if (!form) return;
+
+    const citySelect = document.getElementById('chart-city-select') as HTMLSelectElement;
   const toggleCoordsBtn = document.getElementById('toggle-coords-btn');
   const coordsDrawer = document.getElementById('coords-drawer');
   const coordsArrow = document.getElementById('coords-arrow');
@@ -609,4 +612,7 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
       </svg>
     `;
   }
+  }
+
+  document.addEventListener('astro:page-load', initBirthChartCalculator);
 </script>

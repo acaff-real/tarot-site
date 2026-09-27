@@ -134,10 +134,13 @@ import GlassButton from './GlassButton.astro';
 </section>
 
 <script>
-  const numForm = document.getElementById('numerology-form') as HTMLFormElement;
-  const numInput = document.getElementById('num-name') as HTMLInputElement;
-  const numLoading = document.getElementById('num-loading');
-  const numResult = document.getElementById('num-result');
+  function initNumerologyCalculator() {
+    const numForm = document.getElementById('numerology-form') as HTMLFormElement;
+    if (!numForm) return;
+
+    const numInput = document.getElementById('num-name') as HTMLInputElement;
+    const numLoading = document.getElementById('num-loading');
+    const numResult = document.getElementById('num-result');
 
   numForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -225,4 +228,7 @@ import GlassButton from './GlassButton.astro';
     const allies = document.getElementById('num-allies');
     if (allies) allies.textContent = result.profile.harmoniousNumbers.join(', ');
   }
+  }
+
+  document.addEventListener('astro:page-load', initNumerologyCalculator);
 </script>

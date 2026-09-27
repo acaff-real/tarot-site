@@ -126,21 +126,42 @@ const NAV_LINKS = [
 </header>
 
 <script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
-  const openIcon = btn?.querySelector('.menu-open-icon');
-  const closeIcon = btn?.querySelector('.menu-close-icon');
+  function initMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
 
-  btn?.addEventListener('click', () => {
-    const isClosed = menu?.classList.contains('hidden');
-    if (isClosed) {
-      menu?.classList.remove('hidden');
-      openIcon?.classList.add('hidden');
-      closeIcon?.classList.remove('hidden');
-    } else {
-      menu?.classList.add('hidden');
-      openIcon?.classList.remove('hidden');
-      closeIcon?.classList.add('hidden');
-    }
-  });
+    // Reset icons & state
+    const openIcon = btn.querySelector('.menu-open-icon');
+    const closeIcon = btn.querySelector('.menu-close-icon');
+
+    // Replace button clone to clean up existing listeners
+    const freshBtn = btn.cloneNode(true);
+    btn.parentNode?.replaceChild(freshBtn, btn);
+
+    freshBtn.addEventListener('click', () => {
+      const isClosed = menu.classList.contains('hidden');
+      if (isClosed) {
+        menu.classList.remove('hidden');
+        openIcon?.classList.add('hidden');
+        closeIcon?.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        openIcon?.classList.remove('hidden');
+        closeIcon?.classList.add('hidden');
+      }
+    });
+
+    // Close menu when a link inside is clicked
+    const links = menu.querySelectorAll('a');
+    links.forEach((l) => {
+      l.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        openIcon?.classList.remove('hidden');
+        closeIcon?.classList.add('hidden');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initMobileMenu);
 </script>

@@ -72,6 +72,5 @@ const { class: className = '', id = 'theme-toggle' } = Astro.props;
   }
 
   // Run on initial load and view transitions
-  initThemeToggle();
-  document.addEventListener('astro:after-swap', initThemeToggle);
+  document.addEventListener('astro:page-load', initThemeToggle);
 </script>
