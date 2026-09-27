@@ -1,7 +1,9 @@
 {
-  "name": "tarot",
+  "name": "astrology-by-anisha",
+  "description": "Editorial personal brand website for Astrology by Anisha, featuring authentic Vedic astrology ephemeris calculation, Chaldean numerology, and contemplative tarot consultations.",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "private": true,
   "engines": {
     "node": ">=22.12.0"
   },
