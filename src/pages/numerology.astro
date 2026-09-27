@@ -1,0 +1,86 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NumerologyCalculator from '../components/NumerologyCalculator.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="Sacred Numerology & Name Analysis — Astrology by Anisha"
+  description="Discover Chaldean and Pythagorean numerology with Anisha. Decode the compound sound vibrations of your legal name, business brand, and life path numbers."
+  currentPath="/numerology"
+>
+  <!-- Header -->
+  <section class="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+        <span>Acoustic Frequency & Destiny</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+        Sacred Numerology
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed">
+        In Vedic science, <em>Nama</em> (name) and <em>Rupa</em> (form) are intrinsically linked. The sound vibration of your name continuously pulses an acoustic frequency through your energetic field.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Calculator Embedded -->
+  <NumerologyCalculator />
+
+  <!-- Educational Section -->
+  <section class="py-16 lg:py-24 bg-[#faf8f5] border-t border-[#28231e]/10">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="text-center max-w-2xl mx-auto mb-14">
+        <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917]">
+          Chaldean vs. Pythagorean Systems
+        </h2>
+        <p class="text-xs sm:text-sm text-[#57534e] font-light mt-2 leading-relaxed">
+          Why sound frequency takes precedence over alphabetical sequence.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs">
+          <span class="text-xs uppercase tracking-widest text-[#a37a4c] font-semibold block mb-2">Ancient Mesopotamian & Vedic</span>
+          <h3 class="font-serif text-2xl text-[#1c1917] mb-3">The Chaldean System</h3>
+          <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-4">
+            The oldest known system of numerology. Values 1 through 8 are assigned according to the acoustic resonance of each consonant and vowel rather than mere sequential order. The number 9 is held as sacred and transcendent.
+          </p>
+          <ul class="text-xs text-[#57534e] space-y-2 border-t border-[#28231e]/5 pt-4">
+            <li>&bull; Focuses on energetic sound vibration</li>
+            <li>&bull; Places immense importance on compound (double-digit) numbers</li>
+            <li>&bull; Traditional choice for Indian name corrections & brand naming</li>
+          </ul>
+        </div>
+
+        <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs">
+          <span class="text-xs uppercase tracking-widest text-[#a37a4c] font-semibold block mb-2">Western Greek Tradition</span>
+          <h3 class="font-serif text-2xl text-[#1c1917] mb-3">The Pythagorean System</h3>
+          <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-4">
+            Developed by Pythagoras in ancient Greece. Assigns numbers 1 through 9 strictly sequentially (A=1, B=2 ... I=9, J=1). Focuses primarily on life path calculations derived from your Gregorian birth date.
+          </p>
+          <ul class="text-xs text-[#57534e] space-y-2 border-t border-[#28231e]/5 pt-4">
+            <li>&bull; Sequential sequential alphabetical allocation</li>
+            <li>&bull; Strong focus on destiny, soul urge, and personality numbers</li>
+            <li>&bull; Widely practiced across modern Western traditions</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Consultation CTA -->
+      <div class="mt-16 p-8 rounded-2xl bg-gradient-to-r from-[#f5f2eb] to-[#fcfbf9] border border-[#28231e]/10 text-center max-w-2xl mx-auto">
+        <h3 class="font-serif text-2xl text-[#1c1917] mb-2">
+          Seeking a Professional Name or Brand Audit?
+        </h3>
+        <p class="text-xs sm:text-sm text-[#57534e] font-light mb-6 leading-relaxed">
+          Book a sacred numerology consultation to align your legal name, professional moniker, or business entity with your birth path numbers.
+        </p>
+        <GlassButton
+          text="Inquire for Name Audit"
+          href="/consultations"
+        />
+      </div>
+
+    </div>
+  </section>
+</Layout>

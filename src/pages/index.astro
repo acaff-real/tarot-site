@@ -1,11 +1,365 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import GlassButton from '../components/GlassButton.astro';
+import SteampunkButton from '../components/SteampunkButton.astro';
+import BirthChartCalculator from '../components/BirthChartCalculator.astro';
+import NumerologyCalculator from '../components/NumerologyCalculator.astro';
+import { SERVICES } from '../data/services';
+import { ARTICLES } from '../data/articles';
+import { TESTIMONIALS } from '../data/testimonials';
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  title="Astrology by Anisha — Vedic Astrology, Tarot & Numerology"
+  description="High-precision Vedic birth chart calculation, contemplative tarot, and Chaldean numerology. Elegant, intelligent personal guidance for life's pivotal thresholds."
+  currentPath="/"
+>
+  <!-- 1. HERO SECTION -->
+  <section class="relative pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden">
+    <!-- Gentle ambient warmth -->
+    <div class="absolute top-1/4 right-5 w-80 h-80 rounded-full bg-[#f3ede2]/60 blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/3 left-10 w-96 h-96 rounded-full bg-[#efe8dc]/40 blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        
+        <!-- Left Text Content -->
+        <div class="lg:col-span-7 flex flex-col items-start text-left">
+          
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.25em] bg-white/80 border border-[#28231e]/10 text-[#a37a4c] mb-6 shadow-xs">
+            <span>Astrology &bull; Tarot &bull; Numerology</span>
+          </div>
+
+          <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-[1.08] mb-6">
+            Astrology by <span class="italic font-light">Anisha</span>
+          </h1>
+
+          <p class="font-serif text-xl sm:text-2xl text-[#57534e] font-light italic leading-snug mb-5 max-w-xl">
+            "Illuminating life's pivotal thresholds through the profound clarity of Vedic wisdom, contemplative tarot, and sacred numerology."
+          </p>
+
+          <p class="text-sm sm:text-base text-[#57534e] font-light leading-relaxed mb-10 max-w-xl">
+            A refined, intelligent sanctuary for self-knowledge. Free of theatrical mysticism—grounded in rigorous Parashari planetary geometry, archetypal psychological clarity, and authentic mentorship.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+            <GlassButton
+              text="Book a Consultation"
+              href="/consultations"
+              class="w-full sm:w-auto"
+            />
+            
+            <a
+              href="#birth-chart"
+              class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-4 px-6 text-center justify-center hover:bg-white text-[#1c1917]"
+            >
+              Calculate Birth Chart &darr;
+            </a>
+          </div>
+
+          <!-- Subtle Trust Metrics -->
+          <div class="mt-12 pt-8 border-t border-[#28231e]/10 flex items-center gap-8 text-xs text-[#857f77]">
+            <div>
+              <span class="font-semibold text-sm text-[#1c1917] block">1,200+</span>
+              <span class="text-[11px] tracking-wider uppercase">Vedic Charts Synthesized</span>
+            </div>
+            <div class="w-px h-8 bg-[#28231e]/10"></div>
+            <div>
+              <span class="font-semibold text-sm text-[#1c1917] block">Lahiri Ephemeris</span>
+              <span class="text-[11px] tracking-wider uppercase">Authentic Sidereal Code</span>
+            </div>
+            <div class="w-px h-8 bg-[#28231e]/10"></div>
+            <div>
+              <span class="font-semibold text-sm text-[#1c1917] block">Global Clients</span>
+              <span class="text-[11px] tracking-wider uppercase">London &bull; NY &bull; Delhi</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Hero Image: Strong Photograph of Anisha -->
+        <div class="lg:col-span-5 relative flex justify-center lg:justify-start">
+          <div class="relative w-full max-w-md">
+            
+            <!-- Frosted Glass Underlay Border -->
+            <div class="absolute inset-0 translate-x-3 translate-y-3 rounded-3xl bg-[#ece5d8]/60 blur-xs"></div>
+            
+            <!-- Image Card -->
+            <div class="relative rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-2xl bg-white aspect-[4/5]">
+              <img
+                src="/images/anisha.webp"
+                alt="Astrology by Anisha — Anisha Sharma"
+                class="w-full h-full object-cover object-[center_12%] hover:scale-[1.02] transition-transform duration-700 ease-out"
+                loading="eager"
+              />
+              
+              <!-- Subtle Floating Glass Badge -->
+              <div class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl glass-card backdrop-blur-md bg-white/80 border border-white/90 shadow-lg">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Anisha Sharma</span>
+                <p class="text-xs text-[#1c1917] font-medium mt-0.5">
+                  Vedic Astrologer, Intuitive Tarot Reader & Numerologist
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROMINENT BIRTH CHART CALCULATOR -->
+  <BirthChartCalculator />
+
+  <!-- 3. NAME / NUMEROLOGY CALCULATOR -->
+  <NumerologyCalculator />
+
+  <!-- 4. ABOUT ANISHA (Concise Homepage Version) -->
+  <section class="py-20 lg:py-28 bg-[#faf8f5] border-y border-[#28231e]/10 relative">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        
+        <!-- Left Image -->
+        <div class="lg:col-span-5 order-2 lg:order-1">
+          <div class="relative rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-xl bg-white aspect-[4/3] lg:aspect-[3/4]">
+            <img
+              src="/images/studio.jpg"
+              alt="Anisha's consultation studio"
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <!-- Right Content -->
+        <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col items-start">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+            <span>About Anisha</span>
+          </div>
+
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight leading-tight mb-6">
+            A contemporary approach to sacred traditions.
+          </h2>
+
+          <div class="space-y-4 text-sm sm:text-base text-[#57534e] font-light leading-relaxed mb-8">
+            <p>
+              I founded Astrology by Anisha with a singular intention: to strip away the sensationalism, fatalism, and superstition often surrounding esoteric disciplines, returning them to their rightful place as sophisticated instruments of self-mastery.
+            </p>
+            <p>
+              Trained in the Parashari Vedic lineage alongside psychological tarot archetypes and Chaldean sound vibration, my sessions are collaborative dialogues. Whether you are an entrepreneur charting a strategic expansion, an artist navigating a fallow season, or someone in the midst of a life crossroad, our work together reveals the unseen currents shaping your timing.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <GlassButton
+              text="Read Biography"
+              href="/about"
+              size="medium"
+            />
+            <a
+              href="/consultations"
+              class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline px-3 py-2"
+            >
+              Consultation Formats
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. MY SERVICES -->
+  <section class="py-20 lg:py-28 bg-[#fcfbf9] relative">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-3">
+          <span>Consultation Offerings</span>
+        </div>
+        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight">
+          Services & Advisory
+        </h2>
+        <p class="mt-4 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+          Thoughtfully structured containers designed for clarity, timing, and empowered decision-making.
+        </p>
+      </div>
+
+      <!-- Services 4-Column Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {
+          SERVICES.map((s) => (
+            <div class="glass-card rounded-2xl p-7 flex flex-col justify-between border border-[#28231e]/10 bg-white/60 hover:bg-white transition-all duration-300">
+              <div>
+                <div class="w-10 h-10 rounded-full bg-[#f5efe6] flex items-center justify-center text-[#a37a4c] mb-6">
+                  <span class="font-serif text-lg font-semibold italic">&#10022;</span>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-1">
+                  {s.duration}
+                </span>
+                <h3 class="font-serif text-2xl text-[#1c1917] font-medium leading-snug mb-3">
+                  {s.title}
+                </h3>
+                <p class="text-xs text-[#57534e] font-light leading-relaxed mb-6">
+                  {s.shortDesc}
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-[#28231e]/10 flex items-center justify-between">
+                <span class="text-xs font-semibold text-[#1c1917]">{s.investment}</span>
+                <a
+                  href={s.href}
+                  class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline"
+                >
+                  Explore &rarr;
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 6. LATEST FROM ANISHA (Curated Articles & Media) -->
+  <section class="py-20 lg:py-28 bg-[#faf8f5] border-t border-[#28231e]/10 relative">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+        <div>
+          <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-2">
+            Editorial Insights & Media
+          </span>
+          <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
+            Latest from Anisha
+          </h2>
+        </div>
+        <GlassButton
+          text="View All Writings"
+          href="/articles"
+          size="compact"
+        />
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {
+          ARTICLES.slice(0, 3).map((art) => (
+            <article class="glass-card rounded-2xl overflow-hidden border border-[#28231e]/10 bg-white/70 flex flex-col justify-between">
+              <div>
+                <div class="aspect-[16/10] overflow-hidden bg-[#eee8dc]">
+                  <img
+                    src={art.featuredImage}
+                    alt={art.title}
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-6">
+                  <div class="flex items-center gap-3 text-[11px] uppercase tracking-wider text-[#857f77] mb-2 font-medium">
+                    <span class="text-[#a37a4c]">{art.category}</span>
+                    <span>&bull;</span>
+                    <span>{art.readingTime}</span>
+                  </div>
+                  <h3 class="font-serif text-xl text-[#1c1917] font-medium leading-snug mb-3 hover:text-[#a37a4c] transition-colors">
+                    <a href={`/articles/${art.slug}`}>{art.title}</a>
+                  </h3>
+                  <p class="text-xs text-[#57534e] font-light leading-relaxed line-clamp-3">
+                    {art.excerpt}
+                  </p>
+                </div>
+              </div>
+
+              <div class="px-6 pb-6 pt-2 border-t border-[#28231e]/5">
+                <a
+                  href={`/articles/${art.slug}`}
+                  class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] hover:text-[#a37a4c] transition-colors"
+                >
+                  Read Essay &rarr;
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 7. TESTIMONIALS -->
+  <section class="py-20 lg:py-28 bg-[#fcfbf9] relative">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-3">
+          <span>Client Experiences</span>
+        </div>
+        <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
+          Reflections & Resonance
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {
+          TESTIMONIALS.map((t) => (
+            <div class="p-8 rounded-2xl bg-white/70 border border-[#28231e]/10 shadow-xs flex flex-col justify-between">
+              <div>
+                <span class="font-serif text-4xl text-[#a37a4c]/40 font-light block mb-3">&ldquo;</span>
+                <p class="text-sm text-[#57534e] font-light leading-relaxed italic mb-6">
+                  {t.quote}
+                </p>
+              </div>
+              <div class="pt-4 border-t border-[#28231e]/10">
+                <span class="font-serif text-base text-[#1c1917] font-semibold block">{t.client}</span>
+                <span class="text-[11px] text-[#857f77] block mt-0.5">{t.role} &bull; {t.location}</span>
+                <span class="text-[10px] uppercase tracking-wider text-[#a37a4c] font-medium block mt-1">
+                  {t.service}
+                </span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 8. FINAL CTA -->
+  <section class="py-20 lg:py-28 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] border-t border-[#28231e]/10 relative text-center">
+    <div class="max-w-3xl mx-auto px-6 sm:px-8">
+      
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        Take The Next Step
+      </span>
+
+      <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight mb-6">
+        Ready to explore your chart?
+      </h2>
+
+      <p class="text-base sm:text-lg text-[#57534e] font-light leading-relaxed mb-10 max-w-xl mx-auto">
+        Step into an intelligent, confidential space dedicated to your clarity, life timing, and soul alignment.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+        <SteampunkButton
+          href="/consultations"
+          text="Book a Consultation"
+          ariaLabel="Book a Consultation"
+        />
+
+        <a
+          href="#birth-chart"
+          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-4 px-6 bg-white/70 dark:bg-white/10 hover:bg-[#1c1917] dark:hover:bg-white hover:text-white dark:hover:text-[#1c1917] transition-all"
+        >
+          Calculate Chart Again &uarr;
+        </a>
+      </div>
+
+    </div>
+  </section>
 </Layout>

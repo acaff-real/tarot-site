@@ -1,0 +1,228 @@
+---
+import GlassButton from './GlassButton.astro';
+---
+
+<section id="numerology-calculator" class="py-16 lg:py-24 bg-[#fcfbf9] relative">
+  <div class="max-w-4xl mx-auto px-6 sm:px-8">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-3 shadow-xs">
+        <span>Sacred Sound Geometry</span>
+      </div>
+      <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
+        What's in Your Name?
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+        Decode the subtle acoustic vibrations and karmic destiny codes encoded within your name through Chaldean astro-numerology.
+      </p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="glass-card rounded-3xl p-6 sm:p-10 border border-[#28231e]/10 shadow-lg">
+      <form id="numerology-form" class="space-y-6">
+        <div>
+          <label for="num-name" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
+            Enter Full Name or Preferred Name
+          </label>
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <input
+              type="text"
+              id="num-name"
+              placeholder="e.g. Anisha Sharma"
+              value="Anisha Sharma"
+              required
+              class="w-full sm:flex-1 px-4 py-3.5 rounded-2xl glass-input text-base font-normal tracking-wide"
+            />
+            <GlassButton
+              text="Calculate Name Number"
+              type="submit"
+              size="medium"
+              width="270px"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs pt-1 border-t border-[#28231e]/5">
+          <span class="text-[#857f77]">Calculation Tradition:</span>
+          <div class="flex items-center gap-4">
+            <label class="inline-flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" name="numSystem" value="chaldean" checked class="accent-[#a37a4c]" />
+              <span class="text-[#1c1917] font-medium">Chaldean (Vedic/Sound)</span>
+            </label>
+            <label class="inline-flex items-center gap-1.5 cursor-pointer">
+              <input type="radio" name="numSystem" value="pythagorean" class="accent-[#a37a4c]" />
+              <span class="text-[#57534e]">Pythagorean</span>
+            </label>
+          </div>
+        </div>
+      </form>
+
+      <!-- Loading State -->
+      <div id="num-loading" class="hidden my-8 text-center">
+        <div class="inline-block w-6 h-6 border-2 border-[#1c1917] border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-2 text-xs uppercase tracking-widest text-[#857f77]">Decoding Letter Frequencies...</p>
+      </div>
+
+      <!-- Result Card -->
+      <div id="num-result" class="hidden mt-8 pt-8 border-t border-[#28231e]/10">
+        
+        <!-- Breakdown by Words -->
+        <div class="mb-6">
+          <span class="text-[11px] uppercase tracking-wider text-[#857f77] block mb-3 font-semibold">
+            Letter-by-Letter Acoustic Breakdown
+          </span>
+          <div id="num-words-container" class="flex flex-wrap gap-4">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Major Numbers Display -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+          
+          <!-- Compound Card -->
+          <div class="p-6 rounded-2xl bg-white/80 border border-[#28231e]/10 shadow-xs">
+            <span class="text-[10.5px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Compound Vibration</span>
+            <div class="flex items-baseline gap-3 mt-1">
+              <span id="num-compound-val" class="font-serif text-4xl text-[#1c1917]">32</span>
+              <span class="text-xs text-[#857f77]">Unreduced Energy</span>
+            </div>
+            <p id="num-compound-desc" class="text-xs text-[#57534e] mt-3 leading-relaxed border-t border-[#28231e]/5 pt-3">
+              The Sovereign Ambassador: Exceptional power of communication and collective alliance.
+            </p>
+          </div>
+
+          <!-- Root Number Card -->
+          <div class="p-6 rounded-2xl bg-white/80 border border-[#28231e]/10 shadow-xs">
+            <span class="text-[10.5px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Single Root Vibration</span>
+            <div class="flex items-baseline gap-3 mt-1">
+              <span id="num-root-val" class="font-serif text-4xl text-[#1c1917]">5</span>
+              <span id="num-archetype" class="text-sm font-serif italic text-[#1c1917]">The Dynamic Catalyst</span>
+            </div>
+            <p id="num-essence" class="text-xs text-[#57534e] mt-3 leading-relaxed border-t border-[#28231e]/5 pt-3">
+              Rapid cognitive adaptability, persuasive commerce, adventurous curiosity, and magnetic freedom.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Profile Details Grid -->
+        <div class="p-6 rounded-2xl bg-[#faf8f5] border border-[#28231e]/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+          <div>
+            <span class="text-[#857f77] block text-[10.5px] uppercase tracking-wider">Governing Body</span>
+            <span id="num-planet" class="font-semibold text-[#1c1917] mt-0.5 block">Mercury (Budha)</span>
+          </div>
+          <div>
+            <span class="text-[#857f77] block text-[10.5px] uppercase tracking-wider">Auspicious Days</span>
+            <span id="num-days" class="font-semibold text-[#1c1917] mt-0.5 block">Wednesday, Friday</span>
+          </div>
+          <div>
+            <span class="text-[#857f77] block text-[10.5px] uppercase tracking-wider">Resonant Gemstone</span>
+            <span id="num-gem" class="font-semibold text-[#1c1917] mt-0.5 block">Emerald, Peridot</span>
+          </div>
+          <div>
+            <span class="text-[#857f77] block text-[10.5px] uppercase tracking-wider">Harmonious Numbers</span>
+            <span id="num-allies" class="font-semibold text-[#1c1917] mt-0.5 block">1, 5, 6</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const numForm = document.getElementById('numerology-form') as HTMLFormElement;
+  const numInput = document.getElementById('num-name') as HTMLInputElement;
+  const numLoading = document.getElementById('num-loading');
+  const numResult = document.getElementById('num-result');
+
+  numForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = numInput.value.trim();
+    if (!name) return;
+
+    const systemRadio = document.querySelector('input[name="numSystem"]:checked') as HTMLInputElement;
+    const system = systemRadio ? systemRadio.value : 'chaldean';
+
+    numLoading?.classList.remove('hidden');
+    numResult?.classList.add('hidden');
+
+    try {
+      const res = await fetch('/api/numerology', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, system }),
+      });
+      const data = await res.json();
+      numLoading?.classList.add('hidden');
+
+      if (!data.success || !data.result) {
+        alert(data.error || 'Unable to calculate numerology.');
+        return;
+      }
+
+      renderNumerology(data.result);
+    } catch (err: any) {
+      numLoading?.classList.add('hidden');
+      alert('Error: ' + err.message);
+    }
+  });
+
+  function renderNumerology(result: any) {
+    numResult?.classList.remove('hidden');
+
+    // Words breakdown
+    const container = document.getElementById('num-words-container');
+    if (container) {
+      container.innerHTML = result.words
+        .map((w: any) => {
+          const letterBadges = w.letters
+            .map((l: any) => `<span class="inline-flex flex-col items-center bg-white px-2 py-1 rounded-md border border-[#28231e]/10 shadow-xs"><span class="font-bold text-[#1c1917] text-xs">${l.char}</span><span class="text-[10px] text-[#a37a4c] font-medium">${l.value}</span></span>`)
+            .join('');
+
+          return `
+            <div class="p-3 rounded-xl bg-black/[0.02] border border-[#28231e]/10 flex flex-col gap-2">
+              <div class="flex items-center gap-1.5">${letterBadges}</div>
+              <div class="text-[11px] text-[#57534e] flex justify-between font-medium pt-1 border-t border-[#28231e]/5">
+                <span>${w.word}</span>
+                <span class="text-[#1c1917]">${w.compoundSum} &rarr; ${w.rootNumber}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    // Compound & Root
+    const compVal = document.getElementById('num-compound-val');
+    if (compVal) compVal.textContent = result.totalCompound.toString();
+
+    const compDesc = document.getElementById('num-compound-desc');
+    if (compDesc) compDesc.textContent = result.compoundMeaning;
+
+    const rootVal = document.getElementById('num-root-val');
+    if (rootVal) rootVal.textContent = result.rootNumber.toString();
+
+    const archetype = document.getElementById('num-archetype');
+    if (archetype) archetype.textContent = result.profile.archetype;
+
+    const essence = document.getElementById('num-essence');
+    if (essence) essence.textContent = result.profile.essence;
+
+    // Attributes
+    const planet = document.getElementById('num-planet');
+    if (planet) planet.textContent = `${result.profile.rulingPlanet} (${result.profile.sanskritLord})`;
+
+    const days = document.getElementById('num-days');
+    if (days) days.textContent = result.profile.luckyDays.join(', ');
+
+    const gem = document.getElementById('num-gem');
+    if (gem) gem.textContent = result.profile.gemstones.slice(0, 2).join(', ');
+
+    const allies = document.getElementById('num-allies');
+    if (allies) allies.textContent = result.profile.harmoniousNumbers.join(', ');
+  }
+</script>

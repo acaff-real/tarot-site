@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="Intuitive Tarot Consultations — Astrology by Anisha"
+  description="Contemplative, psychological tarot readings by Anisha. Archetypal clarity, crossroad navigation, and empowered decision-making without fatalism or melodrama."
+  currentPath="/tarot"
+>
+  <!-- Header -->
+  <section class="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+        <span>Contemplative Archetypes</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+        Intuitive Tarot
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed italic">
+        "The cards do not predict what is guaranteed; they illuminate the subconscious currents guiding your next conscious choice."
+      </p>
+    </div>
+  </section>
+
+  <!-- Narrative Section -->
+  <section class="py-16 lg:py-24 bg-[#faf8f5]">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
+        
+        <div class="lg:col-span-6 space-y-5 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+          <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] leading-tight">
+            A Psychological Mirror, Not Fortune-Telling
+          </h2>
+          <p>
+            In my practice, the tarot is held as an exquisite archetypal library. Rooted in Jungian psychology and intuitive discernment, each of the 78 keys reflects a specific threshold of human development, grief, mastery, or transformation.
+          </p>
+          <p>
+            When we lay the cards during a session, we are not trying to spy on a locked future. We are pausing the noise of everyday life to take an honest, compassionate inventory of what is happening beneath the surface of your conscious thoughts.
+          </p>
+        </div>
+
+        <div class="lg:col-span-6">
+          <div class="rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-lg bg-white aspect-[4/3]">
+            <img
+              src="/images/studio.jpg"
+              alt="Anisha's tarot consultation table"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Spread Formats -->
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <h3 class="font-serif text-3xl text-[#1c1917]">
+          Consultation Formats
+        </h3>
+        <p class="text-xs sm:text-sm text-[#57534e] font-light mt-2">
+          Tailored structures designed to resolve specific crossroads.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs flex flex-col justify-between">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#a37a4c] font-semibold block mb-2">Crossroad Analysis</span>
+            <h4 class="font-serif text-2xl text-[#1c1917] mb-3">The Two Paths</h4>
+            <p class="text-xs text-[#57534e] font-light leading-relaxed">
+              When facing a pivotal decision between two offers, partnerships, or creative trajectories, this spread explores the energetic consequences and inner alignment of each path.
+            </p>
+          </div>
+          <div class="pt-6 border-t border-[#28231e]/5 text-xs text-[#857f77]">
+            Ideal for Career & Relocation Shifts
+          </div>
+        </div>
+
+        <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs flex flex-col justify-between">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#a37a4c] font-semibold block mb-2">Relational Dynamic</span>
+            <h4 class="font-serif text-2xl text-[#1c1917] mb-3">The Dyad Mirror</h4>
+            <p class="text-xs text-[#57534e] font-light leading-relaxed">
+              Unpacking the unspoken contracts, energetic projections, and genuine opportunities for growth within an intimate or business partnership.
+            </p>
+          </div>
+          <div class="pt-6 border-t border-[#28231e]/5 text-xs text-[#857f77]">
+            Ideal for Partnerships & Healing
+          </div>
+        </div>
+
+        <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs flex flex-col justify-between">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#a37a4c] font-semibold block mb-2">Seasonal Overview</span>
+            <h4 class="font-serif text-2xl text-[#1c1917] mb-3">The Solar Return / Year Ahead</h4>
+            <p class="text-xs text-[#57534e] font-light leading-relaxed">
+              A comprehensive 12-month archetypal forecast mapping the dominant lessons, gifts, and fallow seasons for your upcoming year of life.
+            </p>
+          </div>
+          <div class="pt-6 border-t border-[#28231e]/5 text-xs text-[#857f77]">
+            Ideal for Birthdays & New Years
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 text-center">
+        <GlassButton
+          text="Book a Tarot Consultation"
+          href="/consultations"
+        />
+      </div>
+
+    </div>
+  </section>
+</Layout>

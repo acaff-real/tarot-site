@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="Contact & Inquiries — Astrology by Anisha"
+  description="Connect with Anisha Sharma for consultation requests, press, podcast inquiries, and private advisory retainers."
+  currentPath="/contact"
+>
+  <!-- Header -->
+  <section class="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+        <span>Direct Communication</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+        Begin a Conversation
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-xl mx-auto leading-relaxed">
+        Whether you have questions regarding our consultations or wish to discuss a bespoke private advisory engagement, we welcome your inquiry.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Form & Info Grid -->
+  <section class="py-16 lg:py-24 bg-[#faf8f5]">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        
+        <!-- Info Column -->
+        <div class="lg:col-span-5 space-y-8">
+          <div>
+            <h2 class="font-serif text-3xl text-[#1c1917] mb-3">
+              Office & Studio
+            </h2>
+            <p class="text-sm text-[#57534e] font-light leading-relaxed">
+              Consultations are conducted digitally via private high-definition video with seekers across the United Kingdom, North America, India, Europe, and Australia.
+            </p>
+          </div>
+
+          <div class="space-y-4 text-xs text-[#57534e]">
+            <div class="p-5 rounded-2xl bg-white border border-[#28231e]/10">
+              <span class="text-[#a37a4c] font-semibold uppercase tracking-wider block mb-1">Direct Email</span>
+              <a href="mailto:concierge@astrologybyanisha.com" class="text-sm font-medium text-[#1c1917] hover:underline">
+                concierge@astrologybyanisha.com
+              </a>
+              <p class="text-[11px] text-[#857f77] mt-1">Direct responses provided within 24 business hours.</p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white border border-[#28231e]/10">
+              <span class="text-[#a37a4c] font-semibold uppercase tracking-wider block mb-1">Operating Hours</span>
+              <p class="text-sm font-medium text-[#1c1917]">Tuesday &ndash; Saturday</p>
+              <p class="text-[11px] text-[#857f77] mt-1">10:00 AM &ndash; 7:00 PM IST / 9:00 AM &ndash; 6:00 PM GMT</p>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-white border border-[#28231e]/10">
+              <span class="text-[#a37a4c] font-semibold uppercase tracking-wider block mb-1">Confidentiality Guarantee</span>
+              <p class="text-xs text-[#57534e] font-light leading-relaxed mt-1">
+                Every consultation, birth chart assessment, and email correspondence is held under strict professional confidentiality.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Column -->
+        <div class="lg:col-span-7">
+          <div class="rounded-3xl glass-panel p-8 sm:p-10 border border-[#28231e]/10 shadow-lg">
+            <h3 class="font-serif text-2xl text-[#1c1917] mb-2">
+              Send an Inquiry
+            </h3>
+            <p class="text-xs text-[#857f77] mb-6">
+              Please share how we can support you.
+            </p>
+
+            <form class="space-y-5" onsubmit="event.preventDefault(); alert('Thank you. Your message has been sent to Anisha.');">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">First & Last Name</label>
+                  <input type="text" required class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="Your name" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Email Address</label>
+                  <input type="email" required class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="email@domain.com" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Topic of Inquiry</label>
+                <select class="w-full px-4 py-3 rounded-xl glass-input text-sm bg-white cursor-pointer">
+                  <option>Consultation Booking Question</option>
+                  <option>Vedic Birth Chart Assessment</option>
+                  <option>Sacred Numerology & Business Brand Audit</option>
+                  <option>Executive Private Mentorship Retainer</option>
+                  <option>Speaking, Media or Podcast Invitation</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your Message</label>
+                <textarea rows="5" required class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="Please share details about your inquiry or current situation..."></textarea>
+              </div>
+
+              <div class="pt-2">
+                <GlassButton
+                  text="Send Message"
+                  type="submit"
+                  size="large"
+                  width="100%"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,112 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="About Anisha — Astrology by Anisha"
+  description="Discover Anisha's journey, philosophy, and lineage. A contemporary, grounded approach to Vedic astrology, contemplative tarot, and sacred numerology."
+  currentPath="/about"
+>
+  <!-- Page Header -->
+  <section class="pt-16 pb-12 lg:pt-24 lg:pb-16 bg-[#fcfbf9] border-b border-[#28231e]/10">
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+        <span>Philosophy & Background</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+        Anisha Sharma
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed italic">
+        "Astrology is not an evasion of responsibility; it is an intimate conversation with the timing of your life."
+      </p>
+    </div>
+  </section>
+
+  <!-- Editorial Biography -->
+  <section class="py-16 lg:py-24 bg-[#faf8f5]">
+    <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        
+        <!-- Sticky Portrait Column -->
+        <div class="lg:col-span-5 lg:sticky lg:top-28">
+          <div class="rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-lg bg-white aspect-[4/5]">
+            <img
+              src="/images/anisha.webp"
+              alt="Anisha Sharma"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div class="mt-6 p-6 rounded-2xl bg-white/70 border border-[#28231e]/10 text-xs text-[#57534e] space-y-2">
+            <div class="flex justify-between">
+              <span class="text-[#857f77]">Lineage:</span>
+              <span class="font-semibold text-[#1c1917]">Parashari Jyotish</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#857f77]">Practices:</span>
+              <span class="font-semibold text-[#1c1917]">Astrology &bull; Tarot &bull; Numerology</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#857f77]">Consultation:</span>
+              <span class="font-semibold text-[#1c1917]">Online (Global Video)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Narrative Column -->
+        <div class="lg:col-span-7 space-y-8 text-base text-[#57534e] font-light leading-relaxed">
+          <div>
+            <h2 class="font-serif text-3xl text-[#1c1917] mb-4">
+              Restoring Dignity to Esoteric Wisdom
+            </h2>
+            <p>
+              Growing up between India and the UK, I witnessed two polarized worlds. In one, astrology was treated with immense cultural reverence but too often entangled with fatalism, superstition, and fear-based remedies. In the other, Western commercial culture flattened astrology into twelve lighthearted horoscope caricatures.
+            </p>
+            <p class="mt-4">
+              I felt called to build a different kind of practice—one that treats traditional Vedic astrology, intuitive tarot, and Chaldean sound vibration with intellectual rigor, psychological nuance, and quiet aesthetic beauty.
+            </p>
+          </div>
+
+          <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs">
+            <h3 class="font-serif text-xl text-[#1c1917] mb-3">Core Tenets of My Practice</h3>
+            <ul class="space-y-3 text-sm">
+              <li class="flex items-start gap-3">
+                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
+                <span><strong>No Fear-Based Predictions:</strong> Planets indicate seasons of energy; they do not strip away your sovereign agency.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
+                <span><strong>Rigorous Calculations:</strong> We calculate with exact astronomical ephemeris and the historic Lahiri Ayanamsha.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
+                <span><strong>Psychological Grounding:</strong> Tarot and astrology serve as contemplative mirrors to help you make decisions with clarity.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="font-serif text-3xl text-[#1c1917] mb-4">
+              The Consultation Experience
+            </h2>
+            <p>
+              When you book a consultation with me, there is no generic recitation of personality traits. Before we meet, I spend hours analyzing your natal Kundali, active Vimshottari Dashas, and transit alignments.
+            </p>
+            <p class="mt-4">
+              Our 75 minutes together is a dedicated, thoughtful container. You can bring your most vulnerable questions about career decisions, relationship dynamics, financial timing, or spiritual purpose. You will leave with a clear timeline, actionable perspective, and a renewed sense of trust in your path.
+            </p>
+          </div>
+
+          <div class="pt-6 border-t border-[#28231e]/10">
+            <GlassButton
+              text="Book a Consultation"
+              href="/consultations"
+            />
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Layout>

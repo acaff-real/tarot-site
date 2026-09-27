@@ -1,0 +1,37 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 215 36"
+  class={`h-[32px] sm:h-[36px] w-auto overflow-visible select-none ${className}`}
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Astrology by Anisha — Astrology, Tarot, Numerology"
+>
+  <!-- Main Brand Title -->
+  <text
+    x="0"
+    y="19"
+    font-family="'Cormorant Garamond', Georgia, serif"
+    font-size="21"
+    font-weight="600"
+    letter-spacing="-0.02em"
+    class="fill-[#1c1917] dark:fill-[#f5f5f7] transition-colors duration-200 group-hover:fill-[#a37a4c]"
+  >Astrology by Anisha</text>
+
+  <!-- Practices Subtitle (tightly locked 12px below title baseline) -->
+  <text
+    x="0.5"
+    y="31"
+    font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    font-size="7.2"
+    font-weight="600"
+    letter-spacing="0.22em"
+    class="fill-[#857f77] dark:fill-[#8b8b94]"
+  >ASTROLOGY • TAROT • NUMEROLOGY</text>
+</svg>
