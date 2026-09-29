@@ -4,7 +4,9 @@ import GlassButton from '../components/GlassButton.astro';
 import SteampunkButton from '../components/SteampunkButton.astro';
 import BirthChartCalculator from '../components/BirthChartCalculator.astro';
 import { SERVICES } from '../data/services';
-import { ARTICLES } from '../data/articles';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles')).slice(0, 3);
 ---
 
 <Layout
@@ -13,35 +15,35 @@ import { ARTICLES } from '../data/articles';
   currentPath="/"
 >
   <!-- 1. HERO SECTION: Anisha & Astro by Anisha Dominate with Generous Whitespace -->
-  <section class="relative pt-12 pb-20 sm:pt-20 sm:pb-32 lg:pt-24 lg:pb-36 overflow-hidden">
+  <section class="relative pt-8 pb-16 sm:pt-16 sm:pb-24 md:pt-20 md:pb-28 lg:pt-24 lg:pb-36 xl:pt-28 xl:pb-40 overflow-hidden">
     <!-- Soft luminous background warmth -->
-    <div class="absolute top-1/6 right-10 w-96 h-96 rounded-full bg-[#f4eee4]/60 blur-3xl pointer-events-none"></div>
-    <div class="absolute top-1/3 left-10 w-80 h-80 rounded-full bg-[#efe8dc]/40 blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/6 right-10 w-72 sm:w-96 lg:w-[28rem] xl:w-[32rem] h-72 sm:h-96 lg:h-[28rem] xl:h-[32rem] rounded-full bg-[#f4eee4]/60 blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/3 left-10 w-64 sm:w-80 lg:w-96 xl:w-[26rem] h-64 sm:h-80 lg:h-96 xl:h-[26rem] rounded-full bg-[#efe8dc]/40 blur-3xl pointer-events-none"></div>
 
-    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-8 lg:gap-14 xl:gap-16 items-center">
         
         <!-- Left: Who I Am -> What I Do -> What You Can Do Next -->
-        <div class="lg:col-span-7 flex flex-col items-start text-left">
+        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left">
           
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-semibold uppercase tracking-[0.22em] bg-white/80 border border-[#28231e]/10 text-[#a37a4c] mb-6 shadow-xs">
+          <div class="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] bg-white/80 border border-[#28231e]/10 text-[#a37a4c] mb-5 sm:mb-6 shadow-xs">
             <span>Anisha Banerji</span>
           </div>
 
-          <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-[#1c1917] tracking-tight leading-[1.04] mb-6">
+          <h1 class="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-[#1c1917] tracking-tight leading-[1.04] mb-5 sm:mb-6">
             Astro by <span class="italic font-light">Anisha</span>
           </h1>
 
-          <p class="font-serif text-xl sm:text-2xl text-[#57534e] font-light leading-snug mb-5 max-w-lg">
+          <p class="font-serif text-lg sm:text-xl md:text-xl lg:text-2xl text-[#57534e] font-light leading-snug mb-4 sm:mb-5 max-w-lg lg:max-w-xl">
             Vedic astrology and contemplative tarot for clarity, life timing, and purposeful direction.
           </p>
 
-          <p class="text-sm sm:text-base text-[#78716c] font-light leading-relaxed mb-10 max-w-lg">
+          <p class="text-xs sm:text-sm md:text-sm lg:text-base text-[#78716c] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg lg:max-w-xl">
             A quiet, intelligent sanctuary dedicated to self-knowledge. Grounded in astronomical precision and psychological depth—designed to help you navigate pivotal thresholds with confidence.
           </p>
 
           <!-- CTAs -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
             <GlassButton
               text="Book a Consultation"
               href="/consultations"
@@ -51,7 +53,7 @@ import { ARTICLES } from '../data/articles';
             
             <a
               href="#birth-chart"
-              class="inline-flex items-center justify-center text-xs font-semibold uppercase tracking-[0.16em] text-[#57534e] hover:text-[#1c1917] transition-colors py-3.5 px-6"
+              class="inline-flex items-center justify-center text-xs font-semibold uppercase tracking-[0.16em] text-[#57534e] hover:text-[#1c1917] transition-colors py-3 px-5 sm:py-3.5 sm:px-6"
             >
               Discover Your Birth Chart &darr;
             </a>
@@ -60,11 +62,11 @@ import { ARTICLES } from '../data/articles';
         </div>
 
         <!-- Right: Dominant Photograph of Anisha -->
-        <div class="lg:col-span-5 relative flex justify-center">
-          <div class="relative w-full max-w-md">
+        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 relative flex justify-center w-full">
+          <div class="relative w-full max-w-xs sm:max-w-sm md:max-w-sm lg:max-w-md xl:max-w-lg">
             
             <!-- Soft Underlay Frame -->
-            <div class="absolute inset-0 translate-x-3 translate-y-3 rounded-xl bg-[#ede5d8]/70 blur-xs"></div>
+            <div class="absolute inset-0 translate-x-2.5 translate-y-2.5 sm:translate-x-3 sm:translate-y-3 rounded-xl bg-[#ede5d8]/70 blur-xs"></div>
             
             <!-- Portrait Card -->
             <div class="relative rounded-xl overflow-hidden border border-[#28231e]/10 shadow-2xl bg-white aspect-[4/5]">
@@ -76,9 +78,9 @@ import { ARTICLES } from '../data/articles';
               />
               
               <!-- Subtle Clean Caption -->
-              <div class="absolute bottom-4 left-4 right-4 p-4 rounded-md glass-card backdrop-blur-md bg-white/85 border border-white/80 shadow-md">
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Anisha Banerji</span>
-                <p class="text-xs text-[#1c1917] font-medium mt-0.5">
+              <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-3 sm:p-4 rounded-md glass-card backdrop-blur-md bg-white/85 border border-white/80 shadow-md">
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Anisha Banerji</span>
+                <p class="text-[11px] sm:text-xs text-[#1c1917] font-medium mt-0.5">
                   Vedic Astrologer & Tarot Consultant
                 </p>
               </div>
@@ -95,13 +97,13 @@ import { ARTICLES } from '../data/articles';
   <BirthChartCalculator />
 
   <!-- 3. ABOUT ANISHA: Premium Personal Profile with Breathing Room -->
-  <section class="py-24 sm:py-32 bg-[#faf8f5] border-y border-[#28231e]/10 relative">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-center">
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-[#faf8f5] border-y border-[#28231e]/10 relative">
+    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 sm:gap-10 md:gap-10 lg:gap-16 xl:gap-20 items-center">
         
         <!-- Left: Prominent Portrait of Anisha -->
-        <div class="lg:col-span-5">
-          <div class="relative rounded-xl overflow-hidden border border-[#28231e]/10 shadow-xl bg-white aspect-[4/5]">
+        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 w-full">
+          <div class="relative rounded-xl overflow-hidden border border-[#28231e]/10 shadow-xl bg-white aspect-[4/5] max-w-sm md:max-w-none mx-auto">
             <img
               src="/images/anisha.webp"
               alt="Anisha Banerji"
@@ -112,16 +114,16 @@ import { ARTICLES } from '../data/articles';
         </div>
 
         <!-- Right: Restrained, Dignified Copy -->
-        <div class="lg:col-span-7 flex flex-col items-start">
+        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start">
           <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
             About Anisha
           </span>
 
-          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight leading-tight mb-6">
+          <h2 class="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl text-[#1c1917] tracking-tight leading-tight mb-5 sm:mb-6">
             A contemporary approach to ancient wisdom.
           </h2>
 
-          <div class="space-y-4 text-sm sm:text-base text-[#57534e] font-light leading-relaxed mb-8">
+          <div class="space-y-4 text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed mb-8">
             <p>
               I founded Astro by Anisha to bring intellectual rigor, psychological clarity, and quiet dignity back to traditional astrology and tarot.
             </p>
@@ -130,7 +132,7 @@ import { ARTICLES } from '../data/articles';
             </p>
           </div>
 
-          <div class="flex items-center gap-6">
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6">
             <GlassButton
               text="Read Full Profile"
               href="/about"
@@ -151,35 +153,35 @@ import { ARTICLES } from '../data/articles';
   </section>
 
   <!-- 4. SERVICES: Clean, Restrained, No Prices (Reference: chani.com/chart) -->
-  <section class="py-24 sm:py-32 bg-[#fcfbf9] relative">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-[#fcfbf9] relative">
+    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
       <!-- Section Header -->
-      <div class="text-center max-w-2xl mx-auto mb-16">
+      <div class="text-center max-w-2xl lg:max-w-3xl mx-auto mb-12 sm:mb-16">
         <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
           1-on-1 Consultations
         </span>
         <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight">
           Consultation Offerings
         </h2>
-        <p class="mt-3 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+        <p class="mt-3 text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed">
           Structured, confidential sessions conducted online via private video worldwide.
         </p>
       </div>
 
-      <!-- Services 3-Column Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Services Multi-Column Responsive Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-6 lg:gap-8 xl:gap-10">
         {
           SERVICES.map((s) => (
-            <div class="glass-card rounded-lg p-8 sm:p-9 flex flex-col justify-between border border-[#28231e]/10 bg-white/70 hover:bg-white transition-all duration-300 shadow-xs">
+            <div class="glass-card rounded-lg p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between border border-[#28231e]/10 bg-white/70 hover:bg-white transition-all duration-300 shadow-xs">
               <div>
                 <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-2">
                   {s.duration}
                 </span>
-                <h3 class="font-serif text-2xl sm:text-3xl text-[#1c1917] font-medium leading-snug mb-2">
+                <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] font-medium leading-snug mb-2">
                   {s.title}
                 </h3>
-                <p class="text-xs uppercase tracking-wider text-[#857f77] mb-4 font-medium">
+                <p class="text-xs uppercase tracking-wider text-[#857f77] mb-3 sm:mb-4 font-medium">
                   {s.subtitle}
                 </p>
                 <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-6">
@@ -187,7 +189,7 @@ import { ARTICLES } from '../data/articles';
                 </p>
               </div>
 
-              <div class="pt-6 border-t border-[#28231e]/10">
+              <div class="pt-5 sm:pt-6 border-t border-[#28231e]/10">
                 <GlassButton
                   text="Book a Consultation"
                   href="/consultations"
@@ -204,15 +206,15 @@ import { ARTICLES } from '../data/articles';
   </section>
 
   <!-- 5. INSTAGRAM FIRST & YOUTUBE SECOND (Curated, Elegant Presentation) -->
-  <section class="py-20 sm:py-28 bg-[#faf8f5] border-t border-[#28231e]/10 relative">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] border-t border-[#28231e]/10 relative">
+    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
           <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">
             Social & Insights
           </span>
-          <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] tracking-tight">
             Follow on Instagram & YouTube
           </h2>
         </div>
@@ -229,21 +231,21 @@ import { ARTICLES } from '../data/articles';
         </div>
       </div>
 
-      <!-- Curated Instagram Cards (Restrained & Aesthetic) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Curated Social Cards (Responsive multi-viewport grid) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
         <!-- Post 1 -->
         <a
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-white p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-lg bg-white p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
         >
           <div>
             <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
               <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">Planetary Transit</span>
               <span>@astrobyanisha</span>
             </div>
-            <p class="font-serif text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
+            <p class="font-serif text-base sm:text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
               "Saturn tests where your foundations were built on obligation rather than authenticity. Slow down and rebuild with truth."
             </p>
           </div>
@@ -258,14 +260,14 @@ import { ARTICLES } from '../data/articles';
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-white p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-lg bg-white p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
         >
           <div>
             <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
               <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">Tarot Archetype</span>
               <span>@astrobyanisha</span>
             </div>
-            <p class="font-serif text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
+            <p class="font-serif text-base sm:text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
               "The Hermit invites you to step outside the noise of external counsel and listen to the voice that only speaks in stillness."
             </p>
           </div>
@@ -280,14 +282,14 @@ import { ARTICLES } from '../data/articles';
           href="https://youtube.com"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-[#f7f4ed] p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-lg bg-[#f7f4ed] p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
         >
           <div>
             <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
               <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">YouTube &bull; Long-form</span>
               <span>Astro by Anisha</span>
             </div>
-            <h4 class="font-serif text-xl text-[#1c1917] font-medium leading-snug mb-2 group-hover:text-[#a37a4c] transition-colors">
+            <h4 class="font-serif text-lg sm:text-xl text-[#1c1917] font-medium leading-snug mb-2 group-hover:text-[#a37a4c] transition-colors">
               Understanding Your Lagna & Current Dashas
             </h4>
             <p class="text-xs text-[#57534e] font-light leading-relaxed">
@@ -305,15 +307,15 @@ import { ARTICLES } from '../data/articles';
   </section>
 
   <!-- 6. SELECTED ARTICLES -->
-  <section class="py-20 sm:py-28 bg-[#fcfbf9] relative">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] relative">
+    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
           <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">
             Essays & Reflections
           </span>
-          <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] tracking-tight">
             Articles by Anisha
           </h2>
         </div>
@@ -324,37 +326,37 @@ import { ARTICLES } from '../data/articles';
         />
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
         {
-          ARTICLES.slice(0, 3).map((art) => (
+          articles.map((art) => (
             <article class="glass-card rounded-lg overflow-hidden border border-[#28231e]/10 bg-white/70 flex flex-col justify-between">
               <div>
                 <div class="aspect-[16/10] overflow-hidden bg-[#eee8dc]">
                   <img
-                    src={art.featuredImage}
-                    alt={art.title}
+                    src={art.data.featuredImage}
+                    alt={art.data.title}
                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
                 </div>
-                <div class="p-6">
+                <div class="p-5 sm:p-6">
                   <div class="flex items-center gap-3 text-[10px] uppercase tracking-wider text-[#857f77] mb-2 font-medium">
-                    <span class="text-[#a37a4c]">{art.category}</span>
+                    <span class="text-[#a37a4c]">{art.data.category}</span>
                     <span>&bull;</span>
-                    <span>{art.readingTime}</span>
+                    <span>{art.data.readingTime}</span>
                   </div>
-                  <h3 class="font-serif text-xl text-[#1c1917] font-medium leading-snug mb-2 hover:text-[#a37a4c] transition-colors">
-                    <a href={`/articles/${art.slug}`}>{art.title}</a>
+                  <h3 class="font-serif text-lg sm:text-xl text-[#1c1917] font-medium leading-snug mb-2 hover:text-[#a37a4c] transition-colors">
+                    <a href={`/articles/${art.id}`}>{art.data.title}</a>
                   </h3>
                   <p class="text-xs text-[#57534e] font-light leading-relaxed line-clamp-2">
-                    {art.excerpt}
+                    {art.data.excerpt}
                   </p>
                 </div>
               </div>
 
-              <div class="px-6 pb-6 pt-2 border-t border-[#28231e]/5">
+              <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#28231e]/5">
                 <a
-                  href={`/articles/${art.slug}`}
+                  href={`/articles/${art.id}`}
                   class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] hover:text-[#a37a4c] transition-colors"
                 >
                   Read Essay &rarr;
@@ -369,22 +371,22 @@ import { ARTICLES } from '../data/articles';
   </section>
 
   <!-- 7. FINAL CTA: Restrained & Elegant -->
-  <section class="py-24 sm:py-32 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] border-t border-[#28231e]/10 text-center relative">
-    <div class="max-w-2xl mx-auto px-6 sm:px-8">
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] border-t border-[#28231e]/10 text-center relative">
+    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
       
       <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
         Take The Next Step
       </span>
 
-      <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight mb-5">
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight mb-5">
         Ready to explore your chart?
       </h2>
 
-      <p class="text-sm sm:text-base text-[#57534e] font-light leading-relaxed mb-10 max-w-lg mx-auto">
+      <p class="text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg mx-auto">
         Step into an intelligent, confidential space dedicated to your clarity, life timing, and soul alignment with Anisha Banerji.
       </p>
 
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-5">
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5 w-full sm:w-auto">
         <SteampunkButton
           href="/consultations"
           text="Book a Consultation"
@@ -393,7 +395,7 @@ import { ARTICLES } from '../data/articles';
 
         <a
           href="#birth-chart"
-          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-4 px-6 bg-white/70 hover:bg-[#1c1917] hover:text-white transition-all"
+          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/70 hover:bg-[#1c1917] hover:text-white transition-all"
         >
           Calculate Chart Again &uarr;
         </a>

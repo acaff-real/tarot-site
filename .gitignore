@@ -29,3 +29,7 @@ desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
+
+# Local temporary context & notes
+checklist.txt
+*.local

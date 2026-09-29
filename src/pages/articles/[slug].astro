@@ -1,30 +1,29 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GlassButton from '../../components/GlassButton.astro';
-import { ARTICLES, type Article } from '../../data/articles';
+import { getCollection, render } from 'astro:content';
 
-export function getStaticPaths() {
-  return ARTICLES.map((article) => ({
-    params: { slug: article.slug },
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({
+    params: { slug: article.id },
     props: { article },
   }));
 }
 
-interface Props {
-  article: Article;
-}
-
 const { article } = Astro.props;
+const { Content } = await render(article);
 ---
 
 <Layout
-  title={`${article.title} — Astro by Anisha`}
-  description={article.excerpt}
-  currentPath="/articles"
+  title={`${article.data.title} — Astro by Anisha`}
+  description={article.data.excerpt}
+  currentPath={`/articles/${article.id}`}
+  image={article.data.featuredImage}
 >
   <!-- Article Header -->
-  <article class="py-16 lg:py-24 bg-[#fcfbf9]">
-    <div class="max-w-3xl mx-auto px-6 sm:px-8">
+  <article class="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#fcfbf9]">
+    <div class="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
       
       <!-- Back Link -->
       <a href="/articles" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#857f77] hover:text-[#1c1917] mb-8 transition-colors">
@@ -33,41 +32,41 @@ const { article } = Astro.props;
 
       <!-- Category & Reading Time -->
       <div class="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold mb-4">
-        <span>{article.category}</span>
+        <span>{article.data.category}</span>
         <span>&bull;</span>
-        <span>{article.readingTime}</span>
+        <span>{article.data.readingTime}</span>
       </div>
 
       <!-- Title -->
-      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-[1.12] mb-6">
-        {article.title}
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-[1.12] mb-6">
+        {article.data.title}
       </h1>
 
       <!-- Date & Author Meta -->
       <div class="flex items-center gap-4 py-4 border-y border-[#28231e]/10 text-xs text-[#57534e] mb-10">
         <span class="font-semibold text-[#1c1917]">By Anisha Banerji</span>
         <span>&bull;</span>
-        <span>{article.date}</span>
+        <span>{article.data.date}</span>
       </div>
 
       <!-- Featured Image -->
       <div class="rounded-xl overflow-hidden border border-[#28231e]/10 shadow-lg mb-12 aspect-[16/10] bg-[#e8e2d5]">
         <img
-          src={article.featuredImage}
-          alt={article.title}
+          src={article.data.featuredImage}
+          alt={article.data.title}
           class="w-full h-full object-cover"
         />
       </div>
 
       <!-- Article Body -->
       <div class="prose prose-stone max-w-none text-[#3a3734] font-light leading-relaxed text-base sm:text-lg space-y-6 [&>p.lead]:font-serif [&>p.lead]:text-2xl [&>p.lead]:text-[#1c1917] [&>p.lead]:leading-snug [&>h2]:font-serif [&>h2]:text-3xl [&>h2]:text-[#1c1917] [&>h2]:mt-10 [&>h2]:mb-4 [&>blockquote]:border-l-2 [&>blockquote]:border-[#a37a4c] [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:my-8 [&>blockquote]:font-serif [&>blockquote]:text-xl [&>blockquote]:text-[#1c1917] [&>ul]:space-y-2 [&>ol]:space-y-2">
-        <Fragment set:html={article.content} />
+        <Content />
       </div>
 
       <!-- Article Footer Tags -->
       <div class="mt-12 pt-8 border-t border-[#28231e]/10 flex flex-wrap gap-2">
         {
-          article.tags.map((tag) => (
+          article.data.tags.map((tag) => (
             <span class="px-3 py-1 rounded-md text-xs bg-black/[0.03] text-[#57534e] border border-[#28231e]/5">
               #{tag}
             </span>

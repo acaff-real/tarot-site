@@ -16,15 +16,15 @@
   }
 
   .dark {
-    --bg-cream: #0c0c0e;
-    --bg-sand: #141418;
-    --bg-stone: #1e1e24;
-    --text-primary: #f5f5f7;
-    --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
-    --accent-bronze: #d4af37;
-    --accent-gold: #e5c158;
-    --border-subtle: rgba(255, 255, 255, 0.08);
+    --bg-cream: #090716;
+    --bg-sand: #0f0b24;
+    --bg-stone: #181236;
+    --text-primary: #f8fafc;
+    --text-secondary: #c4b5fd;
+    --text-muted: #818cf8;
+    --accent-bronze: #2dd4bf; /* Spectral Cyan / Mint */
+    --accent-gold: #c084fc;   /* Spectral Astral Violet */
+    --border-subtle: rgba(168, 85, 247, 0.2);
   }
 
   body {
@@ -39,8 +39,27 @@
   }
 
   .dark body {
-    background: radial-gradient(circle at 50% 15%, #181820 0%, #0d0d10 60%, #08080a 100%);
-    color: #f5f5f7;
+    background: radial-gradient(circle at 50% 10%, #150f33 0%, #0d0922 45%, #070512 80%, #04030a 100%);
+    color: #f8fafc;
+    position: relative;
+  }
+
+  /* Balatro Spectral Pack Ethereal Aurora Fog */
+  .dark body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 65% 45% at 15% 15%, rgba(45, 212, 191, 0.08) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 50% at 85% 25%, rgba(168, 85, 247, 0.11) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 60% at 50% 85%, rgba(56, 189, 248, 0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .dark main, .dark header, .dark footer {
+    position: relative;
+    z-index: 1;
   }
 
   h1, h2, h3, h4, .font-serif {
@@ -63,12 +82,12 @@
 }
 
 .dark .glass-panel {
-  background: rgba(20, 20, 26, 0.78);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(13, 9, 28, 0.76);
+  border-color: rgba(168, 85, 247, 0.25);
   box-shadow: 
-    0 16px 40px -8px rgba(0, 0, 0, 0.6),
-    0 1px 3px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.12);
+    0 18px 45px -8px rgba(0, 0, 0, 0.8),
+    0 0 32px -6px rgba(45, 212, 191, 0.12),
+    inset 0 1px 1px rgba(192, 132, 252, 0.28);
 }
 
 .glass-card {
@@ -83,11 +102,12 @@
 }
 
 .dark .glass-card {
-  background: rgba(24, 24, 30, 0.65);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(16, 11, 34, 0.68);
+  border: 1px solid rgba(168, 85, 247, 0.2);
   box-shadow: 
-    0 14px 36px -4px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 14px 36px -4px rgba(0, 0, 0, 0.65),
+    0 0 20px -4px rgba(124, 58, 237, 0.12),
+    inset 0 1px 0 rgba(192, 132, 252, 0.16);
 }
 
 .glass-card:hover {
@@ -100,11 +120,13 @@
 }
 
 .dark .glass-card:hover {
-  background: rgba(30, 30, 38, 0.85);
-  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(22, 15, 48, 0.88);
+  border-color: rgba(45, 212, 191, 0.55);
   box-shadow: 
-    0 20px 48px -4px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 22px 50px -4px rgba(0, 0, 0, 0.85),
+    0 0 35px -2px rgba(45, 212, 191, 0.35),
+    inset 0 1px 0 rgba(103, 232, 249, 0.35);
+  transform: translateY(-2px);
 }
 
 .glass-input {
@@ -117,14 +139,14 @@
 }
 
 .dark .glass-input {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: #f5f5f7;
+  background: rgba(18, 13, 38, 0.7);
+  border-color: rgba(168, 85, 247, 0.24);
+  color: #f8fafc;
 }
 
 .dark select.glass-input option {
-  background-color: #141418;
-  color: #f5f5f7;
+  background-color: #0f0b24;
+  color: #f8fafc;
 }
 
 .glass-input:focus {
@@ -135,9 +157,9 @@
 }
 
 .dark .glass-input:focus {
-  background: rgba(28, 28, 36, 0.95);
-  border-color: var(--accent-bronze);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+  background: rgba(25, 18, 54, 0.95);
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22), 0 0 18px rgba(45, 212, 191, 0.18);
 }
 
 /* ==========================================================================
@@ -158,6 +180,8 @@
   position: relative;
   width: var(--w);
   height: var(--h);
+  max-width: 100%;
+  box-sizing: border-box;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -192,23 +216,31 @@
   overflow: hidden;
 }
 
-/* Dark Mode Crystal Button */
+/* Dark Mode Spectral Crystal Button */
 .dark .box {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0.03) 50%,
-    rgba(255, 255, 255, 0.08) 100%
+    rgba(168, 85, 247, 0.22) 0%,
+    rgba(45, 212, 191, 0.08) 50%,
+    rgba(139, 92, 246, 0.18) 100%
   );
-  border-top: 1.5px solid rgba(255, 255, 255, 0.4);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.6);
+  border-top: 1.5px solid rgba(103, 232, 249, 0.65);
+  border-left: 1px solid rgba(192, 132, 252, 0.4);
+  border-right: 1px solid rgba(192, 132, 252, 0.4);
+  border-bottom: 1.5px solid rgba(5, 3, 12, 0.8);
   box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.5),
-    inset 2px 0 4px 0 rgba(255, 255, 255, 0.15),
-    0 10px 28px -4px rgba(0, 0, 0, 0.6);
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.6),
+    inset 2px 0 4px 0 rgba(192, 132, 252, 0.25),
+    0 10px 28px -4px rgba(0, 0, 0, 0.75),
+    0 0 18px -2px rgba(45, 212, 191, 0.25);
+}
+
+.dark .box:hover {
+  box-shadow:
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.7),
+    0 16px 36px -4px rgba(0, 0, 0, 0.85),
+    0 0 28px rgba(45, 212, 191, 0.45);
 }
 
 .box:before {
@@ -353,7 +385,14 @@
 }
 
 .dark .glass-btn-wrapper .absolute {
-  background: linear-gradient(to right, rgba(212, 175, 55, 0.2), rgba(229, 193, 88, 0.3), rgba(212, 175, 55, 0.2));
+  background: linear-gradient(to right, rgba(45, 212, 191, 0.2), rgba(168, 85, 247, 0.3), rgba(45, 212, 191, 0.2));
+}
+
+@media (max-width: 640px) {
+  .box:not(.box-compact) {
+    --h: 56px;
+    max-width: 100%;
+  }
 }
 
 /* Secondary frosted glass pill */
@@ -378,12 +417,12 @@
 }
 
 .dark .glass-pill-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #f5f5f7;
+  background: rgba(22, 15, 48, 0.6);
+  border-color: rgba(168, 85, 247, 0.25);
+  color: #f8fafc;
   box-shadow: 
-    inset 1px 1px 1px rgba(255, 255, 255, 0.15),
-    0 2px 10px rgba(0, 0, 0, 0.4);
+    inset 1px 1px 1px rgba(192, 132, 252, 0.2),
+    0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .glass-pill-btn:hover {
@@ -397,29 +436,30 @@
 }
 
 .dark .glass-pill-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(212, 175, 55, 0.4);
-  color: var(--accent-bronze);
+  background: rgba(30, 20, 64, 0.85);
+  border-color: rgba(45, 212, 191, 0.6);
+  color: #2dd4bf;
   box-shadow: 
-    inset 1px 1px 1px rgba(255, 255, 255, 0.3),
-    0 8px 20px rgba(0, 0, 0, 0.5);
+    inset 1px 1px 1px rgba(103, 232, 249, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    0 0 16px rgba(45, 212, 191, 0.3);
 }
 
 /* ==========================================================================
-   GLOBAL DARK MODE COLOR SCHEME MAPPING
+   GLOBAL DARK MODE COLOR SCHEME MAPPING (BALATRO SPECTRAL PACK PALETTE)
    ========================================================================== */
 
 .dark body {
-  background: radial-gradient(circle at 50% 15%, #181820 0%, #0d0d10 60%, #08080a 100%) !important;
-  color: #f5f5f7 !important;
+  background: radial-gradient(circle at 50% 10%, #150f33 0%, #0d0922 45%, #070512 80%, #04030a 100%) !important;
+  color: #f8fafc !important;
 }
 
 .dark .bg-\[\#fcfbf9\] {
-  background-color: #0c0c0e !important;
+  background-color: #070512 !important;
 }
 
 .dark .bg-\[\#faf8f5\] {
-  background-color: #121217 !important;
+  background-color: #0c0822 !important;
 }
 
 .dark .bg-\[\#f7f4ed\],
@@ -427,57 +467,57 @@
 .dark .bg-\[\#f4eee4\],
 .dark .bg-\[\#f5efe6\],
 .dark .bg-\[\#ece5d8\]\/60 {
-  background-color: #16161d !important;
+  background-color: #120d2e !important;
 }
 
 .dark .bg-white {
-  background-color: #181820 !important;
+  background-color: #150f38 !important;
 }
 
 .dark .bg-white\/70,
 .dark .bg-white\/80,
 .dark .bg-white\/60,
 .dark .bg-white\/95 {
-  background-color: rgba(24, 24, 30, 0.78) !important;
+  background-color: rgba(21, 15, 56, 0.78) !important;
 }
 
 .dark .text-\[\#1c1917\] {
-  color: #f5f5f7 !important;
+  color: #f8fafc !important;
 }
 
 .dark .text-\[\#3a3734\],
 .dark .text-\[\#57534e\] {
-  color: #a1a1aa !important;
+  color: #c4b5fd !important;
 }
 
 .dark .text-\[\#857f77\] {
-  color: #8b8b94 !important;
+  color: #a78bfa !important;
 }
 
 .dark .border-\[\#28231e\]\/10,
 .dark .border-\[\#28231e\]\/5,
 .dark .border-\[\#28231e\]\/15,
 .dark .border-white\/90 {
-  border-color: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
 }
 
 .dark header {
-  background-color: rgba(12, 12, 14, 0.88) !important;
-  border-color: rgba(255, 255, 255, 0.07) !important;
+  background-color: rgba(12, 9, 31, 0.92) !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
 }
 
 .dark footer {
-  background-color: #0e0e12 !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #070512 !important;
+  border-color: rgba(168, 85, 247, 0.2) !important;
 }
 
 .dark tr.border-b,
 .dark tr:hover {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(168, 85, 247, 0.16) !important;
 }
 
 .dark .divide-\[\#28231e\]\/5 > * {
-  border-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(168, 85, 247, 0.12) !important;
 }
 
 /* Form Inputs & Controls in Dark Mode */
@@ -487,24 +527,30 @@
 .dark input[type="email"],
 .dark input[type="search"],
 .dark textarea {
-  color: #f5f5f7 !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: #f8fafc !important;
+  background-color: rgba(18, 13, 40, 0.75) !important;
+  border-color: rgba(168, 85, 247, 0.25) !important;
+}
+
+.dark input:focus,
+.dark textarea:focus {
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.25) !important;
 }
 
 .dark input::placeholder,
 .dark textarea::placeholder {
-  color: #71717a !important;
+  color: #818cf8 !important;
 }
 
 .dark input[type="date"]::-webkit-calendar-picker-indicator,
 .dark input[type="time"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.85);
+  filter: invert(0.85) sepia(1) hue-rotate(120deg);
 }
 
 .dark .bg-black\/\[0\.02\],
 .dark .bg-black\/\[0\.03\] {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+  background-color: rgba(168, 85, 247, 0.04) !important;
 }
 
 .dark .blur-3xl {
@@ -513,55 +559,56 @@
 
 /* Numerology acoustic letter badges */
 .dark #num-words-container > div {
-  background-color: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(22, 15, 48, 0.5);
+  border-color: rgba(168, 85, 247, 0.2);
 }
 
 .dark #num-words-container span.bg-white {
-  background-color: rgba(36, 36, 44, 0.9) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(28, 19, 60, 0.9) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+  color: #f8fafc !important;
 }
 
 /* SVG Kundali in Dark Mode */
 .dark #chart-svg-wrapper svg rect[fill="#fcfbf9"],
 .dark #chart-svg-wrapper svg rect[fill="#faf8f5"],
 .dark #chart-svg-wrapper svg rect[fill="#f5eee6"] {
-  fill: #131318 !important;
-  stroke: #444450 !important;
+  fill: #0c0822 !important;
+  stroke: rgba(168, 85, 247, 0.45) !important;
 }
 
 .dark #chart-svg-wrapper svg line,
 .dark #chart-svg-wrapper svg polygon {
-  stroke: #4f4f5e !important;
+  stroke: rgba(45, 212, 191, 0.4) !important;
 }
 
 .dark #chart-svg-wrapper svg text[fill="#1c1917"] {
-  fill: #f5f5f7 !important;
+  fill: #f8fafc !important;
 }
 
 .dark #chart-svg-wrapper svg text[fill="#a37a4c"] {
-  fill: #d4af37 !important;
+  fill: #2dd4bf !important;
 }
 
 .dark #chart-svg-wrapper svg text[fill="#857f77"] {
-  fill: #8b8b94 !important;
+  fill: #c4b5fd !important;
 }
 
 /* Gradients in Dark Mode */
 .dark section.bg-gradient-to-b {
-  background: radial-gradient(circle at 50% 0%, #15151c 0%, #0c0c0e 100%) !important;
+  background: radial-gradient(circle at 50% 0%, #17103d 0%, #070512 100%) !important;
 }
 
 .dark .from-\[\#f5f2eb\] {
-  --tw-gradient-from: #15151c var(--tw-gradient-from-position) !important;
+  --tw-gradient-from: #17103d var(--tw-gradient-from-position) !important;
 }
 
 .dark .to-\[\#fcfbf9\] {
-  --tw-gradient-to: #0c0c0e var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: #070512 var(--tw-gradient-to-position) !important;
 }
 
 .dark .to-\[\#f4eee4\] {
-  --tw-gradient-to: #111116 var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: #0e0a26 var(--tw-gradient-to-position) !important;
 }
 
 /* ==========================================================================
@@ -582,6 +629,7 @@
   align-items: center;
   justify-content: center;
   min-width: 270px;
+  max-width: 100%;
   height: 64px;
   padding: 0;
   border: none;
@@ -602,13 +650,42 @@
     box-shadow 0.25s ease;
 }
 
-.dark .steampunk-btn {
-  box-shadow:
-    0 16px 36px -4px rgba(0, 0, 0, 0.6),
-    0 4px 12px rgba(0, 0, 0, 0.4);
+@media (max-width: 640px) {
+  .steampunk-btn {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 56px;
+  }
+
+  .steampunk-btn .btn-text {
+    font-size: 0.95rem;
+  }
 }
 
-/* Metallic Bronze & Champagne Gold Outer Bevel Frame */
+.dark .steampunk-btn {
+  box-shadow:
+    0 16px 40px -4px rgba(0, 0, 0, 0.85),
+    0 0 28px rgba(45, 212, 191, 0.22);
+}
+
+.dark .steampunk-btn .btn-frame {
+  background: linear-gradient(
+    135deg,
+    #38bdf8 0%,
+    #a855f7 32%,
+    #1d1338 52%,
+    #080514 78%,
+    #2dd4bf 100%
+  );
+  box-shadow:
+    inset 0 1.5px 2px rgba(103, 232, 249, 0.9),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.9),
+    inset 2px 2px 4px rgba(168, 85, 247, 0.6),
+    0 0 14px rgba(45, 212, 191, 0.35);
+}
+
+/* Metallic Bronze & Champagne Gold Outer Bevel Frame (Light Mode) */
 .steampunk-btn .btn-frame {
   display: flex;
   align-items: center;
@@ -670,18 +747,18 @@
 .dark .steampunk-btn .btn-glass {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.03) 50%,
-    rgba(255, 255, 255, 0.09) 100%
+    rgba(168, 85, 247, 0.24) 0%,
+    rgba(9, 6, 22, 0.5) 50%,
+    rgba(45, 212, 191, 0.16) 100%
   );
-  border-top: 1px solid rgba(255, 255, 255, 0.45);
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
-  border-right: 1px solid rgba(255, 255, 255, 0.22);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  border-top: 1px solid rgba(103, 232, 249, 0.65);
+  border-left: 1px solid rgba(192, 132, 252, 0.4);
+  border-right: 1px solid rgba(192, 132, 252, 0.4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.85);
 
   box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.6);
+    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.85);
 }
 
 /* Glass Specular Reflection Highlight */
@@ -702,7 +779,7 @@
   z-index: 2;
 }
 
-/* Amber Glowing Light Core (Blooms smoothly on hover, smoothly lingers on unhover) */
+/* Amber / Spectral Glowing Light Core */
 .steampunk-btn .amber-glow {
   position: absolute;
   width: 160px;
@@ -714,14 +791,12 @@
   pointer-events: none;
   z-index: 1;
   opacity: 0.18;
-  /* Smooth lingering fade-out when unhovering (no abrupt stop) */
   transition:
     opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
     filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Continuous breathing pulse inside pseudo-element (keeps pulsing smoothly through fade-out) */
 .steampunk-btn .amber-glow::after {
   content: "";
   position: absolute;
@@ -736,6 +811,19 @@
   filter: blur(10px);
   mix-blend-mode: screen;
   animation: pulse-amber 1.8s ease-in-out infinite;
+}
+
+/* Spectral Pack Hypnotic Flame Core (Dark Mode) */
+.dark .steampunk-btn .amber-glow::after {
+  background: radial-gradient(
+    circle,
+    #38bdf8 0%,
+    #2dd4bf 38%,
+    #a855f7 68%,
+    transparent 80%
+  );
+  filter: blur(10px);
+  animation: pulse-spectral 1.8s ease-in-out infinite;
 }
 
 /* Content Layout */
@@ -761,10 +849,10 @@
 }
 
 .dark .steampunk-btn .btn-text {
-  color: #f5f5f7;
+  color: #f8fafc;
 }
 
-/* Circular Arrow Icon Medallion (Consistent with site button system) */
+/* Circular Arrow Icon Medallion */
 .steampunk-btn .btn-icon {
   width: 36px;
   height: 36px;
@@ -781,8 +869,8 @@
 }
 
 .dark .steampunk-btn .btn-icon {
-  background: #f5f5f7;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  background: #f8fafc;
+  box-shadow: 0 0 14px rgba(45, 212, 191, 0.55);
 }
 
 .steampunk-btn .btn-icon .svg {
@@ -793,10 +881,10 @@
 }
 
 .dark .steampunk-btn .btn-icon .svg {
-  fill: #141418;
+  fill: #0c0919;
 }
 
-/* Hover States: Amber Glow Blooms & Pulses Smoothly */
+/* Hover States */
 .steampunk-btn:hover {
   transform: translateY(-2px);
   box-shadow:
@@ -809,8 +897,8 @@
 
 .dark .steampunk-btn:hover {
   box-shadow:
-    0 20px 42px -4px rgba(0, 0, 0, 0.7),
-    0 0 34px rgba(250, 154, 106, 0.55);
+    0 22px 50px -4px rgba(0, 0, 0, 0.95),
+    0 0 45px rgba(45, 212, 191, 0.65);
 }
 
 .steampunk-btn:hover .btn-frame {
@@ -819,6 +907,13 @@
     inset 0 -2px 3px rgba(0, 0, 0, 0.8),
     0 0 14px rgba(252, 227, 161, 0.55);
   transition: box-shadow 0.35s ease-out;
+}
+
+.dark .steampunk-btn:hover .btn-frame {
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.9),
+    0 0 24px rgba(103, 232, 249, 0.75);
 }
 
 .steampunk-btn:hover .btn-glass {
@@ -834,9 +929,9 @@
 .dark .steampunk-btn:hover .btn-glass {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.14) 100%
+    rgba(168, 85, 247, 0.35) 0%,
+    rgba(9, 6, 22, 0.4) 50%,
+    rgba(45, 212, 191, 0.25) 100%
   );
 }
 
@@ -860,12 +955,25 @@
     box-shadow 0.35s ease-out;
 }
 
+.dark .steampunk-btn:hover .btn-icon {
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
+    0 3px 8px rgba(0, 0, 0, 0.6),
+    0 0 18px rgba(45, 212, 191, 0.85);
+}
+
 /* Active State */
 .steampunk-btn:active {
   transform: translateY(1px) scale(0.98);
   box-shadow:
     0 6px 14px rgba(0, 0, 0, 0.4),
     0 0 35px rgba(252, 153, 15, 0.5);
+}
+
+.dark .steampunk-btn:active {
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.6),
+    0 0 45px rgba(45, 212, 191, 0.75);
 }
 
 .steampunk-btn:active .amber-glow {
@@ -885,5 +993,19 @@
     opacity: 1;
     transform: scale(1.16);
     filter: blur(7px);
+  }
+}
+
+@keyframes pulse-spectral {
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(0.96);
+    filter: blur(12px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.24);
+    filter: blur(8px);
   }
 }
