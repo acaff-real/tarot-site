@@ -13,6 +13,8 @@
     --accent-bronze: #a37a4c;
     --accent-gold: #c29b68;
     --border-subtle: rgba(40, 35, 30, 0.08);
+    --cubic-in: cubic-bezier(0.32, 0, 0.67, 0);
+    --cubic-out: cubic-bezier(0.33, 1, 0.68, 1);
   }
 
   .dark {
@@ -171,228 +173,432 @@
   vertical-align: middle;
 }
 
-/* General button box */
-.box {
-  --w: 260px;
-  --h: 64px;
-  --r: 9999px;
-  z-index: 20;
-  position: relative;
-  width: var(--w);
-  height: var(--h);
-  max-width: 100%;
-  box-sizing: border-box;
+/* ==========================================================================
+   IRIDESCENT REFRACTIVE BUTTONS (NO ARROWS, PURE OPTICAL CRYSTAL GLASS)
+   Based on & inspired by Wojciech Zieliński & Simey (simeydotme)
+   Seamlessly unified with Astro by Anisha warm champagne / spectral colorway
+   ========================================================================== */
+
+.iridescent,
+button.iridescent,
+a.iridescent {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  text-transform: none;
+  color: #1c1917;
+  line-height: 1;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  border-radius: var(--r);
-  
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.2) 100%
-  );
-  backdrop-filter: blur(16px) saturate(190%);
-  -webkit-backdrop-filter: blur(16px) saturate(190%);
-  
-  border-top: 1.5px solid rgba(255, 255, 255, 0.95);
-  border-left: 1px solid rgba(255, 255, 255, 0.75);
-  border-right: 1px solid rgba(255, 255, 255, 0.75);
-  border-bottom: 1.5px solid rgba(40, 35, 30, 0.18);
-  
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 3px 0 rgba(40, 35, 30, 0.1),
-    inset 2px 0 4px 0 rgba(255, 255, 255, 0.6),
-    inset -2px 0 4px 0 rgba(40, 35, 30, 0.06),
-    0 8px 24px -4px rgba(40, 35, 30, 0.12),
-    0 2px 6px rgba(40, 35, 30, 0.05);
-
-  cursor: pointer;
+  position: relative;
+  outline: none !important;
+  border-radius: 9999px;
+  box-sizing: border-box;
   user-select: none;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.25s ease;
+
+  --brdr: 0.12em;
+  border: max(1.5px, var(--brdr)) solid transparent;
+
+  /* Double background: crisp frosted glass padding-box + champagne gold border-box */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.96),
+      rgba(250, 247, 242, 0.88) 33%,
+      rgba(255, 255, 255, 0.94)
+    ) padding-box,
+    linear-gradient(
+      165deg,
+      rgba(255, 255, 255, 0.98) 20%,
+      rgba(235, 220, 203, 0.85) 55%,
+      rgba(196, 177, 152, 0.8) 100%
+    ) border-box;
+
+  --ibxs:
+    inset -0.35em -0.35em 0.25em -0.25em rgba(255, 255, 255, 0.95),
+    inset -0.33em -1em 0.75em -0.75em rgba(245, 235, 220, 0.6),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+
+  --bxs:
+    rgba(163, 122, 76, 0.12) 0px max(4px, 0.3em) 0.3em 0px,
+    rgba(40, 35, 30, 0.06) 0px max(2px, 0.18em) 0.18em 0px,
+    rgba(40, 35, 30, 0.04) 0px max(1px, 0.05em) max(2px, 0.05em) 0px;
+
+  box-shadow: var(--ibxs), var(--bxs);
 }
 
-/* Dark Mode Spectral Crystal Button */
-.dark .box {
-  background: linear-gradient(
-    135deg,
-    rgba(168, 85, 247, 0.22) 0%,
-    rgba(45, 212, 191, 0.08) 50%,
-    rgba(139, 92, 246, 0.18) 100%
-  );
-  border-top: 1.5px solid rgba(103, 232, 249, 0.65);
-  border-left: 1px solid rgba(192, 132, 252, 0.4);
-  border-right: 1px solid rgba(192, 132, 252, 0.4);
-  border-bottom: 1.5px solid rgba(5, 3, 12, 0.8);
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.6),
-    inset 2px 0 4px 0 rgba(192, 132, 252, 0.25),
-    0 10px 28px -4px rgba(0, 0, 0, 0.75),
-    0 0 18px -2px rgba(45, 212, 191, 0.25);
+.iridescent:has(.drop-shadow) {
+  box-shadow: var(--ibxs);
 }
 
-.dark .box:hover {
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.7),
-    0 16px 36px -4px rgba(0, 0, 0, 0.85),
-    0 0 28px rgba(45, 212, 191, 0.45);
-}
-
-.box:before {
+/* Pseudo-elements for refraction & glow */
+.iridescent:before,
+.iridescent:after,
+.iridescent .drop-shadow,
+.iridescent .drop-shadow:after,
+.iridescent .drop-shadow:before {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: var(--r);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.05) 35%,
-    transparent 55%,
-    rgba(255, 255, 255, 0.25) 100%
-  );
+  inset: min(-2px, calc(var(--brdr) * -1));
+  border-radius: inherit;
   pointer-events: none;
-  z-index: 1;
+  transition: all 0.5s var(--cubic-in);
 }
 
-.dark .box:before {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.02) 40%,
-    transparent 60%,
-    rgba(255, 255, 255, 0.1) 100%
-  );
+.iridescent:hover:before,
+.iridescent:hover:after,
+.iridescent:hover .drop-shadow,
+.iridescent:hover .drop-shadow:after,
+.iridescent:hover .drop-shadow:before,
+.iridescent.shine:before,
+.iridescent.shine:after,
+.iridescent.shine .drop-shadow,
+.iridescent.shine .drop-shadow:after,
+.iridescent.shine .drop-shadow:before {
+  transition-duration: 0.3s;
+  transition-timing-function: var(--cubic-out);
 }
 
-.box .circle-overlay {
-  position: absolute;
-  inset: 2px;
-  border-radius: var(--r);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  pointer-events: none;
+/* Inner glassy glow */
+.iridescent:after {
+  opacity: 0.35;
+  background: transparent;
+  box-shadow:
+    inset 0 -0.3em 2px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -0.3em 0.25em rgba(254, 243, 199, 0.45),
+    inset 0 -0.3em 0.5em rgba(245, 222, 179, 0.3),
+    inset 0 -0.3em 0.75em rgba(245, 222, 179, 0.2),
+    inset 0 -0.3em 1em rgba(255, 255, 255, 0.15);
+  mix-blend-mode: lighten;
   z-index: 2;
 }
 
-.dark .box .circle-overlay {
-  border-color: rgba(255, 255, 255, 0.2);
+/* Outer drop shadow container */
+.iridescent .drop-shadow {
+  box-shadow: var(--bxs);
+  z-index: -2;
 }
 
-.start-btn {
-  padding: 0 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.875rem;
-}
-
-.start-btn .text {
-  position: relative;
+/* Inner iridescence refraction highlight */
+.iridescent:before {
+  opacity: 0;
+  translate: 1.1em -0.1em;
+  scale: 0.8;
+  background: linear-gradient(
+    98deg,
+    rgba(255, 220, 180, 0) -5%,
+    rgba(255, 215, 160, 0.85) 45%,
+    rgba(254, 240, 138, 0.95) 55%,
+    rgba(187, 247, 208, 0.8) 64%,
+    rgba(199, 210, 254, 0.85) 75%,
+    rgba(244, 114, 182, 0.7) 95%,
+    rgba(254, 205, 211, 0) 120%
+  );
+  -webkit-mask: linear-gradient(166deg, transparent 60%, black);
+  mask: linear-gradient(166deg, transparent 60%, black);
+  filter: blur(3px) brightness(1.05) contrast(1.2);
+  box-shadow:
+    inset 0 max(-2px, calc(var(--brdr) * -1)) 0 min(2px, var(--brdr)) rgba(255, 255, 255, 0.3),
+    inset 0 -0.25em 0.25em 0.125em rgba(255, 255, 255, 0.5);
   z-index: 3;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1c1917;
-  letter-spacing: -0.01em;
+}
+
+/* Outer iridescence refraction */
+.iridescent .drop-shadow:after {
+  opacity: 0;
+  translate: -0.25em 1.2em;
+  scale: -1 0.8;
+  filter: blur(8px) brightness(1.15) contrast(1.05);
+  mix-blend-mode: lighten;
+  background-position: center;
+  background: linear-gradient(
+    98deg,
+    rgba(255, 220, 180, 0) -5%,
+    rgba(255, 215, 160, 0.85) 45%,
+    rgba(254, 240, 138, 0.95) 55%,
+    rgba(187, 247, 208, 0.8) 64%,
+    rgba(199, 210, 254, 0.85) 75%,
+    rgba(244, 114, 182, 0.7) 95%,
+    rgba(254, 205, 211, 0) 120%
+  );
+  -webkit-mask: radial-gradient(
+    closest-side,
+    hsl(0, 0%, 100%) 0%,
+    hsla(0, 0%, 100%, 0.987) 8.1%,
+    hsla(0, 0%, 100%, 0.951) 15.5%,
+    hsla(0, 0%, 100%, 0.896) 22.5%,
+    hsla(0, 0%, 100%, 0.825) 29%,
+    hsla(0, 0%, 100%, 0.741) 35.3%,
+    hsla(0, 0%, 100%, 0.648) 41.2%,
+    hsla(0, 0%, 100%, 0.55) 47.1%,
+    hsla(0, 0%, 100%, 0.45) 52.9%,
+    hsla(0, 0%, 100%, 0.352) 58.8%,
+    hsla(0, 0%, 100%, 0.259) 64.7%,
+    hsla(0, 0%, 100%, 0.175) 71%,
+    hsla(0, 0%, 100%, 0.104) 77.5%,
+    hsla(0, 0%, 100%, 0.049) 84.5%,
+    hsla(0, 0%, 100%, 0.013) 91.9%,
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  mask: radial-gradient(
+    closest-side,
+    hsl(0, 0%, 100%) 0%,
+    hsla(0, 0%, 100%, 0.987) 8.1%,
+    hsla(0, 0%, 100%, 0.951) 15.5%,
+    hsla(0, 0%, 100%, 0.896) 22.5%,
+    hsla(0, 0%, 100%, 0.825) 29%,
+    hsla(0, 0%, 100%, 0.741) 35.3%,
+    hsla(0, 0%, 100%, 0.648) 41.2%,
+    hsla(0, 0%, 100%, 0.55) 47.1%,
+    hsla(0, 0%, 100%, 0.45) 52.9%,
+    hsla(0, 0%, 100%, 0.352) 58.8%,
+    hsla(0, 0%, 100%, 0.259) 64.7%,
+    hsla(0, 0%, 100%, 0.175) 71%,
+    hsla(0, 0%, 100%, 0.104) 77.5%,
+    hsla(0, 0%, 100%, 0.049) 84.5%,
+    hsla(0, 0%, 100%, 0.013) 91.9%,
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  z-index: -2;
+}
+
+/* Outer glassy glow halo */
+.iridescent .drop-shadow:before {
+  opacity: 0.8;
+  translate: 1.2em 1.1em;
+  scale: 1.5 0.8;
+  background: rgba(254, 243, 199, 0.45);
+  -webkit-mask: radial-gradient(
+    closest-side,
+    hsl(0, 0%, 100%) 0%,
+    hsla(0, 0%, 100%, 0.987) 8.1%,
+    hsla(0, 0%, 100%, 0.951) 15.5%,
+    hsla(0, 0%, 100%, 0.896) 22.5%,
+    hsla(0, 0%, 100%, 0.825) 29%,
+    hsla(0, 0%, 100%, 0.741) 35.3%,
+    hsla(0, 0%, 100%, 0.648) 41.2%,
+    hsla(0, 0%, 100%, 0.55) 47.1%,
+    hsla(0, 0%, 100%, 0.45) 52.9%,
+    hsla(0, 0%, 100%, 0.352) 58.8%,
+    hsla(0, 0%, 100%, 0.259) 64.7%,
+    hsla(0, 0%, 100%, 0.175) 71%,
+    hsla(0, 0%, 100%, 0.104) 77.5%,
+    hsla(0, 0%, 100%, 0.049) 84.5%,
+    hsla(0, 0%, 100%, 0.013) 91.9%,
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  mask: radial-gradient(
+    closest-side,
+    hsl(0, 0%, 100%) 0%,
+    hsla(0, 0%, 100%, 0.987) 8.1%,
+    hsla(0, 0%, 100%, 0.951) 15.5%,
+    hsla(0, 0%, 100%, 0.896) 22.5%,
+    hsla(0, 0%, 100%, 0.825) 29%,
+    hsla(0, 0%, 100%, 0.741) 35.3%,
+    hsla(0, 0%, 100%, 0.648) 41.2%,
+    hsla(0, 0%, 100%, 0.55) 47.1%,
+    hsla(0, 0%, 100%, 0.45) 52.9%,
+    hsla(0, 0%, 100%, 0.352) 58.8%,
+    hsla(0, 0%, 100%, 0.259) 64.7%,
+    hsla(0, 0%, 100%, 0.175) 71%,
+    hsla(0, 0%, 100%, 0.104) 77.5%,
+    hsla(0, 0%, 100%, 0.049) 84.5%,
+    hsla(0, 0%, 100%, 0.013) 91.9%,
+    hsla(0, 0%, 100%, 0) 100%
+  );
+  z-index: -1;
+}
+
+/* Button Text Layer (Crisp, centered, above glass reflections) */
+.iridescent .btn-text {
+  position: relative;
+  z-index: 10;
   white-space: nowrap;
-  transition: color 0.2s ease;
+  transition: color 0.25s ease;
+  font-weight: 600;
+  letter-spacing: inherit;
 }
 
-.dark .start-btn .text {
-  color: #f5f5f7;
+/* Hover, Shine & Focus States */
+.iridescent:hover,
+.iridescent.shine,
+.iridescent:focus {
+  opacity: 1;
+  color: #8c6738;
+  transform: translateY(-1.5px);
+  box-shadow: var(--ibxs), var(--bxs);
 }
 
-.start-btn .btn-icon {
-  position: relative;
-  z-index: 3;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #1c1917;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  transition: all 0.25s ease;
-  flex-shrink: 0;
+.iridescent:hover:has(.drop-shadow),
+.iridescent.shine:has(.drop-shadow),
+.iridescent:focus:has(.drop-shadow) {
+  box-shadow: var(--ibxs);
 }
 
-.dark .start-btn .btn-icon {
-  background: #f5f5f7;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+.iridescent:hover:after,
+.iridescent.shine:after,
+.iridescent:hover:before,
+.iridescent.shine:before,
+.iridescent:hover .drop-shadow:after,
+.iridescent.shine .drop-shadow:after {
+  opacity: 0.85;
 }
 
-.start-btn .btn-icon .svg {
-  width: 14px;
-  height: 14px;
-  fill: #faf9f6;
-  transition: transform 0.25s ease;
+.iridescent:hover:before,
+.iridescent.shine:before {
+  opacity: 0.45;
+  translate: 0em;
+  scale: 1;
 }
 
-.dark .start-btn .btn-icon .svg {
-  fill: #141418;
+.iridescent:hover .drop-shadow:after,
+.iridescent.shine .drop-shadow:after {
+  opacity: 0.45;
+  translate: 1.8em 1.2em;
+  scale: -1 1;
 }
 
-.box:hover {
-  background: rgba(255, 255, 255, 0.38);
-  border-color: rgba(255, 255, 255, 0.9);
-  transform: translateY(-2px);
+.iridescent:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* ==========================================================================
+   DARK MODE OVERRIDES (BALATRO SPECTRAL PACK AESTHETIC)
+   ========================================================================== */
+
+.dark .iridescent,
+.dark button.iridescent,
+.dark a.iridescent {
+  color: #f8fafc;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(28, 20, 60, 0.92),
+      rgba(15, 10, 35, 0.9) 33%,
+      rgba(22, 15, 48, 0.92)
+    ) padding-box,
+    linear-gradient(
+      165deg,
+      rgba(216, 180, 254, 0.45) 20%,
+      rgba(124, 58, 237, 0.3) 60%,
+      rgba(45, 212, 191, 0.3) 100%
+    ) border-box;
+
+  --ibxs:
+    inset -0.35em -0.35em 0.25em -0.25em rgba(168, 85, 247, 0.25),
+    inset -0.33em -1em 0.75em -0.75em rgba(15, 10, 35, 0.8),
+    inset 0 1px 1.5px 0 rgba(216, 180, 254, 0.4);
+
+  --bxs:
+    rgba(0, 0, 0, 0.65) 0px max(4px, 0.3em) 0.3em 0px,
+    rgba(168, 85, 247, 0.15) 0px max(2px, 0.18em) 0.18em 0px;
+}
+
+.dark .iridescent:after {
   box-shadow:
-    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.05),
-    0 14px 32px -4px rgba(28, 25, 23, 0.12),
-    0 4px 8px rgba(28, 25, 23, 0.06);
+    inset 0 -0.3em 2px 1px rgba(216, 180, 254, 0.45),
+    inset 0 -0.3em 0.25em rgba(168, 85, 247, 0.35),
+    inset 0 -0.3em 0.5em rgba(45, 212, 191, 0.2);
 }
 
-.dark .box:hover {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.5),
-    0 18px 40px -4px rgba(0, 0, 0, 0.7);
+.dark .iridescent:before,
+.dark .iridescent .drop-shadow:after {
+  background: linear-gradient(
+    98deg,
+    rgba(168, 85, 247, 0) -5%,
+    rgba(192, 132, 252, 0.85) 45%,
+    rgba(56, 189, 248, 0.85) 60%,
+    rgba(45, 212, 191, 0.9) 75%,
+    rgba(168, 85, 247, 0.75) 100%
+  );
 }
 
-.box:active {
-  transform: scale(0.97);
-  background: rgba(255, 255, 255, 0.2);
+.dark .iridescent .drop-shadow:before {
+  background: rgba(168, 85, 247, 0.25);
 }
 
-/* Compact Glass Button */
-.box.box-compact {
-  --w: auto;
-  --h: 42px;
-  padding: 0 1rem;
-  gap: 0.6rem;
+.dark .iridescent:hover,
+.dark .iridescent.shine,
+.dark .iridescent:focus {
+  color: #f3e8ff;
 }
 
-.box.box-compact .text {
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
+/* ==========================================================================
+   BUTTON SIZE VARIANTS
+   ========================================================================== */
 
-.box.box-compact .btn-icon {
-  width: 26px;
-  height: 26px;
-}
-
-.box.box-compact .btn-icon .svg {
-  width: 11px;
-  height: 11px;
-}
-
-.dark .glass-btn-wrapper .absolute {
-  background: linear-gradient(to right, rgba(45, 212, 191, 0.2), rgba(168, 85, 247, 0.3), rgba(45, 212, 191, 0.2));
+/* Large (Hero, Consultations, & Primary Landing CTAs) */
+.iridescent.iridescent-large {
+  height: 56px;
+  min-width: 250px;
+  padding: 0 2rem;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
 }
 
 @media (max-width: 640px) {
-  .box:not(.box-compact) {
-    --h: 56px;
-    max-width: 100%;
+  .iridescent.iridescent-large {
+    min-width: 0;
+    width: 100%;
+    height: 52px;
+    padding: 0 1.25rem;
+    font-size: 0.95rem;
   }
+}
+
+/* Medium (Standard cards & sub-pages) */
+.iridescent.iridescent-medium {
+  height: 48px;
+  min-width: 200px;
+  padding: 0 1.5rem;
+  font-size: 0.925rem;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  .iridescent.iridescent-medium {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Compact (Header Navigation & Inline Buttons) */
+.iridescent.iridescent-compact {
+  height: 38px;
+  min-width: auto;
+  padding: 0 1.15rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Full Width (Form submissions & Calculator actions) */
+.iridescent.iridescent-full {
+  width: 100%;
+  min-width: 100%;
+  height: 54px;
+  padding: 0 1.75rem;
+  font-size: 0.975rem;
+}
+
+/* ==========================================================================
+   BACKWARDS COMPATIBILITY ALIASES FOR PREVIOUS BUTTON SELECTORS
+   ========================================================================== */
+
+.steampunk-btn {
+  /* Alias to iridescent */
+  display: inline-flex;
+}
+
+.box.start-btn {
+  /* Alias to iridescent */
+  display: inline-flex;
 }
 
 /* Secondary frosted glass pill */
@@ -609,403 +815,4 @@
 
 .dark .to-\[\#f4eee4\] {
   --tw-gradient-to: #0e0a26 var(--tw-gradient-to-position) !important;
-}
-
-/* ==========================================================================
-   FUSED GLASSMORPHIC RELIC BUTTON
-   (Transparent glassmorphism body + bronze metallic outline + pulsing amber glow)
-   ========================================================================== */
-
-.steampunk-btn {
-  --bronze-dark: #2b2927;
-  --bronze-mid: #63431f;
-  --bronze-light: #856233;
-  --bronze-highlight: #fce3a1;
-  --amber-light: #ffc95e;
-  --amber-glow: #fa9a6a;
-
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 270px;
-  max-width: 100%;
-  height: 64px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  outline: none;
-  border-radius: 9999px;
-  text-decoration: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-
-  box-shadow:
-    0 12px 28px -4px rgba(28, 25, 23, 0.16),
-    0 4px 10px rgba(28, 25, 23, 0.08);
-
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.25s ease;
-}
-
-@media (max-width: 640px) {
-  .steampunk-btn {
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    height: 56px;
-  }
-
-  .steampunk-btn .btn-text {
-    font-size: 0.95rem;
-  }
-}
-
-.dark .steampunk-btn {
-  box-shadow:
-    0 16px 40px -4px rgba(0, 0, 0, 0.85),
-    0 0 28px rgba(45, 212, 191, 0.22);
-}
-
-.dark .steampunk-btn .btn-frame {
-  background: linear-gradient(
-    135deg,
-    #38bdf8 0%,
-    #a855f7 32%,
-    #1d1338 52%,
-    #080514 78%,
-    #2dd4bf 100%
-  );
-  box-shadow:
-    inset 0 1.5px 2px rgba(103, 232, 249, 0.9),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.9),
-    inset 2px 2px 4px rgba(168, 85, 247, 0.6),
-    0 0 14px rgba(45, 212, 191, 0.35);
-}
-
-/* Metallic Bronze & Champagne Gold Outer Bevel Frame (Light Mode) */
-.steampunk-btn .btn-frame {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 9999px;
-  padding: 2.5px;
-  box-sizing: border-box;
-  background: linear-gradient(
-    135deg,
-    var(--bronze-highlight) 0%,
-    var(--bronze-light) 25%,
-    var(--bronze-mid) 50%,
-    var(--bronze-dark) 75%,
-    var(--bronze-light) 100%
-  );
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.8),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.7),
-    inset 2px 2px 4px var(--bronze-highlight),
-    inset -2px -2px 4px #000;
-  transition: all 0.25s ease;
-}
-
-/* Transparent Frosted Glassmorphism Body */
-.steampunk-btn .btn-glass {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 9999px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.85rem 0 1.75rem;
-
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.35) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.24) 100%
-  );
-  backdrop-filter: blur(16px) saturate(190%);
-  -webkit-backdrop-filter: blur(16px) saturate(190%);
-
-  border-top: 1px solid rgba(255, 255, 255, 0.95);
-  border-left: 1px solid rgba(255, 255, 255, 0.75);
-  border-right: 1px solid rgba(255, 255, 255, 0.75);
-  border-bottom: 1px solid rgba(40, 35, 30, 0.2);
-
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 1),
-    inset 0 -1.5px 2px 0 rgba(40, 35, 30, 0.12);
-
-  transition: all 0.25s ease;
-}
-
-.dark .steampunk-btn .btn-glass {
-  background: linear-gradient(
-    135deg,
-    rgba(168, 85, 247, 0.24) 0%,
-    rgba(9, 6, 22, 0.5) 50%,
-    rgba(45, 212, 191, 0.16) 100%
-  );
-  border-top: 1px solid rgba(103, 232, 249, 0.65);
-  border-left: 1px solid rgba(192, 132, 252, 0.4);
-  border-right: 1px solid rgba(192, 132, 252, 0.4);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.85);
-
-  box-shadow:
-    inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.85);
-}
-
-/* Glass Specular Reflection Highlight */
-.steampunk-btn .glass-reflection {
-  position: absolute;
-  top: 1px;
-  left: 14px;
-  right: 14px;
-  height: 48%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 255, 255, 0.08) 75%,
-    transparent 100%
-  );
-  border-radius: 9999px 9999px 0 0;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Amber / Spectral Glowing Light Core */
-.steampunk-btn .amber-glow {
-  position: absolute;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0.9);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.18;
-  transition:
-    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.steampunk-btn .amber-glow::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    var(--amber-light) 0%,
-    var(--amber-glow) 42%,
-    transparent 72%
-  );
-  filter: blur(10px);
-  mix-blend-mode: screen;
-  animation: pulse-amber 1.8s ease-in-out infinite;
-}
-
-/* Spectral Pack Hypnotic Flame Core (Dark Mode) */
-.dark .steampunk-btn .amber-glow::after {
-  background: radial-gradient(
-    circle,
-    #38bdf8 0%,
-    #2dd4bf 38%,
-    #a855f7 68%,
-    transparent 80%
-  );
-  filter: blur(10px);
-  animation: pulse-spectral 1.8s ease-in-out infinite;
-}
-
-/* Content Layout */
-.steampunk-btn .btn-content {
-  position: relative;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  width: 100%;
-}
-
-/* Typography */
-.steampunk-btn .btn-text {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  font-size: 1.025rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: #1c1917;
-  white-space: nowrap;
-  transition: color 0.2s ease;
-}
-
-.dark .steampunk-btn .btn-text {
-  color: #f8fafc;
-}
-
-/* Circular Arrow Icon Medallion */
-.steampunk-btn .btn-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1c1917;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  flex-shrink: 0;
-  transition:
-    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.dark .steampunk-btn .btn-icon {
-  background: #f8fafc;
-  box-shadow: 0 0 14px rgba(45, 212, 191, 0.55);
-}
-
-.steampunk-btn .btn-icon .svg {
-  width: 14px;
-  height: 14px;
-  fill: #faf9f6;
-  transition: transform 0.25s ease;
-}
-
-.dark .steampunk-btn .btn-icon .svg {
-  fill: #0c0919;
-}
-
-/* Hover States */
-.steampunk-btn:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 18px 36px -4px rgba(28, 25, 23, 0.25),
-    0 0 28px rgba(250, 154, 106, 0.45);
-  transition:
-    transform 0.25s ease-out,
-    box-shadow 0.35s ease-out;
-}
-
-.dark .steampunk-btn:hover {
-  box-shadow:
-    0 22px 50px -4px rgba(0, 0, 0, 0.95),
-    0 0 45px rgba(45, 212, 191, 0.65);
-}
-
-.steampunk-btn:hover .btn-frame {
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.8),
-    0 0 14px rgba(252, 227, 161, 0.55);
-  transition: box-shadow 0.35s ease-out;
-}
-
-.dark .steampunk-btn:hover .btn-frame {
-  box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.9),
-    0 0 24px rgba(103, 232, 249, 0.75);
-}
-
-.steampunk-btn:hover .btn-glass {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.16) 50%,
-    rgba(255, 255, 255, 0.32) 100%
-  );
-  transition: background 0.35s ease-out;
-}
-
-.dark .steampunk-btn:hover .btn-glass {
-  background: linear-gradient(
-    135deg,
-    rgba(168, 85, 247, 0.35) 0%,
-    rgba(9, 6, 22, 0.4) 50%,
-    rgba(45, 212, 191, 0.25) 100%
-  );
-}
-
-.steampunk-btn:hover .amber-glow {
-  opacity: 0.95;
-  transform: translate(-50%, -50%) scale(1.25);
-  transition:
-    opacity 0.35s ease-out,
-    transform 0.35s ease-out,
-    filter 0.35s ease-out;
-}
-
-.steampunk-btn:hover .btn-icon {
-  transform: scale(1.08);
-  box-shadow:
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.35),
-    0 0 14px rgba(255, 201, 94, 0.7);
-  transition:
-    transform 0.25s ease-out,
-    box-shadow 0.35s ease-out;
-}
-
-.dark .steampunk-btn:hover .btn-icon {
-  box-shadow:
-    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.6),
-    0 0 18px rgba(45, 212, 191, 0.85);
-}
-
-/* Active State */
-.steampunk-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.4),
-    0 0 35px rgba(252, 153, 15, 0.5);
-}
-
-.dark .steampunk-btn:active {
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.6),
-    0 0 45px rgba(45, 212, 191, 0.75);
-}
-
-.steampunk-btn:active .amber-glow {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1.45);
-  filter: blur(14px);
-}
-
-@keyframes pulse-amber {
-  0%,
-  100% {
-    opacity: 0.6;
-    transform: scale(0.96);
-    filter: blur(11px);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.16);
-    filter: blur(7px);
-  }
-}
-
-@keyframes pulse-spectral {
-  0%,
-  100% {
-    opacity: 0.65;
-    transform: scale(0.96);
-    filter: blur(12px);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.24);
-    filter: blur(8px);
-  }
 }

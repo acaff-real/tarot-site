@@ -9,6 +9,7 @@ interface Props {
   class?: string;
   id?: string;
   target?: string;
+  ariaLabel?: string;
 }
 
 const {
@@ -21,49 +22,49 @@ const {
   class: className = '',
   id,
   target,
+  ariaLabel,
 } = Astro.props;
 
-let wStyle = width ? width : size === 'compact' ? 'auto' : size === 'medium' ? '240px' : size === 'full' ? '100%' : '260px';
-let hStyle = height ? height : size === 'compact' ? '42px' : size === 'medium' ? '58px' : size === 'full' ? '58px' : '64px';
-const sizeClass = size === 'compact' ? 'box-compact' : '';
+const sizeClass =
+  size === 'compact'
+    ? 'iridescent-compact'
+    : size === 'medium'
+      ? 'iridescent-medium'
+      : size === 'full'
+        ? 'iridescent-full'
+        : 'iridescent-large';
+
+const inlineStyle = [
+  width ? `width: ${width}; min-width: ${width};` : '',
+  height ? `height: ${height};` : '',
+]
+  .filter(Boolean)
+  .join(' ');
 ---
 
-<div class={`glass-btn-wrapper relative group ${size === 'full' ? 'w-full block' : 'inline-block'}`}>
-  <!-- Subtle ambient glow that shines through the transparent frosted glass -->
-  <div class="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[#d8c3a9]/30 via-[#ebdccb]/50 to-[#d8c3a9]/30 blur-sm opacity-70 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-
-  {
-    href ? (
-      <a
-        href={href}
-        class={`box start-btn ${sizeClass} ${className}`}
-        style={`--w: ${wStyle}; --h: ${hStyle};`}
-        id={id}
-        target={target}
-      >
-        <span class="text">{text}</span>
-        <div class="btn-icon">
-          <svg class="svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <path d="M779.180132 473.232045 322.354755 16.406668c-21.413706-21.413706-56.121182-21.413706-77.534887 0-21.413706 21.413706-21.413706 56.122205 0 77.534887l418.057421 418.057421L244.819868 930.057421c-21.413706 21.413706-21.413706 56.122205 0 77.534887 10.706853 10.706853 24.759917 16.059767 38.767955 16.059767s28.061103-5.353938 38.767955-16.059767L779.180132 550.767955C800.593837 529.35425 800.593837 494.64575 779.180132 473.232045z" />
-          </svg>
-        </div>
-        <div class="circle-overlay" />
-      </a>
-    ) : (
-      <button
-        type={type}
-        class={`box start-btn ${sizeClass} ${className}`}
-        style={`--w: ${wStyle}; --h: ${hStyle};`}
-        id={id}
-      >
-        <span class="text">{text}</span>
-        <div class="btn-icon">
-          <svg class="svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-            <path d="M779.180132 473.232045 322.354755 16.406668c-21.413706-21.413706-56.121182-21.413706-77.534887 0-21.413706 21.413706-21.413706 56.122205 0 77.534887l418.057421 418.057421L244.819868 930.057421c-21.413706 21.413706-21.413706 56.122205 0 77.534887 10.706853 10.706853 24.759917 16.059767 38.767955 16.059767s28.061103-5.353938 38.767955-16.059767L779.180132 550.767955C800.593837 529.35425 800.593837 494.64575 779.180132 473.232045z" />
-          </svg>
-        </div>
-        <div class="circle-overlay" />
-      </button>
-    )
-  }
-</div>
+{
+  href ? (
+    <a
+      href={href}
+      class={`iridescent ${sizeClass} ${className}`}
+      id={id}
+      target={target}
+      aria-label={ariaLabel || text}
+      style={inlineStyle || undefined}
+    >
+      <span class="btn-text">{text}</span>
+      <span class="drop-shadow" aria-hidden="true" />
+    </a>
+  ) : (
+    <button
+      type={type}
+      class={`iridescent ${sizeClass} ${className}`}
+      id={id}
+      aria-label={ariaLabel || text}
+      style={inlineStyle || undefined}
+    >
+      <span class="btn-text">{text}</span>
+      <span class="drop-shadow" aria-hidden="true" />
+    </button>
+  )
+}
