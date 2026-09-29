@@ -30,6 +30,7 @@ export interface HouseInfo {
 }
 
 export interface ChartResult {
+  zodiacSystem?: 'vedic' | 'western';
   birthDetails: {
     name: string;
     dateTimeUtc: string;
@@ -312,8 +313,21 @@ export function calculateVedicChart(params: {
   longitude: number;
   timezoneOffset: number; // Hours offset from UTC (e.g., +5.5 for IST, -5 for EST)
   cityName?: string;
+  zodiacSystem?: 'vedic' | 'western';
 }): ChartResult {
-  const { name, year, month, day, hour, minute, latitude, longitude, timezoneOffset, cityName = 'Custom Location' } = params;
+  const {
+    name,
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    latitude,
+    longitude,
+    timezoneOffset,
+    cityName = 'Custom Location',
+    zodiacSystem = 'vedic',
+  } = params;
 
   // Convert local birth time to UTC Date
   const localMinutes = hour * 60 + minute;
@@ -322,8 +336,10 @@ export function calculateVedicChart(params: {
   const utcDate = new Date(Date.UTC(year, month - 1, day, 0, utcMinutes, 0));
   const astroTime = Astronomy.MakeTime(utcDate);
 
-  // Lahiri Ayanamsha for this epoch
-  const ayanamsha = calculateLahiriAyanamsha(astroTime.ut);
+  // Lahiri Ayanamsha for this epoch (0 for Western Tropical)
+  const isWestern = zodiacSystem === 'western';
+  const rawLahiri = calculateLahiriAyanamsha(astroTime.ut);
+  const ayanamsha = isWestern ? 0 : rawLahiri;
 
   // Ascendant (Lagna)
   const asc = calculateAscendant(astroTime, latitude, longitude, ayanamsha);
@@ -463,6 +479,7 @@ export function calculateVedicChart(params: {
   const insights = generateChartInsights(asc, moon, sun);
 
   return {
+    zodiacSystem,
     birthDetails: {
       name,
       dateTimeUtc: utcDate.toISOString(),
@@ -473,9 +490,9 @@ export function calculateVedicChart(params: {
       timezoneOffset,
     },
     ayanamsha: {
-      name: 'Lahiri (Chitra Paksha)',
+      name: isWestern ? 'Western (Tropical Zodiac)' : 'Lahiri (Chitra Paksha)',
       value: ayanamsha,
-      formatted: formatDMS(ayanamsha),
+      formatted: isWestern ? '0° 00\' 00"' : formatDMS(rawLahiri),
     },
     ascendant: asc,
     moonSign: {

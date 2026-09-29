@@ -1,0 +1,88 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="The Book — Astro by Anisha"
+  description="The forthcoming book by Anisha Banerji. A contemporary contemplation on Vedic planetary timing, archetypal tarot, and self-knowledge."
+  currentPath="/book"
+>
+  <!-- Hero Section -->
+  <section class="pt-16 pb-20 sm:pt-24 sm:pb-32 bg-[#fcfbf9] border-b border-[#28231e]/10 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        
+        <!-- Left: Book Information -->
+        <div class="lg:col-span-7 flex flex-col items-start">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+            Forthcoming Publication
+          </span>
+          <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-[1.08] mb-6">
+            The Sacred Mirror
+          </h1>
+          <p class="font-serif text-xl sm:text-2xl text-[#57534e] font-light leading-snug mb-5 max-w-lg">
+            Navigating life's pivotal seasons through Vedic wisdom and contemplative archetypes.
+          </p>
+          <p class="text-sm sm:text-base text-[#78716c] font-light leading-relaxed mb-8 max-w-lg">
+            Authored by Anisha Banerji, this forthcoming work bridges classical astronomical ephemeris and psychological nuance—offering thoughtful seekers a timeless framework for understanding their internal timing and sovereign crossroads.
+          </p>
+
+          <!-- Waitlist Form (Lands directly on anishabanerji@gmail.com) -->
+          <div class="w-full max-w-md p-6 rounded-lg bg-white border border-[#28231e]/10 shadow-xs">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] block mb-2">
+              Join the Priority Release Waitlist
+            </span>
+            <p class="text-xs text-[#57534e] font-light mb-4">
+              Be the first to receive publication dates, chapter previews, and private pre-order access.
+            </p>
+
+            <form
+              class="space-y-3"
+              onsubmit="event.preventDefault(); const email = this.querySelector('input').value; window.location.href = `mailto:anishabanerji@gmail.com?subject=${encodeURIComponent('Book Waitlist Request')}&body=${encodeURIComponent('Please add me to the book waitlist: ' + email)}`; alert('Thank you for joining the book waitlist!');"
+            >
+              <input
+                type="email"
+                required
+                placeholder="Enter your email address"
+                class="w-full px-4 py-2.5 rounded-md glass-input text-sm"
+              />
+              <GlassButton
+                text="Notify Me on Launch"
+                type="submit"
+                size="medium"
+                width="100%"
+              />
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Book Mockup Art -->
+        <div class="lg:col-span-5 flex justify-center">
+          <div class="relative w-full max-w-sm aspect-[3/4] rounded-lg bg-gradient-to-br from-[#28231e] to-[#141312] p-8 sm:p-10 text-white shadow-2xl flex flex-col justify-between border border-[#a37a4c]/30">
+            <div class="space-y-2">
+              <span class="text-[10px] uppercase tracking-[0.3em] text-[#a37a4c] block">Astro by Anisha</span>
+              <div class="h-px w-10 bg-[#a37a4c]/40 my-3"></div>
+            </div>
+
+            <div class="my-auto text-center py-6">
+              <h3 class="font-serif text-3xl sm:text-4xl font-normal tracking-tight text-[#f5efe6] mb-3">
+                The Sacred Mirror
+              </h3>
+              <p class="text-xs uppercase tracking-[0.2em] text-[#a37a4c]">
+                Planetary Timing & Archetypes
+              </p>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex justify-between items-center text-xs tracking-wider text-[#a1a1aa]">
+              <span>Anisha Banerji</span>
+              <span class="text-[#a37a4c]">&bull;</span>
+              <span>Forthcoming</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</Layout>

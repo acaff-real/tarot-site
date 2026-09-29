@@ -5,51 +5,46 @@ import { SERVICES } from '../data/services';
 ---
 
 <Layout
-  title="Consultations & Advisory — Astrology by Anisha"
-  description="Private 1-on-1 consultations in Vedic astrology, intuitive tarot, and sacred numerology with Anisha Sharma. Transparent pricing and booking details."
+  title="Consultations — Astro by Anisha"
+  description="Private 1-on-1 consultations in Vedic astrology, intuitive tarot, and numerology with Anisha Banerji. Reserve your appointment directly."
   currentPath="/consultations"
 >
   <!-- Header -->
-  <section class="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
+  <section class="pt-16 pb-14 sm:pt-24 sm:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
     <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
-        <span>Private Advisory</span>
-      </div>
-      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        1-on-1 Appointments
+      </span>
+      <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-tight">
         Consultation Offerings
       </h1>
-      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed">
-        Confidential, collaborative containers designed to bring decisive clarity to your life thresholds. Available via live high-definition video worldwide.
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-xl mx-auto leading-relaxed">
+        Confidential, collaborative sessions designed to illuminate your life timing and pivotal crossroads with Anisha Banerji. Conducted via private high-definition video worldwide.
       </p>
     </div>
   </section>
 
-  <!-- Detailed Service Cards -->
-  <section class="py-16 lg:py-24 bg-[#faf8f5]">
+  <!-- Detailed Service Cards: Clean, Light, No Prices -->
+  <section class="py-16 sm:py-24 bg-[#faf8f5]">
     <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {
           SERVICES.map((s) => (
-            <div class="glass-card rounded-3xl p-8 sm:p-10 border border-[#28231e]/10 bg-white/70 flex flex-col justify-between">
+            <div class="glass-card rounded-lg p-8 sm:p-9 border border-[#28231e]/10 bg-white/70 flex flex-col justify-between shadow-xs">
               <div>
-                <div class="flex items-center justify-between mb-4">
-                  <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold">
-                    {s.duration}
-                  </span>
-                  <span class="font-serif text-2xl font-medium text-[#1c1917]">
-                    {s.investment}
-                  </span>
-                </div>
+                <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-2">
+                  {s.duration}
+                </span>
 
-                <h2 class="font-serif text-3xl text-[#1c1917] font-medium leading-tight mb-2">
+                <h2 class="font-serif text-2xl sm:text-3xl text-[#1c1917] font-medium leading-snug mb-2">
                   {s.title}
                 </h2>
                 <p class="text-xs uppercase tracking-wider text-[#857f77] mb-4 font-medium">
                   {s.subtitle}
                 </p>
 
-                <p class="text-sm text-[#57534e] font-light leading-relaxed mb-6">
+                <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-6">
                   {s.shortDesc}
                 </p>
 
@@ -69,20 +64,21 @@ import { SERVICES } from '../data/services';
               </div>
 
               <div class="pt-2">
-                <GlassButton
-                  text="Request Consultation"
+                <a
                   href="#booking-form"
-                  size="medium"
-                  width="100%"
-                />
+                  class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 px-6 text-center w-full justify-center bg-white/80 hover:bg-[#1c1917] hover:text-white transition-all text-[#1c1917]"
+                  data-service-select={s.title}
+                >
+                  Book a Consultation
+                </a>
               </div>
             </div>
           ))
         }
       </div>
 
-      <!-- What to Expect Grid -->
-      <div class="rounded-3xl bg-white border border-[#28231e]/10 p-8 sm:p-12 mb-20">
+      <!-- Consultation Protocol -->
+      <div class="rounded-xl bg-white border border-[#28231e]/10 p-8 sm:p-12 mb-20 shadow-xs">
         <h3 class="font-serif text-3xl text-[#1c1917] text-center mb-12">
           The Consultation Protocol
         </h3>
@@ -90,91 +86,216 @@ import { SERVICES } from '../data/services';
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">01</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Before We Meet</h4>
+            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Pre-Session Preparation</h4>
             <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
-              Upon booking, you will provide your exact birth information and 1-3 core focus inquiries. Anisha spends 2-3 hours pre-analyzing your planetary charts and transits before opening the call.
+              Upon booking, you share your exact birth coordinates and primary questions. Anisha pre-calculates and analyzes your planetary charts and transits before opening the call.
             </p>
           </div>
 
           <div>
             <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">02</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">During the Session</h4>
+            <h4 class="font-semibold text-base text-[#1c1917] mb-2">The Live Video Dialogue</h4>
             <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
-              We meet via private high-resolution video. The conversation is collaborative, compassionate, and grounded. We directly dissect timelines, relationship dynamics, and energetic blocks.
+              We meet via private high-resolution video. The conversation is collaborative, compassionate, and grounded—focused on real timelines, crossroads, and practical timing.
             </p>
           </div>
 
           <div>
             <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">03</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Aftercare & Integration</h4>
+            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Integration & Aftercare</h4>
             <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
-              Within 24 hours of our session, you receive the full video/audio recording along with custom remedies, gemstone/color alignments, and key calendar dates for your upcoming year.
+              Following our session, you receive the full video recording and tailored notes to support your personal integration and decision-making.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Booking Request Form -->
-      <div id="booking-form" class="max-w-2xl mx-auto rounded-3xl glass-panel p-8 sm:p-12 border border-[#28231e]/10 shadow-xl">
+      <!-- Booking / Enquiry Form (Direct to anishabanerji@gmail.com) -->
+      <div id="booking-form" class="max-w-2xl mx-auto rounded-xl glass-panel p-8 sm:p-12 border border-[#28231e]/10 shadow-xl bg-white/90">
         <div class="text-center mb-8">
-          <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-1">Appointment Request</span>
-          <h3 class="font-serif text-3xl text-[#1c1917]">
-            Schedule Your Consultation
+          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">Direct Enquiry</span>
+          <h3 class="font-serif text-3xl sm:text-4xl text-[#1c1917]">
+            Book a Consultation
           </h3>
-          <p class="text-xs sm:text-sm text-[#57534e] font-light mt-2">
-            Please fill in your details below. You will receive a response within 24 hours to confirm calendar availability.
+          <p class="text-xs sm:text-sm text-[#57534e] font-light mt-2 max-w-md mx-auto">
+            Please fill in your details below. This will deliver your inquiry directly to Anisha Banerji's inbox (<span class="font-medium text-[#1c1917]">anishabanerji@gmail.com</span>).
           </p>
         </div>
 
-        <form class="space-y-5" onsubmit="event.preventDefault(); alert('Thank you, your consultation inquiry has been received. Anisha will contact you within 24 hours.');">
+        <form id="consultation-enquiry-form" class="space-y-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your Name</label>
-              <input type="text" required class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="Full name" />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your Full Name</label>
+              <input type="text" id="booking-name" required class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. Maya Patel" />
             </div>
             <div>
               <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Email Address</label>
-              <input type="email" required class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="email@domain.com" />
+              <input type="email" id="booking-email" required class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="email@domain.com" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Select Consultation</label>
+              <select id="booking-service" class="w-full px-4 py-3 rounded-md glass-input text-sm bg-white cursor-pointer font-medium text-[#1c1917]">
+                <option value="Vedic Astrology Consultation">Vedic Astrology Consultation (75 Min)</option>
+                <option value="Intuitive Tarot Reading">Intuitive Tarot Reading (50 Min)</option>
+                <option value="Numerology & Name Consultation">Numerology & Name Consultation (60 Min)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Phone / WhatsApp (Optional)</label>
+              <input type="text" id="booking-phone" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="+1 / +44 / +91 ..." />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Preferred Date / Time</label>
+              <input type="text" id="booking-schedule" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. Next Tuesday morning" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your City & Timezone</label>
+              <input type="text" id="booking-tz" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. London (GMT) / Delhi (IST)" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Select Consultation</label>
-            <select class="w-full px-4 py-3 rounded-xl glass-input text-sm bg-white cursor-pointer">
-              <option>Vedic Astrology Consultation (75 Min &bull; $275)</option>
-              <option>Intuitive Tarot Reading (50 Min &bull; $195)</option>
-              <option>Sacred Numerology & Name Analysis (60 Min &bull; $225)</option>
-              <option>Private Mentorship & Retainer Advisory (Inquire)</option>
-            </select>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Preferred Day / Time</label>
-              <input type="text" class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="e.g. Weekday mornings (EST)" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Location / Timezone</label>
-              <input type="text" class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="e.g. London (GMT) / NY (EST)" />
-            </div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Birth Details (Date, Exact Time, Place of Birth)</label>
+            <input type="text" id="booking-birth" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. 18 April 1996, 14:30, New Delhi, India" />
           </div>
 
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Primary Questions / Focus Areas</label>
-            <textarea rows="4" class="w-full px-4 py-3 rounded-xl glass-input text-sm" placeholder="Share any particular transitions, decisions, or themes you wish to explore..."></textarea>
+            <textarea id="booking-notes" rows="4" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="Please share any specific life questions, decisions, or transitions you wish to explore..."></textarea>
           </div>
 
           <div class="pt-2">
             <GlassButton
-              text="Submit Consultation Request"
+              text="Send Consultation Request to Anisha"
               type="submit"
               size="large"
               width="100%"
             />
           </div>
         </form>
+
+        <!-- Dynamic Success Confirmation Modal / Banner -->
+        <div id="booking-success-box" class="hidden mt-6 p-6 rounded-lg bg-[#f7f4ed] border border-[#a37a4c]/30 text-center space-y-4">
+          <div class="w-10 h-10 rounded-md bg-[#a37a4c]/10 text-[#a37a4c] mx-auto flex items-center justify-center font-bold text-lg">
+            &#10003;
+          </div>
+          <h4 class="font-serif text-2xl text-[#1c1917]">
+            Opening Direct Email to Anisha
+          </h4>
+          <p class="text-xs sm:text-sm text-[#57534e] font-light max-w-md mx-auto">
+            Your consultation request has been prepared and opened in your email client. If it did not open automatically, click below to open directly in Gmail:
+          </p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <a
+              id="gmail-direct-btn"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-5 py-2.5 rounded-full bg-[#1c1917] text-white text-xs font-semibold uppercase tracking-wider hover:bg-[#a37a4c] transition-colors"
+            >
+              Open in Gmail &rarr;
+            </a>
+            <button
+              type="button"
+              id="copy-details-btn"
+              class="px-5 py-2.5 rounded-full border border-[#28231e]/20 text-xs font-semibold uppercase tracking-wider hover:bg-black/5 transition-colors"
+            >
+              Copy Details
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>
   </section>
 </Layout>
+
+<script>
+  function initConsultationBooking() {
+    const form = document.getElementById('consultation-enquiry-form') as HTMLFormElement;
+    if (!form) return;
+
+    const serviceSelect = document.getElementById('booking-service') as HTMLSelectElement;
+    const successBox = document.getElementById('booking-success-box');
+    const gmailDirectBtn = document.getElementById('gmail-direct-btn') as HTMLAnchorElement;
+    const copyDetailsBtn = document.getElementById('copy-details-btn');
+
+    // Preset service if clicked from card
+    document.querySelectorAll('[data-service-select]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const serviceName = (e.currentTarget as HTMLElement).getAttribute('data-service-select');
+        if (serviceName && serviceSelect) {
+          for (let i = 0; i < serviceSelect.options.length; i++) {
+            if (serviceSelect.options[i].text.includes(serviceName)) {
+              serviceSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = (document.getElementById('booking-name') as HTMLInputElement)?.value || '';
+      const email = (document.getElementById('booking-email') as HTMLInputElement)?.value || '';
+      const service = serviceSelect?.value || 'Consultation';
+      const phone = (document.getElementById('booking-phone') as HTMLInputElement)?.value || 'Not provided';
+      const schedule = (document.getElementById('booking-schedule') as HTMLInputElement)?.value || 'Flexible';
+      const tz = (document.getElementById('booking-tz') as HTMLInputElement)?.value || 'Not provided';
+      const birth = (document.getElementById('booking-birth') as HTMLInputElement)?.value || 'To be shared';
+      const notes = (document.getElementById('booking-notes') as HTMLTextAreaElement)?.value || 'None';
+
+      const subject = `Consultation Inquiry: ${service} — ${name}`;
+      const body = `Dear Anisha,
+
+I would like to book a consultation with you. Here are my details:
+
+• Name: ${name}
+• Email: ${email}
+• Phone / WhatsApp: ${phone}
+• Consultation Type: ${service}
+• Preferred Date / Time: ${schedule}
+• Location / Timezone: ${tz}
+• Birth Information: ${birth}
+
+Focus Areas / Questions:
+${notes}
+
+Thank you,
+${name}`;
+
+      const recipient = 'anishabanerji@gmail.com';
+      const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+      // Show success box
+      if (successBox) successBox.classList.remove('hidden');
+      if (gmailDirectBtn) gmailDirectBtn.href = gmailWebUrl;
+
+      // Copy handler
+      if (copyDetailsBtn) {
+        copyDetailsBtn.onclick = () => {
+          navigator.clipboard.writeText(body);
+          copyDetailsBtn.textContent = 'Copied to Clipboard!';
+          setTimeout(() => {
+            copyDetailsBtn.textContent = 'Copy Details';
+          }, 3000);
+        };
+      }
+
+      // Try triggering mailto directly
+      window.location.href = mailtoUrl;
+    });
+  }
+
+  document.addEventListener('astro:page-load', initConsultationBooking);
+</script>

@@ -1,38 +1,38 @@
 ---
 import GlassButton from './GlassButton.astro';
 import { POPULAR_CITIES } from '../lib/vedic/cities';
+
+// Extract unique countries
+const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort();
 ---
 
-<section id="birth-chart" class="relative py-20 lg:py-28 overflow-hidden bg-gradient-to-b from-[#fcfbf9] via-[#f7f4ed] to-[#fcfbf9]">
-  <!-- Subtle decorative ambient circles -->
-  <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#f0e8dc]/50 blur-3xl pointer-events-none"></div>
-  <div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#ebdccb]/40 blur-3xl pointer-events-none"></div>
-
-  <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+<section id="birth-chart" class="relative py-16 sm:py-24 overflow-hidden bg-gradient-to-b from-[#fcfbf9] via-[#f9f7f2] to-[#fcfbf9]">
+  <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
     
-    <!-- Section Heading -->
-    <div class="text-center max-w-3xl mx-auto mb-14">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white/80 border border-[#28231e]/10 text-[#a37a4c] mb-4 shadow-sm">
-        <span>Vedic Kundali Calculation Engine</span>
-      </div>
-      <h2 class="font-serif text-4xl sm:text-5xl lg:text-5xl text-[#1c1917] tracking-tight leading-tight">
+    <!-- Section Heading: Restrained, generous whitespace -->
+    <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        Astronomical Calculation
+      </span>
+      <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight leading-tight">
         Discover Your Birth Chart
       </h2>
-      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light leading-relaxed">
-        Calculated using authentic Sidereal planetary ephemeris and high-precision Lahiri Ayanamsha (Chitra Paksha) through our backend engine.
+      <p class="mt-3 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+        High-precision natal ephemeris supporting both authentic Vedic (Sidereal/Lahiri) and Western (Tropical) calculations.
       </p>
     </div>
 
-    <!-- Calculator Container Card -->
-    <div class="glass-panel rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#28231e]/10 shadow-xl relative">
+    <!-- Calculator Card: Organic subtle corners -->
+    <div class="glass-panel rounded-xl p-6 sm:p-10 border border-[#28231e]/10 shadow-lg relative bg-white/70">
       
       <!-- Input Form -->
-      <form id="chart-form" class="space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
+      <form id="chart-form" class="space-y-6">
+        
+        <!-- Primary Fields Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <!-- Full Name -->
           <div>
-            <label for="chart-name" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
+            <label for="chart-name" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
               Full Name
             </label>
             <input
@@ -42,13 +42,13 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
               placeholder="e.g. Maya Patel"
               value="Maya Patel"
               required
-              class="w-full px-4 py-3 rounded-xl glass-input text-sm"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm"
             />
           </div>
 
           <!-- Date of Birth -->
           <div>
-            <label for="chart-date" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
+            <label for="chart-date" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
               Date of Birth
             </label>
             <input
@@ -57,14 +57,14 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
               name="date"
               value="1996-04-18"
               required
-              class="w-full px-4 py-3 rounded-xl glass-input text-sm"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm"
             />
           </div>
 
           <!-- Time of Birth -->
           <div>
-            <label for="chart-time" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
-              Exact Time (24h or AM/PM)
+            <label for="chart-time" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
+              Exact Time (24h)
             </label>
             <input
               type="time"
@@ -72,105 +72,148 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
               name="time"
               value="14:30"
               required
-              class="w-full px-4 py-3 rounded-xl glass-input text-sm"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm"
             />
           </div>
 
-          <!-- Place of Birth -->
+          <!-- Calculation System (Vedic vs Western) -->
           <div>
-            <label for="chart-city-select" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
+            <label for="chart-system" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
+              Zodiac System
+            </label>
+            <select
+              id="chart-system"
+              name="system"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white cursor-pointer font-medium text-[#1c1917]"
+            >
+              <option value="vedic" selected>Vedic (Sidereal / Lahiri)</option>
+              <option value="western">Western (Tropical)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Location Fields: Country & City Separated -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+          <!-- Country Dropdown -->
+          <div>
+            <label for="chart-country-select" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
+              Country of Birth
+            </label>
+            <select
+              id="chart-country-select"
+              name="country"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white cursor-pointer"
+            >
+              {
+                COUNTRIES.map((cty) => (
+                  <option value={cty} selected={cty === 'India'}>
+                    {cty}
+                  </option>
+                ))
+              }
+              <option value="Other">Other / Worldwide</option>
+            </select>
+          </div>
+
+          <!-- City Dropdown -->
+          <div>
+            <label for="chart-city-select" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
               City of Birth
             </label>
             <select
               id="chart-city-select"
               name="city"
-              class="w-full px-4 py-3 rounded-xl glass-input text-sm bg-white cursor-pointer"
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white cursor-pointer"
             >
-              {
-                POPULAR_CITIES.map((c) => (
-                  <option
-                    value={JSON.stringify(c)}
-                    selected={c.city === 'New Delhi'}
-                  >
-                    {c.label}
-                  </option>
-                ))
-              }
+              <!-- Populated via script according to selected country -->
             </select>
           </div>
-
         </div>
 
-        <!-- Custom Coordinate Toggle (Optional Advanced) -->
+        <!-- Custom Coordinate Drawer Toggle -->
         <div class="pt-2 flex items-center justify-between border-t border-[#28231e]/5">
           <button
             type="button"
             id="toggle-coords-btn"
             class="text-xs text-[#857f77] hover:text-[#1c1917] transition-colors inline-flex items-center gap-1.5"
           >
-            <span>Custom Coordinates & Timezone</span>
+            <span>Custom Coordinates & Timezone Dropdown</span>
             <svg class="w-3.5 h-3.5 transform transition-transform" id="coords-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-
-          <!-- Chart Style Selector -->
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-[#857f77] font-medium">Style:</span>
-            <label class="inline-flex items-center gap-1.5 cursor-pointer">
-              <input type="radio" name="chartStyle" value="north" checked class="accent-[#a37a4c]" />
-              <span class="text-[#1c1917]">North Indian (Kundali)</span>
-            </label>
-            <label class="inline-flex items-center gap-1.5 cursor-pointer ml-3">
-              <input type="radio" name="chartStyle" value="south" class="accent-[#a37a4c]" />
-              <span class="text-[#1c1917]">South Indian</span>
-            </label>
-          </div>
+          
+          <span class="text-[11px] text-[#857f77]">Parashar Sidereal & Tropical Ephemeris</span>
         </div>
 
-        <!-- Hidden manual coordinates drawer -->
-        <div id="coords-drawer" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-black/[0.02] border border-[#28231e]/10">
+        <!-- Hidden manual coordinates drawer with timezone dropdown -->
+        <div id="coords-drawer" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-md bg-black/[0.02] border border-[#28231e]/10">
           <div>
-            <label class="block text-[11px] uppercase tracking-wider text-[#857f77] mb-1">Latitude</label>
-            <input type="number" step="0.0001" id="custom-lat" value="28.6139" class="w-full px-3 py-2 text-xs rounded-lg glass-input" />
+            <label class="block text-[10px] uppercase tracking-wider text-[#857f77] mb-1">Latitude</label>
+            <input type="number" step="0.0001" id="custom-lat" value="28.6139" class="w-full px-3 py-2 text-xs rounded-md glass-input" />
           </div>
           <div>
-            <label class="block text-[11px] uppercase tracking-wider text-[#857f77] mb-1">Longitude</label>
-            <input type="number" step="0.0001" id="custom-lon" value="77.2090" class="w-full px-3 py-2 text-xs rounded-lg glass-input" />
+            <label class="block text-[10px] uppercase tracking-wider text-[#857f77] mb-1">Longitude</label>
+            <input type="number" step="0.0001" id="custom-lon" value="77.2090" class="w-full px-3 py-2 text-xs rounded-md glass-input" />
           </div>
           <div>
-            <label class="block text-[11px] uppercase tracking-wider text-[#857f77] mb-1">UTC Offset (Hours)</label>
-            <input type="number" step="0.5" id="custom-tz" value="5.5" class="w-full px-3 py-2 text-xs rounded-lg glass-input" />
+            <label class="block text-[10px] uppercase tracking-wider text-[#857f77] mb-1">Timezone (UTC Offset)</label>
+            <select id="custom-tz-select" class="w-full px-3 py-2 text-xs rounded-md glass-input bg-white cursor-pointer">
+              <option value="-10">UTC-10:00 (Hawaii)</option>
+              <option value="-8">UTC-08:00 (Pacific - US & Canada)</option>
+              <option value="-7">UTC-07:00 (Mountain - US & Canada)</option>
+              <option value="-6">UTC-06:00 (Central - US & Canada)</option>
+              <option value="-5">UTC-05:00 (Eastern - US & Canada)</option>
+              <option value="-4">UTC-04:00 (Atlantic)</option>
+              <option value="-3">UTC-03:00 (Buenos Aires / São Paulo)</option>
+              <option value="0">UTC+00:00 (London / GMT / Dublin)</option>
+              <option value="1">UTC+01:00 (Paris / Berlin / Rome / CET)</option>
+              <option value="2">UTC+02:00 (Athens / Cairo / Johannesburg)</option>
+              <option value="3">UTC+03:00 (Moscow / Istanbul / Riyadh)</option>
+              <option value="4">UTC+04:00 (Dubai / UAE / Gulf)</option>
+              <option value="5">UTC+05:00 (Karachi / Tashkent)</option>
+              <option value="5.5" selected>UTC+05:30 (India Standard Time - IST)</option>
+              <option value="5.75">UTC+05:45 (Nepal / Kathmandu)</option>
+              <option value="6">UTC+06:00 (Dhaka / Almaty)</option>
+              <option value="7">UTC+07:00 (Bangkok / Jakarta)</option>
+              <option value="8">UTC+08:00 (Singapore / Hong Kong / Perth)</option>
+              <option value="9">UTC+09:00 (Tokyo / Seoul)</option>
+              <option value="9.5">UTC+09:30 (Adelaide / Darwin)</option>
+              <option value="10">UTC+10:00 (Sydney / Melbourne)</option>
+              <option value="12">UTC+12:00 (Auckland / Fiji)</option>
+            </select>
           </div>
         </div>
 
         <!-- Submit Button -->
-        <div class="flex flex-col sm:flex-row items-center justify-center pt-2">
+        <div class="flex items-center justify-center pt-2">
           <GlassButton
-            text="Calculate My Birth Chart"
+            text="Calculate Birth Chart"
             type="submit"
             size="large"
-            width="320px"
+            width="280px"
             id="calculate-btn"
           />
         </div>
       </form>
 
       <!-- Loading State -->
-      <div id="chart-loading" class="hidden my-12 text-center">
-        <div class="inline-block w-8 h-8 border-2 border-[#1c1917] border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-3 text-xs uppercase tracking-widest text-[#857f77]">
-          Computing Ephemeris & Lahiri Ayanamsha...
+      <div id="chart-loading" class="hidden my-10 text-center">
+        <div class="inline-block w-7 h-7 border-2 border-[#1c1917] border-t-transparent rounded-full animate-spin"></div>
+        <p class="mt-2 text-xs uppercase tracking-widest text-[#857f77]">
+          Computing Ephemeris Coordinates...
         </p>
       </div>
 
       <!-- Result Container -->
-      <div id="chart-result" class="hidden mt-12 pt-10 border-t border-[#28231e]/10">
+      <div id="chart-result" class="hidden mt-10 pt-8 border-t border-[#28231e]/10">
         
         <!-- Result Header -->
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 pb-6 border-b border-[#28231e]/10">
           <div>
-            <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Vedic Natal Assessment</span>
+            <span id="res-system-tag" class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">
+              Vedic Natal Assessment
+            </span>
             <h3 id="res-name-title" class="font-serif text-3xl sm:text-4xl text-[#1c1917] mt-1">
               Birth Chart for Maya
             </h3>
@@ -179,16 +222,16 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
             </p>
           </div>
           <div class="text-left md:text-right">
-            <span class="text-[11px] uppercase tracking-wider text-[#857f77] block">Ayanamsha (Chitra Paksha)</span>
+            <span class="text-[11px] uppercase tracking-wider text-[#857f77] block" id="res-ayanamsha-label">Calculation Mode</span>
             <span id="res-ayanamsha" class="text-sm font-medium text-[#1c1917]">Lahiri 23° 48' 12"</span>
           </div>
         </div>
 
-        <!-- 3 Core Astrological Pillars -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <!-- 3 Core Astrological Pillars: Organic crisp corners -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
           <!-- Ascendant Card -->
-          <div class="p-6 rounded-2xl bg-white/70 border border-[#28231e]/10 shadow-sm relative overflow-hidden">
-            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">1st House &bull; Lagna</div>
+          <div class="p-6 rounded-lg bg-white border border-[#28231e]/10 shadow-xs">
+            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">1st House &bull; Ascendant</div>
             <div id="res-ascendant-title" class="font-serif text-2xl text-[#1c1917] font-medium">Leo (Simha)</div>
             <div id="res-ascendant-deg" class="text-xs text-[#857f77] mt-0.5">14° 22' 08" &bull; Purva Phalguni</div>
             <p id="res-ascendant-desc" class="text-xs text-[#57534e] leading-relaxed mt-3 pt-3 border-t border-[#28231e]/5">
@@ -197,8 +240,8 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
           </div>
 
           <!-- Moon Sign Card -->
-          <div class="p-6 rounded-2xl bg-white/70 border border-[#28231e]/10 shadow-sm relative overflow-hidden">
-            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">Moon &bull; Chandra Rashi</div>
+          <div class="p-6 rounded-lg bg-white border border-[#28231e]/10 shadow-xs">
+            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">Moon &bull; Chandra</div>
             <div id="res-moon-title" class="font-serif text-2xl text-[#1c1917] font-medium">Aries (Mesha)</div>
             <div id="res-moon-deg" class="text-xs text-[#857f77] mt-0.5">Bharani (Pada 2) &bull; Venus Lord</div>
             <p id="res-moon-desc" class="text-xs text-[#57534e] leading-relaxed mt-3 pt-3 border-t border-[#28231e]/5">
@@ -207,32 +250,32 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
           </div>
 
           <!-- Sun Sign Card -->
-          <div class="p-6 rounded-2xl bg-white/70 border border-[#28231e]/10 shadow-sm relative overflow-hidden">
-            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">Sun &bull; Surya Rashi</div>
+          <div class="p-6 rounded-lg bg-white border border-[#28231e]/10 shadow-xs">
+            <div class="text-[11px] uppercase tracking-[0.18em] text-[#a37a4c] font-semibold mb-2">Sun &bull; Surya</div>
             <div id="res-sun-title" class="font-serif text-2xl text-[#1c1917] font-medium">Aries (Mesha)</div>
-            <div id="res-sun-deg" class="text-xs text-[#857f77] mt-0.5">Exalted (Uchcha) Position</div>
+            <div id="res-sun-deg" class="text-xs text-[#857f77] mt-0.5">Exalted Position</div>
             <p id="res-sun-desc" class="text-xs text-[#57534e] leading-relaxed mt-3 pt-3 border-t border-[#28231e]/5">
               Powerful soul vitality, resolute ambition, moral integrity, and natural executive presence.
             </p>
           </div>
         </div>
 
-        <!-- Chart Graphic Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-10">
+        <!-- Chart Graphic Section: Parashar Sidereal Diamond Chart -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
           
           <!-- Diagram Column -->
           <div class="lg:col-span-6 flex flex-col items-center">
             <div class="w-full flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-semibold uppercase tracking-wider text-[#57534e]" id="chart-diagram-label">
-                North Indian Kundali (Lagna D1)
+                Parashari Chart (Lagna D1)
               </span>
               <span class="text-[11px] text-[#857f77]">Whole Sign Houses</span>
             </div>
 
             <!-- SVG Container -->
-            <div class="w-full max-w-[420px] aspect-square rounded-2xl bg-[#faf8f5] p-3 border border-[#28231e]/15 shadow-inner relative flex items-center justify-center">
+            <div class="w-full max-w-[400px] aspect-square rounded-lg bg-[#faf8f5] p-3 border border-[#28231e]/15 shadow-inner relative flex items-center justify-center">
               <div id="chart-svg-wrapper" class="w-full h-full">
-                <!-- Dynamically rendered SVG will be injected here -->
+                <!-- Dynamically rendered Parashar diamond SVG -->
               </div>
             </div>
           </div>
@@ -241,19 +284,18 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
           <div class="lg:col-span-6">
             <div class="flex items-center justify-between mb-3 px-1">
               <span class="text-xs font-semibold uppercase tracking-wider text-[#57534e]">
-                Planetary Coordinates (Nirayana)
+                Planetary Coordinates
               </span>
-              <span class="text-[11px] text-[#857f77]">9 Grahas</span>
+              <span class="text-[11px] text-[#857f77]" id="planets-count-label">9 Positions</span>
             </div>
 
-            <div class="overflow-x-auto rounded-2xl border border-[#28231e]/10 bg-white/70">
+            <div class="overflow-x-auto rounded-lg border border-[#28231e]/10 bg-white">
               <table class="w-full text-left text-xs">
                 <thead>
-                  <tr class="border-b border-[#28231e]/10 text-[#857f77] uppercase tracking-wider text-[10.5px] bg-black/[0.02]">
-                    <th class="py-2.5 px-3 font-semibold">Planet</th>
+                  <tr class="border-b border-[#28231e]/10 text-[#857f77] uppercase tracking-wider text-[10px] bg-black/[0.02]">
+                    <th class="py-2.5 px-3 font-semibold">Body</th>
                     <th class="py-2.5 px-3 font-semibold">Sign</th>
                     <th class="py-2.5 px-3 font-semibold">Degree</th>
-                    <th class="py-2.5 px-3 font-semibold">Nakshatra</th>
                     <th class="py-2.5 px-3 font-semibold">House</th>
                     <th class="py-2.5 px-3 font-semibold">Status</th>
                   </tr>
@@ -268,19 +310,19 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
         </div>
 
         <!-- Synthesis and Consultation CTA -->
-        <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#f5f2eb] to-[#fcfbf9] border border-[#28231e]/10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="p-6 sm:p-8 rounded-lg bg-[#f7f4ed] border border-[#28231e]/10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="max-w-xl">
-            <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-1">Deeper Chart Synthesis</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-1">Personal Consultation</span>
             <h4 class="font-serif text-2xl text-[#1c1917]">
-              Ready to explore your active Dashas & life timing?
+              Explore your active timing & transits
             </h4>
-            <p class="text-xs sm:text-sm text-[#57534e] mt-2 font-light leading-relaxed">
-              Your natal chart is an active karmic blueprint. In a 1-on-1 private Vedic consultation, Anisha interprets your Navamsha (D9), Vimshottari Dasha timelines, and auspicious remedies tailored to your current crossroads.
+            <p class="text-xs sm:text-sm text-[#57534e] mt-1.5 font-light leading-relaxed">
+              Your natal chart is a living map. In a 1-on-1 private consultation, Anisha interprets your deeper planetary cycles, relationship timing, and grounded remedies for your current crossroads.
             </p>
           </div>
           <div class="flex-shrink-0">
             <GlassButton
-              text="Book Consultation"
+              text="Book a Consultation"
               href="/consultations"
               size="compact"
             />
@@ -295,323 +337,333 @@ import { POPULAR_CITIES } from '../lib/vedic/cities';
 </section>
 
 <script>
+  import { POPULAR_CITIES } from '../lib/vedic/cities';
+
   function initBirthChartCalculator() {
-    // DOM References
     const form = document.getElementById('chart-form') as HTMLFormElement;
     if (!form) return;
 
+    const countrySelect = document.getElementById('chart-country-select') as HTMLSelectElement;
     const citySelect = document.getElementById('chart-city-select') as HTMLSelectElement;
-  const toggleCoordsBtn = document.getElementById('toggle-coords-btn');
-  const coordsDrawer = document.getElementById('coords-drawer');
-  const coordsArrow = document.getElementById('coords-arrow');
+    const systemSelect = document.getElementById('chart-system') as HTMLSelectElement;
 
-  const customLat = document.getElementById('custom-lat') as HTMLInputElement;
-  const customLon = document.getElementById('custom-lon') as HTMLInputElement;
-  const customTz = document.getElementById('custom-tz') as HTMLInputElement;
+    const toggleCoordsBtn = document.getElementById('toggle-coords-btn');
+    const coordsDrawer = document.getElementById('coords-drawer');
+    const coordsArrow = document.getElementById('coords-arrow');
 
-  const loadingEl = document.getElementById('chart-loading');
-  const resultEl = document.getElementById('chart-result');
-  const svgWrapper = document.getElementById('chart-svg-wrapper');
-  const planetsTbody = document.getElementById('planets-tbody');
+    const customLat = document.getElementById('custom-lat') as HTMLInputElement;
+    const customLon = document.getElementById('custom-lon') as HTMLInputElement;
+    const customTzSelect = document.getElementById('custom-tz-select') as HTMLSelectElement;
 
-  // Toggle Coordinates Drawer
-  toggleCoordsBtn?.addEventListener('click', () => {
-    const isHidden = coordsDrawer?.classList.contains('hidden');
-    if (isHidden) {
-      coordsDrawer?.classList.remove('hidden');
-      coordsArrow?.classList.add('rotate-180');
-    } else {
-      coordsDrawer?.classList.add('hidden');
-      coordsArrow?.classList.remove('rotate-180');
-    }
-  });
+    const loadingEl = document.getElementById('chart-loading');
+    const resultEl = document.getElementById('chart-result');
+    const svgWrapper = document.getElementById('chart-svg-wrapper');
+    const planetsTbody = document.getElementById('planets-tbody');
 
-  // When city selection changes, update manual lat/lon/tz
-  citySelect?.addEventListener('change', () => {
-    try {
-      const cityData = JSON.parse(citySelect.value);
-      if (customLat && customLon && customTz) {
-        customLat.value = cityData.latitude.toString();
-        customLon.value = cityData.longitude.toString();
-        customTz.value = cityData.timezone.toString();
-      }
-    } catch (e) {}
-  });
+    // Populate cities based on selected country
+    function populateCitiesForCountry(countryName: string) {
+      if (!citySelect) return;
+      citySelect.innerHTML = '';
 
-  // Handle Form Submit
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const name = (document.getElementById('chart-name') as HTMLInputElement).value;
-    const date = (document.getElementById('chart-date') as HTMLInputElement).value;
-    const time = (document.getElementById('chart-time') as HTMLInputElement).value;
-
-    let cityData = { label: 'New Delhi, India', latitude: 28.6139, longitude: 77.209, timezone: 5.5 };
-    try {
-      cityData = JSON.parse(citySelect.value);
-    } catch (err) {}
-
-    // Use custom coords if modified
-    const lat = customLat ? parseFloat(customLat.value) : cityData.latitude;
-    const lon = customLon ? parseFloat(customLon.value) : cityData.longitude;
-    const tz = customTz ? parseFloat(customTz.value) : cityData.timezone;
-
-    const chartStyleRadio = document.querySelector('input[name="chartStyle"]:checked') as HTMLInputElement;
-    const chartStyle = chartStyleRadio ? chartStyleRadio.value : 'north';
-
-    loadingEl?.classList.remove('hidden');
-    resultEl?.classList.add('hidden');
-
-    try {
-      const resp = await fetch('/api/birth-chart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          date,
-          time,
-          latitude: lat,
-          longitude: lon,
-          timezone: tz,
-          cityName: cityData.label,
-        }),
-      });
-
-      const res = await resp.json();
-      loadingEl?.classList.add('hidden');
-
-      if (!res.success || !res.chart) {
-        alert(res.error || 'Unable to calculate chart. Please verify inputs.');
-        return;
-      }
-
-      renderChartResult(res.chart, chartStyle);
-    } catch (err: any) {
-      loadingEl?.classList.add('hidden');
-      alert('Error connecting to backend calculator: ' + err.message);
-    }
-  });
-
-  function renderChartResult(chart: any, style: string) {
-    resultEl?.classList.remove('hidden');
-    resultEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-    // Meta details
-    const nameTitle = document.getElementById('res-name-title');
-    if (nameTitle) nameTitle.textContent = `Birth Chart for ${chart.birthDetails.name}`;
-
-    const birthMeta = document.getElementById('res-birth-meta');
-    if (birthMeta) {
-      birthMeta.textContent = `${chart.birthDetails.localDateTime} • ${chart.birthDetails.cityName}`;
-    }
-
-    const ayanamshaEl = document.getElementById('res-ayanamsha');
-    if (ayanamshaEl) ayanamshaEl.textContent = `${chart.ayanamsha.name} ${chart.ayanamsha.formatted}`;
-
-    // Ascendant Card
-    const ascTitle = document.getElementById('res-ascendant-title');
-    if (ascTitle) ascTitle.textContent = `${chart.ascendant.signName} (${chart.ascendant.signSanskrit})`;
-    const ascDeg = document.getElementById('res-ascendant-deg');
-    if (ascDeg) ascDeg.textContent = `${chart.ascendant.degreeFormatted} • ${chart.ascendant.nakshatra} (Pada ${chart.ascendant.pada})`;
-    const ascDesc = document.getElementById('res-ascendant-desc');
-    if (ascDesc) ascDesc.textContent = chart.insights.ascendantSummary;
-
-    // Moon Card
-    const moonTitle = document.getElementById('res-moon-title');
-    if (moonTitle) moonTitle.textContent = `${chart.moonSign.signName} (${chart.moonSign.signSanskrit})`;
-    const moonDeg = document.getElementById('res-moon-deg');
-    if (moonDeg) moonDeg.textContent = `${chart.moonSign.nakshatra} (Pada ${chart.moonSign.pada}) • ${chart.moonSign.nakshatraLord} Lord`;
-    const moonDesc = document.getElementById('res-moon-desc');
-    if (moonDesc) moonDesc.textContent = chart.insights.moonSummary;
-
-    // Sun Card
-    const sunPlanet = chart.planets.find((p: any) => p.name === 'Sun');
-    const sunTitle = document.getElementById('res-sun-title');
-    if (sunTitle) sunTitle.textContent = `${chart.sunSign.signName} (${chart.sunSign.signSanskrit})`;
-    const sunDeg = document.getElementById('res-sun-deg');
-    if (sunDeg && sunPlanet) sunDeg.textContent = `${sunPlanet.degreeFormatted} • Dignity: ${sunPlanet.dignity}`;
-    const sunDesc = document.getElementById('res-sun-desc');
-    if (sunDesc) sunDesc.textContent = chart.insights.lifeFocusSummary;
-
-    // Table rows
-    if (planetsTbody) {
-      planetsTbody.innerHTML = chart.planets
-        .map((p: any) => {
-          const retroTag = p.isRetrograde ? '<span class="text-[#a37a4c] font-semibold ml-1">(R)</span>' : '';
-          const dignityBadge =
-            p.dignity === 'Exalted'
-              ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-50 text-amber-800 font-medium">Exalted</span>'
-              : p.dignity === 'Debilitated'
-              ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-stone-100 text-stone-600 font-medium">Debilitated</span>'
-              : p.dignity === 'Own Sign'
-              ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 font-medium">Own Sign</span>'
-              : '<span class="text-[#857f77]">Neutral</span>';
-
-          return `
-            <tr class="hover:bg-black/[0.015] transition-colors">
-              <td class="py-2.5 px-3 font-medium text-[#1c1917]">${p.name} <span class="text-[#857f77] text-[10px]">(${p.sanskritName})</span> ${retroTag}</td>
-              <td class="py-2.5 px-3 text-[#57534e]">${p.signName} <span class="text-[#857f77] text-[10px]">(${p.signSanskrit})</span></td>
-              <td class="py-2.5 px-3 font-mono text-[11px] text-[#1c1917]">${p.degreeFormatted}</td>
-              <td class="py-2.5 px-3 text-[#57534e]">${p.nakshatra} <span class="text-[#857f77] text-[10px]">P${p.pada}</span></td>
-              <td class="py-2.5 px-3 font-medium text-[#1c1917]">H${p.house}</td>
-              <td class="py-2.5 px-3">${dignityBadge}</td>
-            </tr>
-          `;
-        })
-        .join('');
-    }
-
-    // Render SVG
-    if (svgWrapper) {
-      if (style === 'south') {
-        svgWrapper.innerHTML = generateSouthIndianChartSvg(chart);
+      const filtered = POPULAR_CITIES.filter((c) => c.country === countryName);
+      if (filtered.length > 0) {
+        filtered.forEach((c, idx) => {
+          const opt = document.createElement('option');
+          opt.value = JSON.stringify(c);
+          opt.textContent = `${c.city} (${c.label})`;
+          if (idx === 0) opt.selected = true;
+          citySelect.appendChild(opt);
+        });
       } else {
-        svgWrapper.innerHTML = generateNorthIndianChartSvg(chart);
+        // Fallback for "Other"
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify({ city: 'Custom City', country: countryName, latitude: 28.6139, longitude: 77.209, timezone: 5.5, label: 'Custom Location' });
+        opt.textContent = 'Custom City (Use coordinates below)';
+        citySelect.appendChild(opt);
+      }
+      syncCoordinatesFromCity();
+    }
+
+    function syncCoordinatesFromCity() {
+      if (!citySelect) return;
+      try {
+        const cityData = JSON.parse(citySelect.value);
+        if (customLat) customLat.value = cityData.latitude.toString();
+        if (customLon) customLon.value = cityData.longitude.toString();
+        if (customTzSelect) {
+          const tzStr = cityData.timezone.toString();
+          // Find matching option or set value
+          let found = false;
+          for (let i = 0; i < customTzSelect.options.length; i++) {
+            if (parseFloat(customTzSelect.options[i].value) === cityData.timezone) {
+              customTzSelect.selectedIndex = i;
+              found = true;
+              break;
+            }
+          }
+          if (!found) customTzSelect.value = tzStr;
+        }
+      } catch (e) {}
+    }
+
+    countrySelect?.addEventListener('change', () => {
+      populateCitiesForCountry(countrySelect.value);
+    });
+
+    citySelect?.addEventListener('change', () => {
+      syncCoordinatesFromCity();
+    });
+
+    // Initial population
+    if (countrySelect) {
+      populateCitiesForCountry(countrySelect.value);
+    }
+
+    // Toggle custom coords drawer
+    toggleCoordsBtn?.addEventListener('click', () => {
+      const isHidden = coordsDrawer?.classList.contains('hidden');
+      if (isHidden) {
+        coordsDrawer?.classList.remove('hidden');
+        coordsArrow?.classList.add('rotate-180');
+      } else {
+        coordsDrawer?.classList.add('hidden');
+        coordsArrow?.classList.remove('rotate-180');
+      }
+    });
+
+    // Handle Form Submit
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = (document.getElementById('chart-name') as HTMLInputElement).value;
+      const date = (document.getElementById('chart-date') as HTMLInputElement).value;
+      const time = (document.getElementById('chart-time') as HTMLInputElement).value;
+      const system = systemSelect ? systemSelect.value : 'vedic';
+
+      let cityData = { city: 'New Delhi', country: 'India', label: 'New Delhi, India', latitude: 28.6139, longitude: 77.209, timezone: 5.5 };
+      try {
+        cityData = JSON.parse(citySelect.value);
+      } catch (err) {}
+
+      const lat = customLat ? parseFloat(customLat.value) : cityData.latitude;
+      const lon = customLon ? parseFloat(customLon.value) : cityData.longitude;
+      const tz = customTzSelect ? parseFloat(customTzSelect.value) : cityData.timezone;
+
+      loadingEl?.classList.remove('hidden');
+      resultEl?.classList.add('hidden');
+
+      try {
+        const resp = await fetch('/api/birth-chart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            date,
+            time,
+            latitude: lat,
+            longitude: lon,
+            timezone: tz,
+            cityName: `${cityData.city}, ${cityData.country}`,
+            zodiacSystem: system,
+          }),
+        });
+
+        const res = await resp.json();
+        loadingEl?.classList.add('hidden');
+
+        if (!res.success || !res.chart) {
+          alert(res.error || 'Unable to calculate chart. Please verify inputs.');
+          return;
+        }
+
+        renderChartResult(res.chart, system);
+      } catch (err: any) {
+        loadingEl?.classList.add('hidden');
+        alert('Error connecting to backend calculator: ' + err.message);
+      }
+    });
+
+    function renderChartResult(chart: any, system: string) {
+      resultEl?.classList.remove('hidden');
+      resultEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      const isWestern = system === 'western';
+
+      // System Tag
+      const systemTag = document.getElementById('res-system-tag');
+      if (systemTag) {
+        systemTag.textContent = isWestern ? 'Western Tropical Natal Chart' : 'Vedic Sidereal Assessment';
+      }
+
+      // Meta details
+      const nameTitle = document.getElementById('res-name-title');
+      if (nameTitle) nameTitle.textContent = `Birth Chart for ${chart.birthDetails.name}`;
+
+      const birthMeta = document.getElementById('res-birth-meta');
+      if (birthMeta) {
+        birthMeta.textContent = `${chart.birthDetails.localDateTime} • ${chart.birthDetails.cityName}`;
+      }
+
+      const ayanamshaLabel = document.getElementById('res-ayanamsha-label');
+      if (ayanamshaLabel) {
+        ayanamshaLabel.textContent = isWestern ? 'Zodiac System' : 'Ayanamsha (Chitra Paksha)';
+      }
+
+      const ayanamshaEl = document.getElementById('res-ayanamsha');
+      if (ayanamshaEl) {
+        ayanamshaEl.textContent = isWestern ? 'Western Tropical (0° Ayanamsha)' : `${chart.ayanamsha.name} ${chart.ayanamsha.formatted}`;
+      }
+
+      // Ascendant Card
+      const ascTitle = document.getElementById('res-ascendant-title');
+      if (ascTitle) {
+        ascTitle.textContent = isWestern ? `${chart.ascendant.signName}` : `${chart.ascendant.signName} (${chart.ascendant.signSanskrit})`;
+      }
+      const ascDeg = document.getElementById('res-ascendant-deg');
+      if (ascDeg) {
+        ascDeg.textContent = isWestern
+          ? `${chart.ascendant.degreeFormatted} in ${chart.ascendant.signName}`
+          : `${chart.ascendant.degreeFormatted} • ${chart.ascendant.nakshatra} (Pada ${chart.ascendant.pada})`;
+      }
+      const ascDesc = document.getElementById('res-ascendant-desc');
+      if (ascDesc) ascDesc.textContent = chart.insights.ascendantSummary;
+
+      // Moon Card
+      const moonTitle = document.getElementById('res-moon-title');
+      if (moonTitle) {
+        moonTitle.textContent = isWestern ? `${chart.moonSign.signName}` : `${chart.moonSign.signName} (${chart.moonSign.signSanskrit})`;
+      }
+      const moonDeg = document.getElementById('res-moon-deg');
+      if (moonDeg) {
+        moonDeg.textContent = isWestern
+          ? `Moon in ${chart.moonSign.signName}`
+          : `${chart.moonSign.nakshatra} (Pada ${chart.moonSign.pada}) • ${chart.moonSign.nakshatraLord} Lord`;
+      }
+      const moonDesc = document.getElementById('res-moon-desc');
+      if (moonDesc) moonDesc.textContent = chart.insights.moonSummary;
+
+      // Sun Card
+      const sunPlanet = chart.planets.find((p: any) => p.name === 'Sun');
+      const sunTitle = document.getElementById('res-sun-title');
+      if (sunTitle) {
+        sunTitle.textContent = isWestern ? `${chart.sunSign.signName}` : `${chart.sunSign.signName} (${chart.sunSign.signSanskrit})`;
+      }
+      const sunDeg = document.getElementById('res-sun-deg');
+      if (sunDeg && sunPlanet) {
+        sunDeg.textContent = isWestern ? `${sunPlanet.degreeFormatted} in ${sunPlanet.signName}` : `${sunPlanet.degreeFormatted} • Dignity: ${sunPlanet.dignity}`;
+      }
+      const sunDesc = document.getElementById('res-sun-desc');
+      if (sunDesc) sunDesc.textContent = chart.insights.lifeFocusSummary;
+
+      // Diagram Label
+      const diagramLabel = document.getElementById('chart-diagram-label');
+      if (diagramLabel) {
+        diagramLabel.textContent = isWestern ? 'Parashari House Layout (Tropical Placements)' : 'Parashari Kundali (Lagna D1)';
+      }
+
+      // Table rows
+      if (planetsTbody) {
+        planetsTbody.innerHTML = chart.planets
+          .map((p: any) => {
+            const retroTag = p.isRetrograde ? '<span class="text-[#a37a4c] font-semibold ml-1">(R)</span>' : '';
+            const dignityBadge =
+              p.dignity === 'Exalted'
+                ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-50 text-amber-800 font-medium">Exalted</span>'
+                : p.dignity === 'Debilitated'
+                ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-stone-100 text-stone-600 font-medium">Debilitated</span>'
+                : p.dignity === 'Own Sign'
+                ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-emerald-50 text-emerald-800 font-medium">Own Sign</span>'
+                : '<span class="text-[#857f77]">Direct</span>';
+
+            const signCol = isWestern
+              ? `<td class="py-2.5 px-3 text-[#57534e]">${p.signName}</td>`
+              : `<td class="py-2.5 px-3 text-[#57534e]">${p.signName} <span class="text-[#857f77] text-[10px]">(${p.signSanskrit})</span></td>`;
+
+            return `
+              <tr class="hover:bg-black/[0.015] transition-colors">
+                <td class="py-2.5 px-3 font-medium text-[#1c1917]">${p.name} ${retroTag}</td>
+                ${signCol}
+                <td class="py-2.5 px-3 font-mono text-[11px] text-[#1c1917]">${p.degreeFormatted}</td>
+                <td class="py-2.5 px-3 font-medium text-[#1c1917]">House ${p.house}</td>
+                <td class="py-2.5 px-3">${dignityBadge}</td>
+              </tr>
+            `;
+          })
+          .join('');
+      }
+
+      // Render Parashar Diamond SVG
+      if (svgWrapper) {
+        svgWrapper.innerHTML = generateParasharChartSvg(chart);
       }
     }
-  }
 
-  // Generate North Indian Diamond Kundali SVG
-  function generateNorthIndianChartSvg(chart: any): string {
-    const lagnaSign = chart.ascendant.signNumber;
+    // Generate Parashar Diamond Kundali SVG
+    function generateParasharChartSvg(chart: any): string {
+      const lagnaSign = chart.ascendant.signNumber;
 
-    // Map planets by house (1 to 12)
-    const housePlanets: Record<number, string[]> = {};
-    for (let h = 1; h <= 12; h++) housePlanets[h] = [];
-    housePlanets[1].push('Asc');
+      const housePlanets: Record<number, string[]> = {};
+      for (let h = 1; h <= 12; h++) housePlanets[h] = [];
+      housePlanets[1].push('Asc');
 
-    for (const p of chart.planets) {
-      const label = `${p.symbol}${p.isRetrograde ? '*' : ''}`;
-      housePlanets[p.house].push(label);
-    }
+      for (const p of chart.planets) {
+        const label = `${p.symbol}${p.isRetrograde ? '*' : ''}`;
+        housePlanets[p.house].push(label);
+      }
 
-    // Sign number for each house: (lagnaSign - 1 + (h - 1)) % 12 + 1
-    const houseSigns: Record<number, number> = {};
-    for (let h = 1; h <= 12; h++) {
-      houseSigns[h] = ((lagnaSign - 1 + (h - 1)) % 12) + 1;
-    }
+      const houseSigns: Record<number, number> = {};
+      for (let h = 1; h <= 12; h++) {
+        houseSigns[h] = ((lagnaSign - 1 + (h - 1)) % 12) + 1;
+      }
 
-    // Coordinates for 12 houses in North Indian 400x400 diamond chart
-    // Center positions for text
-    const textPositions: Record<number, { signX: number; signY: number; plX: number; plY: number }> = {
-      1:  { signX: 200, signY: 135, plX: 200, plY: 95 },
-      2:  { signX: 130, signY: 30,  plX: 95,  plY: 55 },
-      3:  { signX: 30,  signY: 130, plX: 55,  plY: 95 },
-      4:  { signX: 135, signY: 200, plX: 95,  plY: 200 },
-      5:  { signX: 30,  signY: 270, plX: 55,  plY: 305 },
-      6:  { signX: 130, signY: 370, plX: 95,  plY: 345 },
-      7:  { signX: 200, signY: 265, plX: 200, plY: 305 },
-      8:  { signX: 270, signY: 370, plX: 305, plY: 345 },
-      9:  { signX: 370, signY: 270, plX: 345, plY: 305 },
-      10: { signX: 265, signY: 200, plX: 305, plY: 200 },
-      11: { signX: 370, signY: 130, plX: 345, plY: 95 },
-      12: { signX: 270, signY: 30,  plX: 305, plY: 55 },
-    };
+      const textPositions: Record<number, { signX: number; signY: number; plX: number; plY: number }> = {
+        1:  { signX: 200, signY: 135, plX: 200, plY: 95 },
+        2:  { signX: 130, signY: 30,  plX: 95,  plY: 55 },
+        3:  { signX: 30,  signY: 130, plX: 55,  plY: 95 },
+        4:  { signX: 135, signY: 200, plX: 95,  plY: 200 },
+        5:  { signX: 30,  signY: 270, plX: 55,  plY: 305 },
+        6:  { signX: 130, signY: 370, plX: 95,  plY: 345 },
+        7:  { signX: 200, signY: 265, plX: 200, plY: 305 },
+        8:  { signX: 270, signY: 370, plX: 305, plY: 345 },
+        9:  { signX: 370, signY: 270, plX: 345, plY: 305 },
+        10: { signX: 265, signY: 200, plX: 305, plY: 200 },
+        11: { signX: 370, signY: 130, plX: 345, plY: 95 },
+        12: { signX: 270, signY: 30,  plX: 305, plY: 55 },
+      };
 
-    let housesSvg = '';
-    for (let h = 1; h <= 12; h++) {
-      const pos = textPositions[h];
-      const signNum = houseSigns[h];
-      const pls = housePlanets[h] || [];
-      const plString = pls.join(' ');
+      let housesSvg = '';
+      for (let h = 1; h <= 12; h++) {
+        const pos = textPositions[h];
+        const signNum = houseSigns[h];
+        const pls = housePlanets[h] || [];
+        const plString = pls.join(' ');
 
-      housesSvg += `
-        <!-- House ${h} -->
-        <text x="${pos.signX}" y="${pos.signY}" font-family="'Cormorant Garamond', Georgia, serif" font-size="13" font-weight="600" fill="#a37a4c" text-anchor="middle" dominant-baseline="middle">${signNum}</text>
-        <text x="${pos.plX}" y="${pos.plY}" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#1c1917" text-anchor="middle" dominant-baseline="middle">${plString}</text>
+        housesSvg += `
+          <!-- House ${h} -->
+          <text x="${pos.signX}" y="${pos.signY}" font-family="'Cormorant Garamond', Georgia, serif" font-size="13" font-weight="600" fill="#a37a4c" text-anchor="middle" dominant-baseline="middle">${signNum}</text>
+          <text x="${pos.plX}" y="${pos.plY}" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#1c1917" text-anchor="middle" dominant-baseline="middle">${plString}</text>
+        `;
+      }
+
+      return `
+        <svg viewBox="0 0 400 400" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer Box -->
+          <rect x="10" y="10" width="380" height="380" fill="#fcfbf9" stroke="#333333" stroke-width="1.5" />
+          
+          <!-- Diagonals -->
+          <line x1="10" y1="10" x2="390" y2="390" stroke="#444444" stroke-width="1.2" />
+          <line x1="390" y1="10" x2="10" y2="390" stroke="#444444" stroke-width="1.2" />
+          
+          <!-- Center Diamond -->
+          <polygon points="200,10 390,200 200,390 10,200" fill="none" stroke="#444444" stroke-width="1.2" />
+
+          <!-- Center point -->
+          <circle cx="200" cy="200" r="3" fill="#a37a4c" />
+
+          ${housesSvg}
+        </svg>
       `;
     }
-
-    return `
-      <svg viewBox="0 0 400 400" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
-        <!-- Outer Box -->
-        <rect x="10" y="10" width="380" height="380" fill="#fcfbf9" stroke="#333333" stroke-width="1.5" />
-        
-        <!-- Diagonals -->
-        <line x1="10" y1="10" x2="390" y2="390" stroke="#444444" stroke-width="1.2" />
-        <line x1="390" y1="10" x2="10" y2="390" stroke="#444444" stroke-width="1.2" />
-        
-        <!-- Center Diamond -->
-        <polygon points="200,10 390,200 200,390 10,200" fill="none" stroke="#444444" stroke-width="1.2" />
-
-        <!-- Accent corner details -->
-        <circle cx="200" cy="200" r="3" fill="#a37a4c" />
-
-        ${housesSvg}
-      </svg>
-    `;
-  }
-
-  // Generate South Indian Fixed Sign SVG
-  function generateSouthIndianChartSvg(chart: any): string {
-    const lagnaSign = chart.ascendant.signNumber;
-
-    // South Indian Chart: Fixed signs 1 to 12 clockwise starting from Pisces (top left box 2):
-    // Standard layout: 4x4 grid with middle 4 boxes merged
-    // Box 1 (0,0): Pisces (12)
-    // Box 2 (1,0): Aries (1)
-    // Box 3 (2,0): Taurus (2)
-    // Box 4 (3,0): Gemini (3)
-    // Box 5 (3,1): Cancer (4)
-    // Box 6 (3,2): Leo (5)
-    // Box 7 (3,3): Virgo (6)
-    // Box 8 (2,3): Libra (7)
-    // Box 9 (1,3): Scorpio (8)
-    // Box 10 (0,3): Sagittarius (9)
-    // Box 11 (0,2): Capricorn (10)
-    // Box 12 (0,1): Aquarius (11)
-
-    const signGrid: Record<number, { x: number; y: number }> = {
-      12: { x: 0, y: 0 },
-      1:  { x: 100, y: 0 },
-      2:  { x: 200, y: 0 },
-      3:  { x: 300, y: 0 },
-      4:  { x: 300, y: 100 },
-      5:  { x: 300, y: 200 },
-      6:  { x: 300, y: 300 },
-      7:  { x: 200, y: 300 },
-      8:  { x: 100, y: 300 },
-      9:  { x: 0, y: 300 },
-      10: { x: 0, y: 200 },
-      11: { x: 0, y: 100 },
-    };
-
-    // Group planets by sign number (1 to 12)
-    const signPlanets: Record<number, string[]> = {};
-    for (let s = 1; s <= 12; s++) signPlanets[s] = [];
-
-    if (lagnaSign >= 1 && lagnaSign <= 12) {
-      signPlanets[lagnaSign].push('Asc //');
-    }
-
-    for (const p of chart.planets) {
-      signPlanets[p.signNumber].push(`${p.symbol}${p.isRetrograde ? '*' : ''}`);
-    }
-
-    let boxesSvg = '';
-    for (let s = 1; s <= 12; s++) {
-      const coord = signGrid[s];
-      const pls = signPlanets[s] || [];
-      const plStr = pls.join(' ');
-      const isLagna = s === lagnaSign;
-
-      boxesSvg += `
-        <rect x="${coord.x}" y="${coord.y}" width="100" height="100" fill="${isLagna ? '#f5eee6' : '#fcfbf9'}" stroke="#444" stroke-width="1" />
-        <text x="${coord.x + 8}" y="${coord.y + 16}" font-family="'Cormorant Garamond', Georgia, serif" font-size="11" font-weight="600" fill="#a37a4c">${s}</text>
-        <text x="${coord.x + 50}" y="${coord.y + 55}" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#1c1917" text-anchor="middle" dominant-baseline="middle">${plStr}</text>
-      `;
-    }
-
-    return `
-      <svg viewBox="0 0 400 400" class="w-full h-full drop-shadow-sm" xmlns="http://www.w3.org/2000/svg">
-        ${boxesSvg}
-        <!-- Center open area -->
-        <rect x="100" y="100" width="200" height="200" fill="#faf8f5" stroke="#444" stroke-width="1.2" />
-        <text x="200" y="195" font-family="'Cormorant Garamond', Georgia, serif" font-size="18" font-weight="600" fill="#1c1917" text-anchor="middle">Rashi Chart</text>
-        <text x="200" y="215" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" uppercase tracking-widest fill="#857f77" text-anchor="middle">South Indian</text>
-      </svg>
-    `;
-  }
   }
 
   document.addEventListener('astro:page-load', initBirthChartCalculator);

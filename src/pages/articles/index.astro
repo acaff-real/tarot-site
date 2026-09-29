@@ -4,14 +4,14 @@ import { ARTICLES } from '../../data/articles';
 ---
 
 <Layout
-  title="Articles & Reflections — Astrology by Anisha"
-  description="Thoughtful essays on Vedic astrology, Sade Sati, the Lagna blueprint, intuitive tarot archetypes, and Chaldean sound vibration."
+  title="Articles & Reflections — Astro by Anisha"
+  description="Thoughtful essays on Vedic astrology, Sade Sati, the Lagna blueprint, intuitive tarot archetypes, and timing by Anisha Banerji."
   currentPath="/articles"
 >
   <!-- Header -->
   <section class="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
     <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
         <span>Essays & Inquiries</span>
       </div>
       <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
@@ -30,7 +30,7 @@ import { ARTICLES } from '../../data/articles';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
         {
           ARTICLES.map((art) => (
-            <article class="glass-card rounded-3xl overflow-hidden border border-[#28231e]/10 bg-white/80 flex flex-col justify-between">
+            <article class="glass-card rounded-lg overflow-hidden border border-[#28231e]/10 bg-white/80 flex flex-col justify-between">
               <div>
                 <div class="aspect-[16/9] overflow-hidden bg-[#e8e2d5]">
                   <img

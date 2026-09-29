@@ -4,104 +4,111 @@ import GlassButton from '../components/GlassButton.astro';
 ---
 
 <Layout
-  title="About Anisha — Astrology by Anisha"
-  description="Discover Anisha's journey, philosophy, and lineage. A contemporary, grounded approach to Vedic astrology, contemplative tarot, and sacred numerology."
+  title="About Anisha — Astro by Anisha"
+  description="Discover Anisha Banerji's journey, lineage, and practice. A contemporary, grounded approach to Vedic astrology and contemplative tarot."
   currentPath="/about"
 >
-  <!-- Page Header -->
-  <section class="pt-16 pb-12 lg:pt-24 lg:pb-16 bg-[#fcfbf9] border-b border-[#28231e]/10">
+  <!-- Header: Spacious & Editorial -->
+  <section class="pt-16 pb-14 sm:pt-24 sm:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
     <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
-        <span>Philosophy & Background</span>
-      </div>
-      <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
-        Anisha Sharma
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        Personal Profile
+      </span>
+      <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-tight">
+        Anisha Banerji
       </h1>
-      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed italic">
+      <p class="mt-4 text-base sm:text-xl text-[#57534e] font-light max-w-xl mx-auto leading-relaxed italic">
         "Astrology is not an evasion of responsibility; it is an intimate conversation with the timing of your life."
       </p>
     </div>
   </section>
 
-  <!-- Editorial Biography -->
-  <section class="py-16 lg:py-24 bg-[#faf8f5]">
+  <!-- Editorial Biography: High Presence Photograph & Breathing Room -->
+  <section class="py-20 sm:py-28 bg-[#faf8f5]">
     <div class="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-14 lg:gap-20 items-start">
         
-        <!-- Sticky Portrait Column -->
+        <!-- Sticky Left Portrait Column -->
         <div class="lg:col-span-5 lg:sticky lg:top-28">
-          <div class="rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-lg bg-white aspect-[4/5]">
+          <div class="rounded-xl overflow-hidden border border-[#28231e]/10 shadow-2xl bg-white aspect-[4/5]">
             <img
               src="/images/anisha.webp"
-              alt="Anisha Sharma"
-              class="w-full h-full object-cover"
+              alt="Anisha Banerji"
+              class="w-full h-full object-cover object-top"
+              loading="eager"
             />
           </div>
-          <div class="mt-6 p-6 rounded-2xl bg-white/70 border border-[#28231e]/10 text-xs text-[#57534e] space-y-2">
-            <div class="flex justify-between">
-              <span class="text-[#857f77]">Lineage:</span>
+
+          <div class="mt-6 p-6 rounded-lg bg-white border border-[#28231e]/10 text-xs text-[#57534e] space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Tradition</span>
               <span class="font-semibold text-[#1c1917]">Parashari Jyotish</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-[#857f77]">Practices:</span>
-              <span class="font-semibold text-[#1c1917]">Astrology &bull; Tarot &bull; Numerology</span>
+            <div class="flex justify-between items-center">
+              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Disciplines</span>
+              <span class="font-semibold text-[#1c1917]">Vedic Astrology &bull; Tarot</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-[#857f77]">Consultation:</span>
-              <span class="font-semibold text-[#1c1917]">Online (Global Video)</span>
+            <div class="flex justify-between items-center">
+              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Consultations</span>
+              <span class="font-semibold text-[#1c1917]">Private Video Worldwide</span>
             </div>
           </div>
         </div>
 
-        <!-- Narrative Column -->
-        <div class="lg:col-span-7 space-y-8 text-base text-[#57534e] font-light leading-relaxed">
+        <!-- Narrative Column with Generous Whitespace -->
+        <div class="lg:col-span-7 space-y-10 text-base text-[#57534e] font-light leading-relaxed">
+          
           <div>
-            <h2 class="font-serif text-3xl text-[#1c1917] mb-4">
-              Restoring Dignity to Esoteric Wisdom
+            <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] mb-5 tracking-tight">
+              A Refined Approach to Sacred Timing
             </h2>
             <p>
-              Growing up between India and the UK, I witnessed two polarized worlds. In one, astrology was treated with immense cultural reverence but too often entangled with fatalism, superstition, and fear-based remedies. In the other, Western commercial culture flattened astrology into twelve lighthearted horoscope caricatures.
+              Growing up between India and the United Kingdom, I witnessed two polarized extremes in the esoteric arts. In one, ancient Vedic astrology was treated with cultural reverence but often entangled in fatalism, superstition, and anxiety-inducing prophecies. In the other, commercial western culture reduced celestial mapping into casual twelve-sign memes.
             </p>
             <p class="mt-4">
-              I felt called to build a different kind of practice—one that treats traditional Vedic astrology, intuitive tarot, and Chaldean sound vibration with intellectual rigor, psychological nuance, and quiet aesthetic beauty.
+              I founded Astro by Anisha to offer a grounded alternative: a practice that honors the rigorous mathematics of the Lahiri ephemeris while holding a dignified, compassionate space for personal agency and psychological nuance.
             </p>
           </div>
 
-          <div class="p-8 rounded-2xl bg-white border border-[#28231e]/10 shadow-xs">
-            <h3 class="font-serif text-xl text-[#1c1917] mb-3">Core Tenets of My Practice</h3>
-            <ul class="space-y-3 text-sm">
-              <li class="flex items-start gap-3">
-                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
-                <span><strong>No Fear-Based Predictions:</strong> Planets indicate seasons of energy; they do not strip away your sovereign agency.</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
-                <span><strong>Rigorous Calculations:</strong> We calculate with exact astronomical ephemeris and the historic Lahiri Ayanamsha.</span>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class="text-[#a37a4c] font-semibold mt-0.5">&#10022;</span>
-                <span><strong>Psychological Grounding:</strong> Tarot and astrology serve as contemplative mirrors to help you make decisions with clarity.</span>
-              </li>
-            </ul>
+          <div class="p-8 rounded-lg bg-white border border-[#28231e]/10 shadow-xs space-y-4">
+            <h3 class="font-serif text-2xl text-[#1c1917] tracking-tight">Guiding Principles</h3>
+            <div class="space-y-3 text-sm text-[#57534e]">
+              <p>
+                <strong class="text-[#1c1917] font-semibold">Self-Sovereignty:</strong> Planets indicate seasons and energetic currents; they do not dictate your character or negate your free will.
+              </p>
+              <p>
+                <strong class="text-[#1c1917] font-semibold">Astronomical Rigor:</strong> Every calculation is computed from exact planetary ephemeris, whether in sidereal Parashari coordinates or western tropical placements.
+              </p>
+              <p>
+                <strong class="text-[#1c1917] font-semibold">Collaborative Dialogue:</strong> Consultations are not passive readings—they are intelligent conversations centered on your real-world decisions and timing.
+              </p>
+            </div>
           </div>
 
           <div>
-            <h2 class="font-serif text-3xl text-[#1c1917] mb-4">
-              The Consultation Experience
+            <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] mb-5 tracking-tight">
+              The Consultation Space
             </h2>
             <p>
-              When you book a consultation with me, there is no generic recitation of personality traits. Before we meet, I spend hours analyzing your natal Kundali, active Vimshottari Dashas, and transit alignments.
+              Before we meet for your session, I spend focused time calculating and analyzing your planetary charts, active Vimshottari Dashas, and transit thresholds.
             </p>
             <p class="mt-4">
-              Our 75 minutes together is a dedicated, thoughtful container. You can bring your most vulnerable questions about career decisions, relationship dynamics, financial timing, or spiritual purpose. You will leave with a clear timeline, actionable perspective, and a renewed sense of trust in your path.
+              During our time together, you are invited to bring your most important questions regarding career crossroads, relational timing, creative transitions, or personal recalibration. You will leave with grounded timelines, actionable perspective, and a renewed sense of clarity.
             </p>
           </div>
 
-          <div class="pt-6 border-t border-[#28231e]/10">
+          <div class="pt-6 border-t border-[#28231e]/10 flex flex-col sm:flex-row items-center gap-4">
             <GlassButton
               text="Book a Consultation"
               href="/consultations"
+              size="medium"
             />
+            <a
+              href="/articles"
+              class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline px-4 py-2"
+            >
+              Read Articles & Essays &rarr;
+            </a>
           </div>
 
         </div>

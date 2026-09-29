@@ -29,6 +29,6 @@ export const TESTIMONIALS: Testimonial[] = [
     client: 'Priyanka & Rohan M.',
     role: 'Founders, SOMA Living',
     location: 'Mumbai & Singapore',
-    service: 'Sacred Numerology Advisory',
+    service: 'Numerology & Brand Consultation',
   },
 ];

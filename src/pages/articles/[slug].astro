@@ -18,7 +18,7 @@ const { article } = Astro.props;
 ---
 
 <Layout
-  title={`${article.title} — Astrology by Anisha`}
+  title={`${article.title} — Astro by Anisha`}
   description={article.excerpt}
   currentPath="/articles"
 >
@@ -45,13 +45,13 @@ const { article } = Astro.props;
 
       <!-- Date & Author Meta -->
       <div class="flex items-center gap-4 py-4 border-y border-[#28231e]/10 text-xs text-[#57534e] mb-10">
-        <span class="font-semibold text-[#1c1917]">By Anisha Sharma</span>
+        <span class="font-semibold text-[#1c1917]">By Anisha Banerji</span>
         <span>&bull;</span>
         <span>{article.date}</span>
       </div>
 
       <!-- Featured Image -->
-      <div class="rounded-3xl overflow-hidden border border-[#28231e]/10 shadow-lg mb-12 aspect-[16/10] bg-[#e8e2d5]">
+      <div class="rounded-xl overflow-hidden border border-[#28231e]/10 shadow-lg mb-12 aspect-[16/10] bg-[#e8e2d5]">
         <img
           src={article.featuredImage}
           alt={article.title}
@@ -68,7 +68,7 @@ const { article } = Astro.props;
       <div class="mt-12 pt-8 border-t border-[#28231e]/10 flex flex-wrap gap-2">
         {
           article.tags.map((tag) => (
-            <span class="px-3 py-1 rounded-full text-xs bg-black/[0.03] text-[#57534e] border border-[#28231e]/5">
+            <span class="px-3 py-1 rounded-md text-xs bg-black/[0.03] text-[#57534e] border border-[#28231e]/5">
               #{tag}
             </span>
           ))
@@ -76,14 +76,14 @@ const { article } = Astro.props;
       </div>
 
       <!-- Author Bio Card -->
-      <div class="mt-12 p-8 rounded-3xl bg-[#faf8f5] border border-[#28231e]/10 flex flex-col sm:flex-row items-center gap-6">
-        <div class="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border border-[#28231e]/10">
-          <img src="/images/anisha.webp" alt="Anisha Sharma" class="w-full h-full object-cover" />
+      <div class="mt-12 p-8 rounded-xl bg-[#faf8f5] border border-[#28231e]/10 flex flex-col sm:flex-row items-center gap-6">
+        <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border border-[#28231e]/10">
+          <img src="/images/anisha.webp" alt="Anisha Banerji" class="w-full h-full object-cover" />
         </div>
         <div>
-          <span class="font-serif text-xl text-[#1c1917] font-medium block">Anisha Sharma</span>
+          <span class="font-serif text-xl text-[#1c1917] font-medium block">Anisha Banerji</span>
           <p class="text-xs text-[#57534e] font-light leading-relaxed mt-1">
-            Vedic astrologer, intuitive tarot reader, and sacred numerologist. Working with private clients globally to guide life thresholds through clear astronomical timing and grounded counsel.
+            Vedic astrologer and intuitive tarot consultant. Working with private clients globally to guide life thresholds through clear astronomical timing and grounded counsel.
           </p>
           <div class="mt-3">
             <a href="/consultations" class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline">

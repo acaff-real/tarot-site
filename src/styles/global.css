@@ -697,7 +697,7 @@
     rgba(255, 255, 255, 0.08) 75%,
     transparent 100%
   );
-  border-radius: 9999px 9999px 30% 30%;
+  border-radius: 9999px 9999px 0 0;
   pointer-events: none;
   z-index: 2;
 }

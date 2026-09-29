@@ -12,35 +12,31 @@ const { currentPath = '/' } = Astro.props;
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Astrology', href: '/astrology' },
-  { label: 'Tarot', href: '/tarot' },
-  { label: 'Numerology', href: '/numerology' },
-  { label: 'Consultations', href: '/consultations' },
   { label: 'Articles', href: '/articles' },
   { label: 'Contact', href: '/contact' },
 ];
 ---
 
-<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-[#fcfbf9]/85 border-b border-[#28231e]/5 transition-all duration-300">
+<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-[#fcfbf9]/90 dark:bg-[#121217]/90 border-b border-[#28231e]/5 dark:border-white/5 transition-all duration-300">
   <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 h-20 sm:h-22 flex items-center justify-between">
     
-    <!-- Brand: Compact Vector SVG Brand Logo (Guaranteed fixed vertical bounds) -->
-    <a href="/" class="flex items-center group text-left pr-6 py-1 select-none" aria-label="Astrology by Anisha — Homepage">
+    <!-- Brand: Vector SVG Brand Logo -->
+    <a href="/" class="flex items-center group text-left pr-6 py-1 select-none" aria-label="Astro by Anisha — Homepage">
       <BrandLogo />
     </a>
 
-    <!-- Desktop Navigation Links: Spread out with generous spacing -->
-    <nav class="hidden xl:flex items-center gap-9 lg:gap-10">
+    <!-- Desktop Navigation Links: Restrained & airy -->
+    <nav class="hidden md:flex items-center gap-8 lg:gap-10">
       {
         NAV_LINKS.map((link) => {
           const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
           return (
             <a
               href={link.href}
-              class={`text-[12.5px] uppercase tracking-[0.14em] font-medium transition-colors duration-150 py-2 ${
+              class={`text-[12.5px] uppercase tracking-[0.16em] font-medium transition-colors duration-150 py-2 ${
                 isActive
                   ? 'text-[#a37a4c] font-semibold border-b border-[#a37a4c]/50'
-                  : 'text-[#57534e] hover:text-[#1c1917]'
+                  : 'text-[#57534e] dark:text-[#a1a1aa] hover:text-[#1c1917] dark:hover:text-[#f5f5f7]'
               }`}
             >
               {link.label}
@@ -50,17 +46,10 @@ const NAV_LINKS = [
       }
     </nav>
 
-    <!-- Right Side Actions: Swapped to prioritize Session Bookings -->
+    <!-- Right Side Actions: Dedicated Consultation Booking -->
     <div class="hidden md:flex items-center gap-5 pl-4">
-      <a
-        href="/#birth-chart"
-        class="hidden lg:inline-flex items-center text-[11.5px] font-semibold uppercase tracking-[0.16em] text-[#57534e] hover:text-[#1c1917] dark:text-[#a1a1aa] dark:hover:text-[#f5f5f7] transition-colors py-2"
-      >
-        Birth Chart
-      </a>
-
       <GlassButton
-        text="Book Session"
+        text="Book a Consultation"
         href="/consultations"
         size="compact"
       />
@@ -69,19 +58,18 @@ const NAV_LINKS = [
     </div>
 
     <!-- Mobile Hamburger Toggle & Primary Booking Action -->
-    <div class="flex xl:hidden items-center gap-3">
-      <ThemeToggle id="theme-toggle-mobile" class="md:hidden" />
+    <div class="flex md:hidden items-center gap-3">
+      <ThemeToggle id="theme-toggle-mobile" />
       <GlassButton
         text="Book"
         href="/consultations"
         size="compact"
-        class="md:hidden"
       />
       <button
         type="button"
         id="mobile-menu-btn"
         aria-label="Toggle navigation menu"
-        class="p-2.5 rounded-xl text-[#1c1917] dark:text-[#f5f5f7] hover:bg-black/5 dark:hover:bg-white/10 transition-colors focus:outline-none"
+        class="p-2.5 rounded-full text-[#1c1917] dark:text-[#f5f5f7] hover:bg-black/5 dark:hover:bg-white/10 transition-colors focus:outline-none"
       >
         <svg class="w-6 h-6 menu-open-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 7h16M4 12h16M4 17h16" />
@@ -95,7 +83,7 @@ const NAV_LINKS = [
   </div>
 
   <!-- Mobile Drawer -->
-  <div id="mobile-menu" class="hidden xl:hidden border-b border-[#28231e]/10 dark:border-white/10 bg-[#fcfbf9]/95 dark:bg-[#121217]/95 backdrop-blur-xl px-8 py-8 transition-all duration-200">
+  <div id="mobile-menu" class="hidden md:hidden border-b border-[#28231e]/10 dark:border-white/10 bg-[#fcfbf9]/98 dark:bg-[#121217]/98 backdrop-blur-xl px-8 py-8 transition-all duration-200">
     <div class="flex flex-col gap-5">
       {
         NAV_LINKS.map((link) => (
@@ -114,12 +102,6 @@ const NAV_LINKS = [
           size="medium"
           width="100%"
         />
-        <a
-          href="/#birth-chart"
-          class="w-full text-center py-3.5 rounded-full text-sm font-medium border border-[#28231e]/15 dark:border-white/15 text-[#1c1917] dark:text-[#f5f5f7] hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          Discover Your Birth Chart
-        </a>
       </div>
     </div>
   </div>

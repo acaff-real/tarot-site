@@ -7,19 +7,19 @@ import GlassButton from './GlassButton.astro';
     
     <!-- Section Header -->
     <div class="text-center max-w-2xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-3 shadow-xs">
-        <span>Sacred Sound Geometry</span>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-3 shadow-xs">
+        <span>Chaldean Name Analysis</span>
       </div>
       <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] tracking-tight">
         What's in Your Name?
       </h2>
       <p class="mt-3 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
-        Decode the subtle acoustic vibrations and karmic destiny codes encoded within your name through Chaldean astro-numerology.
+        Decode the phonetic resonance and alignment between your birth date and chosen name through Chaldean astro-numerology.
       </p>
     </div>
 
     <!-- Main Card -->
-    <div class="glass-card rounded-3xl p-6 sm:p-10 border border-[#28231e]/10 shadow-lg">
+    <div class="glass-card rounded-xl p-6 sm:p-10 border border-[#28231e]/10 shadow-lg">
       <form id="numerology-form" class="space-y-6">
         <div>
           <label for="num-name" class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-2">
@@ -29,10 +29,10 @@ import GlassButton from './GlassButton.astro';
             <input
               type="text"
               id="num-name"
-              placeholder="e.g. Anisha Sharma"
-              value="Anisha Sharma"
+              placeholder="e.g. Anisha Banerji"
+              value="Anisha Banerji"
               required
-              class="w-full sm:flex-1 px-4 py-3.5 rounded-2xl glass-input text-base font-normal tracking-wide"
+              class="w-full sm:flex-1 px-4 py-3.5 rounded-md glass-input text-base font-normal tracking-wide"
             />
             <GlassButton
               text="Calculate Name Number"
@@ -81,7 +81,7 @@ import GlassButton from './GlassButton.astro';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
           
           <!-- Compound Card -->
-          <div class="p-6 rounded-2xl bg-white/80 border border-[#28231e]/10 shadow-xs">
+          <div class="p-6 rounded-lg bg-white/80 border border-[#28231e]/10 shadow-xs">
             <span class="text-[10.5px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Compound Vibration</span>
             <div class="flex items-baseline gap-3 mt-1">
               <span id="num-compound-val" class="font-serif text-4xl text-[#1c1917]">32</span>
@@ -93,7 +93,7 @@ import GlassButton from './GlassButton.astro';
           </div>
 
           <!-- Root Number Card -->
-          <div class="p-6 rounded-2xl bg-white/80 border border-[#28231e]/10 shadow-xs">
+          <div class="p-6 rounded-lg bg-white/80 border border-[#28231e]/10 shadow-xs">
             <span class="text-[10.5px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Single Root Vibration</span>
             <div class="flex items-baseline gap-3 mt-1">
               <span id="num-root-val" class="font-serif text-4xl text-[#1c1917]">5</span>
@@ -107,7 +107,7 @@ import GlassButton from './GlassButton.astro';
         </div>
 
         <!-- Profile Details Grid -->
-        <div class="p-6 rounded-2xl bg-[#faf8f5] border border-[#28231e]/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div class="p-6 rounded-lg bg-[#faf8f5] border border-[#28231e]/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
           <div>
             <span class="text-[#857f77] block text-[10.5px] uppercase tracking-wider">Governing Body</span>
             <span id="num-planet" class="font-semibold text-[#1c1917] mt-0.5 block">Mercury (Budha)</span>

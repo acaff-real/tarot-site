@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+
+const FUTURE_PRODUCTS = [
+  {
+    title: 'The Contemplative Journal',
+    category: 'Print & Stationary',
+    desc: 'Linen-bound archival journal featuring guided prompts for planetary transits, seasonal thresholds, and personal reflections.',
+    badge: 'Coming Soon',
+  },
+  {
+    title: 'Mindful Affirmation Deck',
+    category: 'Archetypal Cards',
+    desc: 'A 54-card contemplative deck centered on psychological sovereignty, planetary grounding, and daily intentionality.',
+    badge: 'In Development',
+  },
+  {
+    title: 'The Astro by Anisha Tarot Deck',
+    category: 'Original Tarot Edition',
+    desc: 'A bespoke 78-card luxury tarot deck synthesizing classic archetypal symbolism with contemporary aesthetic restraint.',
+    badge: 'In Design',
+  },
+];
+---
+
+<Layout
+  title="Shop — Astro by Anisha"
+  description="Curated editions and artifacts for contemplation and timing. Journals, affirmation cards, and original tarot editions by Anisha Banerji."
+  currentPath="/shop"
+>
+  <!-- Header -->
+  <section class="pt-16 pb-14 sm:pt-24 sm:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
+    <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        Editions & Artifacts
+      </span>
+      <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-tight">
+        The Studio Shop
+      </h1>
+      <p class="mt-4 text-base sm:text-lg text-[#57534e] font-light max-w-xl mx-auto leading-relaxed">
+        Intentional physical companions designed to deepen your daily contemplation, self-inquiry, and astrological awareness.
+      </p>
+    </div>
+  </section>
+
+  <!-- Curated Products Grid (Reference: chanishop.com) -->
+  <section class="py-20 sm:py-28 bg-[#faf8f5]">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        {
+          FUTURE_PRODUCTS.map((prod) => (
+            <div class="glass-card rounded-lg p-8 border border-[#28231e]/10 bg-white/80 flex flex-col justify-between shadow-xs">
+              <div>
+                <div class="aspect-[4/3] rounded-md bg-[#f5efe6] border border-[#28231e]/5 mb-6 flex items-center justify-center p-6 text-center">
+                  <span class="font-serif text-2xl text-[#a37a4c] italic">✦</span>
+                </div>
+                
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold">
+                    {prod.category}
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-medium bg-[#28231e]/5 text-[#57534e]">
+                    {prod.badge}
+                  </span>
+                </div>
+
+                <h3 class="font-serif text-2xl text-[#1c1917] font-medium leading-snug mb-3">
+                  {prod.title}
+                </h3>
+                
+                <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
+                  {prod.desc}
+                </p>
+              </div>
+
+              <div class="pt-6 border-t border-[#28231e]/10 mt-6">
+                <a
+                  href="#shop-notify"
+                  class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3 px-4 text-center w-full justify-center bg-white text-[#1c1917] hover:bg-[#1c1917] hover:text-white transition-colors"
+                >
+                  Join Release Waitlist
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Release Notification Form -->
+      <div id="shop-notify" class="max-w-2xl mx-auto rounded-xl p-8 sm:p-12 bg-white border border-[#28231e]/10 text-center shadow-md">
+        <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">
+          First Access
+        </span>
+        <h3 class="font-serif text-3xl text-[#1c1917] mb-3">
+          Early Product Releases
+        </h3>
+        <p class="text-xs sm:text-sm text-[#57534e] font-light mb-6 max-w-md mx-auto">
+          Sign up to receive private notifications when our journals, affirmation decks, and tarot collections become available for pre-order.
+        </p>
+
+        <form
+          class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+          onsubmit="event.preventDefault(); const email = this.querySelector('input').value; window.location.href = `mailto:anishabanerji@gmail.com?subject=${encodeURIComponent('Shop Product Waitlist')}&body=${encodeURIComponent('Please notify me for product releases: ' + email)}`; alert('Thank you for joining the product waitlist!');"
+        >
+          <input
+            type="email"
+            required
+            placeholder="Enter your email address"
+            class="flex-grow px-4 py-2.5 rounded-md glass-input text-sm"
+          />
+          <GlassButton
+            text="Notify Me"
+            type="submit"
+            size="compact"
+          />
+        </form>
+      </div>
+
+    </div>
+  </section>
+</Layout>

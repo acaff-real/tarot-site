@@ -1,251 +1,262 @@
-# Astrology by Anisha ✦
+# Astro by Anisha ✦
 
-> An editorial luxury personal brand platform for Vedic astrology, contemplative tarot, and sacred numerology. Designed as a modern, dignified sanctuary for self-knowledge—combining authentic astronomical ephemeris calculations with contemporary design.
+> An editorial luxury digital platform for Vedic astrology, contemplative tarot, and Chaldean numerology by **Anisha Banerji**. Engineered with [Astro 5+](https://astro.build), [Tailwind CSS v4](https://tailwindcss.com), and the high-precision [Astronomy Engine](https://github.com/cosinekitty/astronomy) ephemeris library.
 
 ---
 
-## ✦ Overview
+## ✦ Agent & Developer Quick Reference
 
-**Astrology by Anisha** strips away superstitious theatricality and horoscope caricatures, returning esoteric traditions to their rightful place as sophisticated instruments of self-mastery and timing.
+> [!IMPORTANT]
+> **Key Rules for Agents Working on This Repository:**
+> 1. **Brand & Identity**: The platform is **Astro by Anisha**. The practitioner is **Anisha Banerji** (NEVER "Sharma").
+> 2. **Navigation Tabs**: Strict 4-tab structure: `Home` (`/`), `About` (`/about`), `Articles` (`/articles`), `Contact` (`/contact`), plus primary CTA `Book a Consultation` (same for footer).
+> 3. **Copy Consistency**: Always use **"Book a Consultation"** (NEVER "Book a session").
+> 4. **No Consultation Prices**: Never display prices on the website. All CTAs route to the direct Gmail enquiry flow.
+> 5. **Direct Gmail Destination**: All consultation inquiries and contact forms route directly to **`anishabanerji@gmail.com`**.
+> 6. **Calculators**: Use the **Parashar calculation chart** (sidereal diamond chart); support both **Vedic (Sidereal/Lahiri)** and **Western (Tropical)** calculation modes.
+> 7. **Forbidden Terminology**: Do NOT reintroduce deprecated phrases (*Sacred Sound Geometry*, *Cosmic Dispatches*, *Sacred Numerology*, *Private Advisory*, *Karmic Destiny Codes*).
+> 8. **Git Operations**: **DO NOT RUN GIT COMMANDS** (`git add`, `git commit`, `git push`). The user handles all version control manually.
+> 9. **Dev Server**: When running the dev server, use background mode: `npx astro dev --background` (manage via `astro dev stop`, `astro dev status`, `astro dev logs`).
 
-### Aesthetic & Design Principles
-- **Editorial Luxury**: Clean alabaster and warm cream spaces inspired by *Vogue*, *Kinfolk*, and high-end wellness publications.
-- **Glassmorphic Tactility**: Custom transparent frosted glass buttons with specular highlights, light reflection curvature, and dual-tone borders.
-- **Celestial Bronze Relic CTA**: Final consultation button engineered with a metallic bronze bevel frame, top specular glass lens, and an organic pulsing amber glow (`pulse-amber`) that blooms on hover and dissipates smoothly when unhovered.
-- **Cohesive Light & Dark Modes**: Seamless palette transition between warm alabaster/sand and deep obsidian/charcoal, featuring zero-flash pre-paint initialization and synchronized vector theme toggles.
-- **Locked Vector Typography**: SVG-locked brand lockup (`Astrology by Anisha • Astrology • Tarot • Numerology`) preventing line-height shifts across devices and operating systems.
+---
+
+## ✦ Design & Aesthetic Principles
+
+* **Restrained Editorial Luxury**: Inspired by [chani.com](https://www.chani.com) and [jaimadaan.com/about](https://www.jaimadaan.com/about). Focuses on elevated whitespace, light ivory/alabaster palettes, and sophisticated typography over visual clutter.
+* **Dominant Hero Focus**: High-presence portrait of Anisha Banerji with immediate clarity: *Who I am* $\rightarrow$ *What I do* $\rightarrow$ *What you can do next*.
+* **Locked Vector Typography**: Vector SVG brand lockup ([`src/components/BrandLogo.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/components/BrandLogo.astro)) with fixed vertical bounds, preventing line breaks or font spreading across viewports.
+* **Glassmorphic Components**: Specular highlight buttons ([`src/components/GlassButton.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/components/GlassButton.astro)) and the celestial bronze relic button ([`src/components/SteampunkButton.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/components/SteampunkButton.astro)) with smooth lingering amber glow.
+* **Organic Square Box System**: Shifted structural containers, panels, cards, photo frames, and form inputs away from bubbly radii to crisp, tactile, organic square corners (6px–12px: `rounded-md`, `rounded-lg`, `rounded-xl`), reminiscent of artisanal linen bookbindings, tarot cards, and editorial folios, while retaining smooth rounded pill contours on interactive buttons.
+* **Cohesive Light / Dark Modes**: Zero-flicker pre-paint initialization script in [`src/layouts/Layout.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/layouts/Layout.astro) supporting warm alabaster light mode and obsidian dark mode.
+* **Instant Client Transitions**: `<ClientRouter />` SPA transitions with hover prefetching for sub-second page loads.
 
 ---
 
 ## ✦ Core Features & Engines
 
-### 1. Vedic Kundali Calculation Engine (Backend SSR)
-Calculated via real-time planetary ephemeris (`astronomy-engine`) through the SSR endpoint `POST /api/birth-chart`:
-- **Sidereal Zodiac (Nirayana)**: High-precision planetary longitude computed with authentic **Lahiri (Chitra Paksha) Ayanamsha**.
-- **Lagna (Ascendant)**: Calculated via Local Sidereal Time (LST) and geographic latitude/longitude for true horizon rising degrees.
-- **9 Grahas**: Sun (Surya), Moon (Chandra), Mars (Mangal), Mercury (Budha), Jupiter (Guru), Venus (Shukra), Saturn (Shani), Rahu (North Node), Ketu (South Node).
-- **Planetary Dignities**: Automatic calculation of Exaltation (Uchcha), Debilitation (Neecha), Own Sign (Swakshetra), and Neutral positions.
-- **Retrograde Motion**: Instant retrograde flag and apparent speed detection.
-- **27 Nakshatras & 4 Padas**: Accurate lunar mansion and pada distribution with planetary lords.
-- **Whole Sign Houses (Bhava)**: Complete 1st through 12th house placements.
-- **Dynamic Kundali Diagrams**: Interactive switcher between **North Indian Diamond Kundali** and **South Indian Fixed-Sign Kundali** rendered dynamically in responsive vector SVG.
-- **City Coordinate Database**: Built-in coordinates and timezone database for major Indian and international cities.
+### 1. Dual-System Astronomical Ephemeris Engine (`POST /api/birth-chart`)
+Engineered with `astronomy-engine` in [`src/lib/vedic/astronomy.ts`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/lib/vedic/astronomy.ts) and surfaced via [`src/components/BirthChartCalculator.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/components/BirthChartCalculator.astro):
+* **Dual Calculation Modes**:
+  * **Vedic (Sidereal / Lahiri)**: Computes high-precision Sidereal coordinates utilizing the historic **Lahiri (Chitra Paksha) Ayanamsha** (~23°48'), Nirayana Rashis, 27 Nakshatras & 4 Padas, and planetary lords.
+  * **Western (Tropical)**: Computes ecliptic coordinates relative to the Vernal Equinox (0° Ayanamsha) with tropical signs, houses, and degrees (comparable to [cafeastrology.com/natal.php](https://astro.cafeastrology.com/natal.php)).
+* **Location & Timezone Mechanics**:
+  * Separated **Country of Birth** and **City of Birth** inputs with automatic coordinate/timezone sync.
+  * Dedicated **Timezone Dropdown** (UTC-10:00 to UTC+12:00) with global regional offsets for custom coordinates.
+* **Planetary Dignities & Motion**: Exalted (Uchcha), Debilitated (Neecha), Own Sign, and apparent Retrograde motion tracking.
+* **Vector Parashari Diamond Chart**: Dynamic, responsive SVG visualization of the 12 whole-sign houses and planetary placements.
 
-### 2. Sacred Sound Numerology Calculator
-Calculated via `POST /api/numerology`:
-- Supports both **Chaldean (Vedic/sound vibration)** and **Pythagorean** calculation traditions.
-- **Letter-by-Letter Acoustic Breakdown**: Visual pills showing individual letter frequencies and compound word sums.
-- **Compound Vibrations**: Deep esoteric interpretations of unreduced numbers (e.g. 10 to 52).
-- **Single Root Archetypes**: Dynamic Catalyst, Sovereign Ambassador, Creative Architect, etc.
-- **Archetype Profiles**: Ruling planetary lord, lucky days, harmonious vibration allies, and aligned gemstones.
+### 2. Chaldean Name & Life Path Analysis (`POST /api/numerology`)
+Surfaced via [`src/components/NumerologyCalculator.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/components/NumerologyCalculator.astro) and [`src/lib/numerology/calculator.ts`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/lib/numerology/calculator.ts):
+* Decodes phonetic acoustic frequencies via classical **Chaldean** values (1–8, with 9 as sacred/transcendent).
+* Displays letter-by-letter frequency pills, compound double-digit vibrations (10–52), and single root archetypes.
+* Compares Chaldean sound frequency with Gregorian birth date life path numbers.
 
-### 3. Complete Editorial Multi-Page Experience
-- **Homepage (`/`)**: Hero section with Anisha's portrait, embedded birth chart calculator, embedded name numerology calculator, editorial biography introduction, service offerings, curated writings, client reflections, and celestial relic final CTA.
-- **About (`/about`)**: Biography, lineage background (Parashari Jyotish), practice philosophy, and ethical framework.
-- **Vedic Astrology (`/astrology`)**: Deep dive into natal Kundali analysis, Dasha timelines, transits, and Navamsha (D9) timing.
-- **Intuitive Tarot (`/tarot`)**: Archetypal psychological reflection containers, ethics, and contemplative tarot spreads.
-- **Sacred Numerology (`/numerology`)**: Sound frequency philosophy and comprehensive name audit details.
-- **Consultations (`/consultations`)**: Structured private 1-on-1 consultation packages, session formats, investment details, and FAQ.
-- **Articles & Essays (`/articles`)**: Editorial archive featuring deep-dive essays (e.g. *The Alchemy of Sade Sati*, *Understanding Your Lagna*, *Tarot as a Contemplative Mirror*).
-- **Dynamic Article Reader (`/articles/[slug]`)**: Reading experience with typography formatting, author bios, and related topics.
-- **Contact & Inquiries (`/contact`)**: Direct concierge inquiry form, operating hours, and confidentiality guarantee.
+### 3. Direct-to-Gmail Consultation Booking
+Surfaced on [`src/pages/consultations.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/pages/consultations.astro):
+* **No Public Pricing**: Removes all displayed rates in favor of private advisory inquiries.
+* **Intake Destination**: Directly delivers to **`anishabanerji@gmail.com`**.
+* **Triple-Tier Dispatch Architecture**:
+  1. Triggers pre-formatted `mailto:` client launch.
+  2. Generates direct **Gmail Web Compose** launcher (`https://mail.google.com/mail/?view=cm...`).
+  3. One-click **Copy Details** clipboard button so zero inquiries are ever lost.
+
+### 4. Curated Social Media Grid
+Surfaced on [`src/pages/index.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/pages/index.astro):
+* **Instagram First**: Prominently highlights **`@astrobyanisha`** with elegant transit reflections and tarot archetypes.
+* **YouTube Secondary**: Clean card linking to long-form video breakdowns.
+
+### 5. Future-Ready Architecture (Book & Shop)
+* **[`src/pages/book.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/pages/book.astro)**: Dedicated landing page for Anisha Banerji's forthcoming publication (*The Sacred Mirror*) with early release waitlist.
+* **[`src/pages/shop.astro`](file:///C:/Users/vi/Desktop/agy/personal/tarot/src/pages/shop.astro)**: Luxury studio store preview ([chanishop.com](https://chanishop.com) style) featuring upcoming editions:
+  * *The Contemplative Journal*
+  * *Mindful Affirmation Deck*
+  * *The Astro by Anisha Tarot Deck*
+* Architecture is pre-built and route-ready without cluttering primary navigation tabs.
 
 ---
 
 ## ✦ Tech Stack
 
-| Layer | Technology |
-| :--- | :--- |
-| **Framework** | [Astro 5+](https://astro.build) (Hybrid SSR & Static Rendering) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com) + Custom Glassmorphic System |
-| **Adapter** | `@astrojs/node` (Standalone Node server adapter) |
-| **Ephemeris** | `astronomy-engine` (J2000 planetary coordinates & sidereal mechanics) |
-| **Typography** | Cormorant Garamond (Serif) & Plus Jakarta Sans (Sans-Serif) |
-| **Language** | TypeScript (Strict Mode) |
+| Layer | Technology | Details |
+| :--- | :--- | :--- |
+| **Framework** | [Astro 5+](https://astro.build) | Hybrid SSR with `@astrojs/node` standalone adapter |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com) | Custom theme tokens, `@theme`, and frosted glassmorphism |
+| **Transitions** | `astro:transitions` (`<ClientRouter />`) | Instant client-side routing & hover prefetching |
+| **Astronomical Math** | `astronomy-engine` | J2000 solar/lunar/planetary vectors & Lahiri Ayanamsha |
+| **Typography** | Google Fonts | *Cormorant Garamond* (Serif) & *Plus Jakarta Sans* (Sans-Serif) |
+| **Language** | TypeScript (Strict) | Fully typed interfaces for charts, houses, and services |
 
 ---
 
-## ✦ Project Structure
+## ✦ Project Directory Layout
 
 ```text
-/
+C:\Users\vi\Desktop\agy\personal\tarot/
 ├── public/
 │   ├── favicon.svg
 │   └── images/
-│       ├── anisha.webp            # Anisha portrait (cropped & optimized)
-│       ├── studio.jpg             # Consultation space imagery
-│       ├── consultation.jpg       # Session advisory space
-│       ├── essay-saturn.jpg       # Sade Sati article featured image
-│       ├── essay-lagna.jpg        # Lagna blueprint featured image
-│       ├── essay-tarot.jpg        # Tarot archetypes featured image
-│       └── essay-numerology.jpg   # Name numerology featured image
+│       ├── anisha.webp            # Anisha Banerji portrait
+│       ├── studio.jpg             # Consultation studio interior
+│       ├── consultation.jpg       # Advisory space
+│       ├── essay-saturn.jpg       # Sade Sati article image
+│       ├── essay-lagna.jpg        # Lagna blueprint image
+│       ├── essay-tarot.jpg        # Tarot archetypes image
+│       └── essay-numerology.jpg   # Name numerology image
 ├── src/
 │   ├── components/
-│   │   ├── BirthChartCalculator.astro   # Interactive Kundali form + SVG renderer
-│   │   ├── BrandLogo.astro              # Vector SVG brand lockup (fixed vertical bounds)
-│   │   ├── Footer.astro                 # Global footer & Cosmic Dispatches newsletter
-│   │   ├── GlassButton.astro            # Tactile frosted glass button with arrow icon
-│   │   ├── Navbar.astro                 # Navigation header with responsive drawer
-│   │   ├── NumerologyCalculator.astro   # Acoustic name number calculator
-│   │   ├── SteampunkButton.astro        # Celestial relic glass button with amber glow
-│   │   └── ThemeToggle.astro            # Synchronized dark/light mode toggle
+│   │   ├── BirthChartCalculator.astro   # Dual-system (Vedic/Western) form & Parashar SVG
+│   │   ├── BrandLogo.astro              # Vector SVG brand lockup (Astro by Anisha)
+│   │   ├── Footer.astro                 # Simplified single-tier essential footer
+│   │   ├── GlassButton.astro            # Tactile frosted glass button with arrow
+│   │   ├── Navbar.astro                 # 4-tab navigation + Book Consultation CTA
+│   │   ├── NumerologyCalculator.astro   # Chaldean phonetic name calculator
+│   │   ├── SteampunkButton.astro        # Celestial bronze relic button with lingering glow
+│   │   └── ThemeToggle.astro            # Dark/light mode theme toggle
 │   ├── data/
-│   │   ├── articles.ts            # Editorial articles & essays dataset
-│   │   ├── services.ts            # Advisory services & consultation formats
-│   │   └── testimonials.ts        # Client testimonials & reflections
+│   │   ├── articles.ts            # Curated essays & reflections dataset
+│   │   ├── services.ts            # 3 core consultation offerings (no prices)
+│   │   └── testimonials.ts        # Client feedback archive
 │   ├── layouts/
-│   │   └── Layout.astro           # Base layout with anti-flicker theme script
+│   │   └── Layout.astro           # Base HTML layout with ClientRouter & anti-flicker script
 │   ├── lib/
 │   │   ├── numerology/
-│   │   │   └── calculator.ts      # Chaldean & Pythagorean numerology engine
+│   │   │   └── calculator.ts      # Chaldean sound frequency & root number engine
 │   │   └── vedic/
-│   │       ├── astronomy.ts       # Lahiri Ayanamsha, Lagna, 9 Grahas & Nakshatras
-│   │       └── cities.ts          # Global & Indian city coordinates database
+│   │       ├── astronomy.ts       # Lahiri ephemeris, tropical coords, Lagna, 9 Grahas
+│   │       └── cities.ts          # Global city coordinates & country mappings
 │   ├── pages/
 │   │   ├── api/
-│   │   │   ├── birth-chart.ts     # SSR endpoint for Vedic chart computation
-│   │   │   └── numerology.ts      # SSR endpoint for name numerology computation
+│   │   │   ├── birth-chart.ts     # POST endpoint (Vedic & Western natal computation)
+│   │   │   └── numerology.ts      # POST endpoint (Chaldean name computation)
 │   │   ├── articles/
-│   │   │   ├── index.astro        # Articles archive
+│   │   │   ├── index.astro        # Editorial archive
 │   │   │   └── [slug].astro       # Dynamic article reader
-│   │   ├── about.astro            # Biography & philosophy
-│   │   ├── astrology.astro        # Vedic astrology practice
-│   │   ├── consultations.astro    # Consultation packages & booking
-│   │   ├── contact.astro          # Inquiry form & studio details
-│   │   ├── index.astro            # Master homepage
-│   │   ├── numerology.astro       # Numerology practice
-│   │   └── tarot.astro            # Tarot advisory practice
+│   │   ├── about.astro            # Anisha Banerji personal profile
+│   │   ├── astrology.astro        # Vedic astrology practice page
+│   │   ├── book.astro             # Forthcoming book release & waitlist
+│   │   ├── consultations.astro    # Consultation offerings & Gmail booking form
+│   │   ├── contact.astro          # Studio contact & direct inquiry form
+│   │   ├── index.astro            # Homepage (Restrained, high-whitespace)
+│   │   ├── numerology.astro       # Chaldean numerology practice page
+│   │   ├── shop.astro             # Studio shop preview (Journals, Deck)
+│   │   └── tarot.astro            # Intuitive tarot practice page
 │   └── styles/
-│       └── global.css             # Tailwind v4, glassmorphism, dark mode, animations
-├── astro.config.mjs               # Astro configuration with Node adapter
-├── package.json                   # Dependencies and npm scripts
+│       └── global.css             # Tailwind v4, glassmorphic filters, keyframes
+├── astro.config.mjs               # Astro config with @astrojs/node adapter
+├── package.json                   # Dependencies & build scripts
+├── README.md                      # Source of truth documentation
 └── tsconfig.json                  # TypeScript compiler settings
 ```
 
 ---
 
-## ✦ Getting Started
-
-### Prerequisites
-- **Node.js**: `v22.12.0` or higher
-- **npm**, **pnpm**, or **yarn**
-
-### Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/astrology-by-anisha.git
-   cd astrology-by-anisha
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start the local development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:4321](http://localhost:4321) in your browser.
-
----
-
-## ✦ Available Scripts
+## ✦ Available Scripts & Commands
 
 | Command | Action |
 | :--- | :--- |
-| `npm run dev` | Starts the Astro development server at `localhost:4321` |
-| `npm run build` | Compiles static pages and server entrypoints to `./dist/` |
-| `npm run preview` | Starts a local server to preview the production build |
-| `npx astro check` | Runs TypeScript and Astro diagnostic checks |
+| `npx astro dev --background` | Starts background development server at `http://localhost:4321` |
+| `npx astro dev status` | Checks dev server process health and port |
+| `npx astro dev logs` | Displays dev server runtime logs |
+| `npx astro dev stop` | Stops the running background dev server |
+| `npm run build` | Compiles production server entrypoint to `./dist/` |
+| `npm run preview` | Previews the compiled production build locally |
 
 ---
 
 ## ✦ API Reference
 
-### 1. Calculate Vedic Birth Chart
-- **Method**: `POST`
-- **Endpoint**: `/api/birth-chart`
-- **Headers**: `Content-Type: application/json`
-- **Request Body**:
+### 1. Birth Chart Calculation (`POST /api/birth-chart`)
+* **Endpoint**: `/api/birth-chart`
+* **Payload**:
   ```json
   {
     "name": "Maya Patel",
     "date": "1996-04-18",
     "time": "14:30",
-    "city": "New Delhi"
+    "latitude": 28.6139,
+    "longitude": 77.2090,
+    "timezone": 5.5,
+    "cityName": "New Delhi, India",
+    "zodiacSystem": "vedic"
   }
   ```
-- **Response**:
+  *(Set `"zodiacSystem": "western"` for Tropical 0° Ayanamsha coordinates).*
+* **Response**:
   ```json
   {
     "success": true,
     "chart": {
-      "name": "Maya Patel",
-      "ayanamsha": "Lahiri (Chitra Paksha)",
+      "zodiacSystem": "vedic",
+      "ayanamsha": {
+        "name": "Lahiri (Chitra Paksha)",
+        "value": 23.8053,
+        "formatted": "23° 48' 19\""
+      },
       "ascendant": {
         "signName": "Leo",
         "signSanskrit": "Simha",
         "signNumber": 5,
+        "degreeFormatted": "8° 59' 43\"",
         "nakshatra": "Magha",
-        "pada": 3,
-        "degreeFormatted": "11° 24'"
+        "pada": 3
       },
+      "moonSign": { "signName": "Aries", "signSanskrit": "Mesha", "nakshatra": "Ashwini" },
+      "sunSign": { "signName": "Aries", "signSanskrit": "Mesha" },
       "planets": [ ... ],
-      "insights": {
-        "lagnaSummary": "...",
-        "moonSummary": "...",
-        "lifeFocusSummary": "..."
-      }
+      "houses": [ ... ],
+      "insights": { ... }
     }
   }
   ```
 
-### 2. Calculate Name Numerology
-- **Method**: `POST`
-- **Endpoint**: `/api/numerology`
-- **Headers**: `Content-Type: application/json`
-- **Request Body**:
+### 2. Chaldean Name Calculation (`POST /api/numerology`)
+* **Endpoint**: `/api/numerology`
+* **Payload**:
   ```json
   {
-    "name": "Anisha Sharma",
+    "name": "Anisha Banerji",
     "system": "chaldean"
   }
   ```
-- **Response**:
+* **Response**:
   ```json
   {
     "success": true,
     "result": {
-      "name": "Anisha Sharma",
+      "name": "Anisha Banerji",
       "system": "chaldean",
-      "totalCompound": 32,
-      "rootNumber": 5,
-      "compoundMeaning": "The Sovereign Ambassador...",
-      "profile": {
-        "archetype": "The Dynamic Catalyst",
-        "rulingPlanet": "Mercury",
-        "harmoniousNumbers": [1, 3, 5, 6],
-        "luckyDays": ["Wednesday", "Friday"],
-        "gemstones": ["Emerald", "Green Tourmaline"]
-      },
-      "words": [ ... ]
+      "totalCompound": 33,
+      "rootNumber": 6,
+      "compoundMeaning": "...",
+      "profile": { "archetype": "...", "rulingPlanet": "Venus", "harmoniousNumbers": [3, 6, 9] }
     }
   }
   ```
 
 ---
 
-## ✦ Deployment
+## ✦ Consultation & Booking Architecture
 
-This project uses the `@astrojs/node` standalone adapter and can be deployed directly to:
-- **Node.js Host** (VPS, DigitalOcean, Railway, Render): Run `npm run build` and launch `node ./dist/server/entry.mjs`.
-- **Vercel / Netlify**: Swap `@astrojs/node` for `@astrojs/vercel` or `@astrojs/netlify` in `astro.config.mjs` for serverless deployment.
-- **Docker**: Can be packaged with a minimal Node 22 Alpine container.
+```
+Visitor clicks "Book a Consultation"
+   │
+   ▼
+Routes to `/consultations#booking-form`
+   │
+   ├─► Validates Name, Email, Service, Date/Time, Timezone, Birth Data, Notes
+   │
+   ▼
+Trigger Direct Gmail Flow
+   ├── 1. Opens `mailto:anishabanerji@gmail.com?subject=...&body=...`
+   ├── 2. Displays Direct Gmail Web Launcher (`https://mail.google.com/mail/?view=cm...`)
+   └── 3. Provides "Copy Details" clipboard fallback button
+   │
+   ▼
+100% of consultation requests arrive directly in Anisha Banerji's Gmail inbox
+```
 
 ---
 
-## ✦ License & Rights
+## ✦ Rights & Ownership
 
-Private & Proprietary © Astrology by Anisha. All rights reserved.
+Proprietary platform created for **Anisha Banerji** (Astro by Anisha). All rights reserved.

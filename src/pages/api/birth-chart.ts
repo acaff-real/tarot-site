@@ -38,6 +38,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    const zodiacSystem = data.zodiacSystem === 'western' ? 'western' : 'vedic';
+
     const chart = calculateVedicChart({
       name,
       year,
@@ -49,6 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
       longitude,
       timezoneOffset: timezone,
       cityName,
+      zodiacSystem,
     });
 
     return new Response(JSON.stringify({ success: true, chart }), {
