@@ -2,12 +2,15 @@
 import Layout from '../layouts/Layout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import { getCollection } from 'astro:content';
+import { getDatabase, getEnv } from '../lib/db';
 
 export const prerender = false;
 
 // 1. Authentication Configuration & Session Checking
-const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || 'f81f684c3133388d356ba4c5ccca680aa351bd81bd211873950d0cad876ab55b';
+const cfEnv = getEnv();
+const ADMIN_USER = (cfEnv.ADMIN_USER || process.env.ADMIN_USER || 'admin').trim();
+const ADMIN_PASSWORD_HASH = (cfEnv.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || 'f81f684c3133388d356ba4c5ccca680aa351bd81bd211873950d0cad876ab55b').trim();
+const ADMIN_PASSWORD = (cfEnv.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '').trim();
 
 async function hashSha256(val: string): Promise<string> {
   const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
@@ -44,14 +47,15 @@ if (Astro.request.method === 'POST') {
 
     if (username && password) {
       const inputHash = await hashSha256(password);
+      const lowerUsername = username.toLowerCase();
 
       // Check Cloudflare D1 database if binding is available
-      const db = (Astro.locals as any)?.runtime?.env?.DB;
+      const db = getDatabase();
       if (db) {
         try {
           const user = await db
-            .prepare('SELECT password_hash, role FROM users WHERE username = ?')
-            .bind(username)
+            .prepare('SELECT password_hash, role FROM users WHERE LOWER(username) = LOWER(?)')
+            .bind(lowerUsername)
             .first();
           if (user && user.password_hash === inputHash) {
             isValid = true;
@@ -61,11 +65,17 @@ if (Astro.request.method === 'POST') {
         }
       }
 
-      // Fallback to environment/default hash verification (for standalone Node mode)
+      // Fallback to environment/secret verification (Worker env or Node process.env)
       if (!isValid) {
-        const isUserMatch = username === ADMIN_USER || username === 'anisha';
-        const isPassMatch = inputHash === ADMIN_PASSWORD_HASH;
-        if (isUserMatch && isPassMatch) {
+        const isUserMatch =
+          lowerUsername === ADMIN_USER.toLowerCase() ||
+          lowerUsername === 'anisha' ||
+          lowerUsername === 'admin';
+
+        const isHashMatch = inputHash === ADMIN_PASSWORD_HASH;
+        const isPlainMatch = ADMIN_PASSWORD && password === ADMIN_PASSWORD;
+
+        if (isUserMatch && (isHashMatch || isPlainMatch)) {
           isValid = true;
         }
       }
@@ -100,21 +110,81 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-// 2. Fetch existing markdown articles if authenticated
+// 2. Fetch existing articles & users from D1 if authenticated
 let initialArticles: any[] = [];
+let initialUsers: any[] = [];
 if (isAuthenticated) {
-  const articlesCollection = await getCollection('articles');
-  initialArticles = articlesCollection.map((a) => ({
-    slug: a.id,
-    title: a.data.title,
-    excerpt: a.data.excerpt,
-    category: a.data.category,
-    date: a.data.date,
-    readingTime: a.data.readingTime,
-    featuredImage: a.data.featuredImage,
-    tags: a.data.tags || [],
-    content: a.body || '',
-  }));
+  const db = getDatabase();
+  const articlesMap = new Map<string, any>();
+
+  if (db) {
+    try {
+      const dbArticles = await db.prepare('SELECT * FROM articles ORDER BY published_at DESC').all();
+      if (dbArticles && dbArticles.results) {
+        for (const row of dbArticles.results as any[]) {
+          let tagsArray = [];
+          try {
+            tagsArray = typeof row.tags === 'string' ? JSON.parse(row.tags) : (row.tags || []);
+          } catch {
+            tagsArray = typeof row.tags === 'string' ? row.tags.split(',').map((t: string) => t.trim()) : [];
+          }
+          articlesMap.set(row.slug, {
+            slug: row.slug,
+            title: row.title,
+            excerpt: row.excerpt,
+            category: row.category,
+            date: row.date,
+            readingTime: row.reading_time,
+            featuredImage: row.featured_image,
+            tags: tagsArray,
+            content: row.content,
+          });
+        }
+      }
+    } catch (e) {
+      console.error('D1 fetch articles error in publish:', e);
+    }
+
+    try {
+      const dbUsers = await db.prepare('SELECT id, username, role FROM users ORDER BY id ASC').all();
+      if (dbUsers && dbUsers.results) {
+        initialUsers = dbUsers.results;
+      }
+    } catch (e) {
+      console.error('D1 fetch users error in publish:', e);
+    }
+  }
+
+  if (initialUsers.length === 0) {
+    initialUsers = [
+      { id: 1, username: 'anisha', role: 'admin' },
+      { id: 2, username: 'admin', role: 'admin' },
+    ];
+  }
+
+  // Merge static markdown articles if not present in D1
+  try {
+    const articlesCollection = await getCollection('articles');
+    for (const a of articlesCollection) {
+      if (!articlesMap.has(a.id)) {
+        articlesMap.set(a.id, {
+          slug: a.id,
+          title: a.data.title,
+          excerpt: a.data.excerpt,
+          category: a.data.category,
+          date: a.data.date,
+          readingTime: a.data.readingTime,
+          featuredImage: a.data.featuredImage,
+          tags: a.data.tags || [],
+          content: a.body || '',
+        });
+      }
+    }
+  } catch (e) {
+    // collection fallback
+  }
+
+  initialArticles = Array.from(articlesMap.values());
 }
 
 const CATEGORIES = [
@@ -142,9 +212,12 @@ const PRESET_IMAGES = [
   currentPath="/publish"
   hideNavFooter={true}
 >
-  <!-- Load Marked for real-time Markdown rendering if authenticated -->
+  <!-- Load Marked and Turndown for bidirectional Visual HTML <-> Markdown conversion -->
   {isAuthenticated && (
-    <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <>
+      <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+      <script is:inline src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.js"></script>
+    </>
   )}
 
   {!isAuthenticated ? (
@@ -265,7 +338,7 @@ const PRESET_IMAGES = [
               target="_blank"
               class="hidden md:inline-flex items-center gap-1 text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] font-medium transition-colors"
             >
-              <span>View Site</span>
+              <span>View Articles</span>
               <span>&nearr;</span>
             </a>
 
@@ -299,9 +372,10 @@ const PRESET_IMAGES = [
           <button
             type="button"
             id="tab-btn-editor"
-            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
           >
-            Article Studio & Editor
+            <span>Article Studio</span>
+            <span id="tab-editor-badge" class="hidden px-2 py-0.5 rounded text-[10px] font-bold bg-[#855b25]/20 dark:bg-purple-900/60 text-[#855b25] dark:text-[#e5c98f]">EDITING</span>
           </button>
 
           <button
@@ -316,9 +390,19 @@ const PRESET_IMAGES = [
           <button
             type="button"
             id="tab-btn-media"
-            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
           >
-            Media Assets
+            <span>Media Library</span>
+            <span id="media-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-[#855b25]/15 dark:bg-purple-900/50 text-[#855b25] dark:text-[#e5c98f] font-mono">{PRESET_IMAGES.length}</span>
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-users"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <span>Team & Access</span>
+            <span id="users-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-[#855b25]/15 dark:bg-purple-900/50 text-[#855b25] dark:text-[#e5c98f] font-mono">{initialUsers.length}</span>
           </button>
         </div>
 
@@ -385,7 +469,27 @@ const PRESET_IMAGES = [
         </section>
 
         <!-- TAB 2: ARTICLE STUDIO & EDITOR -->
-        <section id="view-editor" class="hidden space-y-8">
+        <section id="view-editor" class="hidden space-y-6">
+          
+          <!-- Active Editing Banner -->
+          <div id="edit-mode-banner" class="hidden p-3.5 rounded-xl bg-[#855b25]/10 dark:bg-purple-950/40 border border-[#855b25]/30 dark:border-purple-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f]">
+                ✏️ Editing Mode:
+              </span>
+              <span id="edit-banner-title" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff] truncate max-w-xs sm:max-w-md"></span>
+              <span id="edit-banner-slug" class="text-[10px] font-mono px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 text-[#5a534b] dark:text-[#ded9d0]"></span>
+            </div>
+            <button
+              type="button"
+              id="btn-cancel-editing"
+              class="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline cursor-pointer"
+            >
+              Cancel Edit & Create New Article
+            </button>
+          </div>
+
+          <!-- Top Toolbar & Heading -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
             <div>
               <h2 id="editor-heading" class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
@@ -419,7 +523,7 @@ const PRESET_IMAGES = [
                 id="btn-publish-article"
                 class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] shadow-sm transition-colors cursor-pointer"
               >
-                Save & Publish
+                <span id="publish-btn-text">Save & Publish</span>
               </button>
             </div>
           </div>
@@ -441,7 +545,7 @@ const PRESET_IMAGES = [
 
             <div class="md:col-span-4 space-y-1.5">
               <label for="input-slug" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
-                URL Slug (.md file name)
+                URL Slug (/articles/slug)
               </label>
               <input
                 type="text"
@@ -518,73 +622,91 @@ const PRESET_IMAGES = [
                   id="btn-pick-media-header"
                   class="px-3 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg border border-[#855b25]/30 text-[#855b25] dark:text-[#e5c98f] hover:bg-[#855b25]/10 whitespace-nowrap cursor-pointer"
                 >
-                  Browse
+                  Choose Media
                 </button>
               </div>
             </div>
 
             <div class="md:col-span-4 space-y-1.5">
               <label for="input-tags" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
-                Tags (comma-separated)
+                Tags (Comma separated)
               </label>
               <input
                 type="text"
                 id="input-tags"
-                placeholder="Vedic Astrology, Saturn, Timing"
+                placeholder="Astrology, Saturn, Transit"
                 class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
               />
             </div>
           </div>
 
-          <!-- Split Workspace -->
-          <div class="rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white dark:bg-[#0f0b24] shadow-sm overflow-hidden flex flex-col">
-            <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 border-b border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5] dark:bg-[#0a071c] text-xs">
-              <div class="flex items-center gap-1 overflow-x-auto">
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-bold" data-md="**|**" title="Bold">B</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 italic" data-md="*|*" title="Italic">I</button>
-                <span class="text-[#28231e]/20 dark:text-purple-500/30">|</span>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-serif font-bold text-sm" data-md="## |" title="Heading 2">H2</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-serif font-bold text-xs" data-md="### |" title="Heading 3">H3</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 italic text-xs" data-md='<p class="lead text-lg font-serif italic text-[#5a534b] mb-6">|</p>' title="Editorial Lead Paragraph">Lead</button>
-                <span class="text-[#28231e]/20 dark:text-purple-500/30">|</span>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="> |" title="Blockquote">” Quote</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="- |" title="Bullet List">• List</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="1. |" title="Numbered List">1. List</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="[Link Text](|https://)" title="Insert Link">🔗 Link</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="![Image Alt](|/images/studio.jpg)" title="Insert Image">🖼 Image</button>
-                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="---" title="Divider">― Divider</button>
+          <!-- Visual & Markdown Workspace -->
+          <div class="rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 overflow-hidden shadow-xs">
+            <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 border-b border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5] dark:bg-[#0a071c] text-xs">
+              <!-- Formatting Toolbar -->
+              <div id="editor-toolbar" class="flex items-center gap-1.5 overflow-x-auto text-[11px]">
+                <button type="button" id="tool-p" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 text-xs hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Normal Paragraph (P)">P</button>
+                <button type="button" id="tool-lead" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 font-serif italic text-xs hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Editorial Lead Paragraph">¶ Lead</button>
+                <button type="button" id="tool-h2" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 font-serif font-bold text-xs hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Heading 2">H2</button>
+                <button type="button" id="tool-h3" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 font-serif font-bold text-xs hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Heading 3">H3</button>
+                <div class="h-4 w-px bg-[#28231e]/15 dark:border-purple-500/25 mx-0.5"></div>
+                <button type="button" id="tool-bold" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 font-bold hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Bold (Ctrl+B)">B</button>
+                <button type="button" id="tool-italic" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 italic font-serif hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Italic (Ctrl+I)">I</button>
+                <button type="button" id="tool-quote" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Editorial Quote">” Quote</button>
+                <button type="button" id="tool-ul" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Bullet List">• List</button>
+                <button type="button" id="tool-ol" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Numbered List">1. List</button>
+                <button type="button" id="tool-link" class="rich-tool-btn px-2.5 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Insert Link">🔗 Link</button>
+                <button type="button" id="tool-hr" class="rich-tool-btn px-2 py-1 rounded border border-[#28231e]/15 dark:border-purple-500/25 hover:bg-[#855b25]/10 text-[#110f0d] dark:text-[#ffffff] cursor-pointer" title="Divider">― Divider</button>
+                <div class="h-4 w-px bg-[#28231e]/15 dark:border-purple-500/25 mx-0.5"></div>
+                <button type="button" id="toolbar-btn-insert-image" class="px-2.5 py-1 rounded bg-[#855b25]/15 dark:bg-purple-900/40 text-[#855b25] dark:text-[#e5c98f] hover:bg-[#855b25]/25 font-semibold text-xs flex items-center gap-1 cursor-pointer" title="Pick from Media Library">
+                  <span>🖼 Add Image</span>
+                </button>
               </div>
 
+              <!-- Mode Switcher -->
               <div class="flex items-center gap-1 bg-[#28231e]/5 dark:bg-white/5 p-1 rounded-lg">
-                <button type="button" id="btn-mode-split" class="mode-btn active px-2.5 py-0.5 rounded text-[11px] font-semibold">Split</button>
-                <button type="button" id="btn-mode-write" class="mode-btn px-2.5 py-0.5 rounded text-[11px] font-semibold">Write</button>
-                <button type="button" id="btn-mode-preview" class="mode-btn px-2.5 py-0.5 rounded text-[11px] font-semibold">Preview</button>
+                <button type="button" id="btn-mode-visual" class="mode-btn active px-3 py-1 rounded text-xs font-semibold cursor-pointer">
+                  ✦ Visual (Plain English)
+                </button>
+                <button type="button" id="btn-mode-split" class="mode-btn px-3 py-1 rounded text-xs font-semibold cursor-pointer">
+                  Side-by-Side
+                </button>
+                <button type="button" id="btn-mode-markdown" class="mode-btn px-3 py-1 rounded text-xs font-semibold cursor-pointer">
+                  Markdown Source
+                </button>
               </div>
             </div>
 
-            <div id="editor-workspace" class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#28231e]/10 dark:divide-purple-500/20 min-h-[500px]">
-              <div id="pane-write" class="flex flex-col p-4 bg-[#faf8f5]/40 dark:bg-[#060410]/40">
+            <!-- Workspace Panes -->
+            <div id="editor-workspace" class="grid grid-cols-1 min-h-[520px]">
+              <!-- Visual WYSIWYG Pane (Default) -->
+              <div id="pane-visual" class="p-6 sm:p-10 max-w-4xl mx-auto w-full min-h-[500px]">
+                <div
+                  id="visual-canvas"
+                  contenteditable="true"
+                  class="visual-canvas outline-none min-h-[460px] leading-relaxed text-[#2c2722] dark:text-[#ded9d0]"
+                  data-placeholder="Start typing your article here in plain English... You can write paragraphs naturally, highlight words to bold or italicize, or click formatting buttons above."
+                ></div>
+              </div>
+
+              <!-- Markdown Source Pane -->
+              <div id="pane-markdown" class="hidden flex flex-col p-4 bg-[#faf8f5]/40 dark:bg-[#060410]/40">
                 <textarea
                   id="input-content"
-                  class="w-full h-full min-h-[460px] bg-transparent text-[#110f0d] dark:text-[#ffffff] font-mono text-sm leading-relaxed outline-none resize-none focus:ring-0 border-0"
-                  placeholder="Start writing in markdown or paste your essay draft here..."
+                  class="w-full h-full min-h-[480px] bg-transparent text-[#110f0d] dark:text-[#ffffff] font-mono text-sm leading-relaxed outline-none resize-none focus:ring-0 border-0"
+                  placeholder="Raw markdown code..."
                 ></textarea>
-              </div>
-
-              <div id="pane-preview" class="p-6 sm:p-8 overflow-y-auto max-h-[600px] bg-white dark:bg-[#060410]">
-                <div id="live-preview-content" class="prose max-w-none text-[#2c2722] dark:text-[#ded9d0]">
-                  <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] italic">Live preview will appear as you type...</p>
-                </div>
               </div>
             </div>
 
-            <div class="flex items-center justify-between px-4 py-2 text-[11px] bg-[#faf8f5] dark:bg-[#0a071c] border-t border-[#28231e]/10 dark:border-purple-500/20 text-[#5a534b] dark:text-[#a8a29a]">
+            <div class="flex items-center justify-between px-4 py-2.5 text-[11px] bg-[#faf8f5] dark:bg-[#0a071c] border-t border-[#28231e]/10 dark:border-purple-500/20 text-[#5a534b] dark:text-[#a8a29a]">
               <div class="flex items-center gap-4">
                 <span>Words: <strong id="stats-words" class="text-[#110f0d] dark:text-[#ffffff]">0</strong></span>
                 <span>Characters: <strong id="stats-chars" class="text-[#110f0d] dark:text-[#ffffff]">0</strong></span>
                 <span>Reading: <strong id="stats-reading" class="text-[#110f0d] dark:text-[#ffffff]">0 min</strong></span>
               </div>
-              <div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">✓ Live Two-Way Sync Active</span>
                 <span id="auto-save-indicator" class="text-[#855b25] dark:text-[#e5c98f]">Auto-save active</span>
               </div>
             </div>
@@ -618,53 +740,222 @@ const PRESET_IMAGES = [
 
         <!-- TAB 4: MEDIA ASSET PICKER -->
         <section id="view-media" class="hidden space-y-6">
-          <div class="pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
-            <h2 class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
-              Brand Media Library
-            </h2>
-            <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] mt-1">
-              Click any image to copy its Markdown syntax or set it as the featured banner.
-            </p>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
+            <div>
+              <h2 class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
+                Brand Media Library
+              </h2>
+              <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] mt-1">
+                Upload images from your computer, paste web image links, or use preset brand assets. Click any action to use directly.
+              </p>
+            </div>
+            
+            <button
+              type="button"
+              id="btn-return-to-editor-from-media"
+              class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#855b25] dark:bg-[#e5c98f] text-white dark:text-[#060410] cursor-pointer"
+            >
+              &larr; Return to Editor
+            </button>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {PRESET_IMAGES.map((img) => (
-              <div class="group rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 overflow-hidden shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between">
-                <div class="aspect-video overflow-hidden bg-[#28231e]/5 relative">
-                  <img src={img.url} alt={img.label} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div class="p-3 text-xs space-y-2">
-                  <span class="font-medium text-[#110f0d] dark:text-[#ffffff] block truncate">{img.label}</span>
-                  <span class="text-[10px] font-mono text-[#5a534b] dark:text-[#a8a29a] block truncate">{img.url}</span>
-                  <div class="flex items-center gap-2 pt-1 border-t border-[#28231e]/10 dark:border-purple-500/15">
-                    <button
-                      type="button"
-                      class="btn-use-featured text-[10px] font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline"
-                      data-url={img.url}
-                    >
-                      Set Featured
-                    </button>
-                    <span>&bull;</span>
-                    <button
-                      type="button"
-                      class="btn-copy-md text-[10px] text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff]"
-                      data-url={img.url}
-                      data-label={img.label}
-                    >
-                      Copy MD
-                    </button>
+          <!-- Add Image Box: Direct Upload or Web URL -->
+          <div class="p-5 rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs space-y-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f]">
+              Add New Image to Library
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
+              <!-- Upload from Computer -->
+              <div class="md:col-span-5 p-4 rounded-xl border-2 border-dashed border-[#28231e]/20 dark:border-purple-500/30 bg-[#faf8f5]/60 dark:bg-[#060410]/60 flex flex-col items-center justify-center text-center">
+                <input type="file" id="media-file-input" accept="image/*" class="hidden" />
+                <button
+                  type="button"
+                  id="btn-trigger-upload"
+                  class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider bg-white dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] hover:bg-[#faf8f5] shadow-xs cursor-pointer"
+                >
+                  📁 Upload from Computer
+                </button>
+                <p class="text-[11px] text-[#5a534b] dark:text-[#a8a29a] mt-2">
+                  Select JPG, PNG, WEBP, or SVG to add to library.
+                </p>
+              </div>
+
+              <!-- Add via URL -->
+              <div class="md:col-span-7 flex flex-col justify-between p-4 rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5]/40 dark:bg-[#060410]/40 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                  <div class="sm:col-span-7">
+                    <label for="media-url-input" class="block text-[11px] font-medium text-[#5a534b] dark:text-[#a8a29a] mb-1">Image URL</label>
+                    <input
+                      type="url"
+                      id="media-url-input"
+                      placeholder="https://images.unsplash.com/... or /images/..."
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff]"
+                    />
+                  </div>
+                  <div class="sm:col-span-5">
+                    <label for="media-label-input" class="block text-[11px] font-medium text-[#5a534b] dark:text-[#a8a29a] mb-1">Label / Title</label>
+                    <input
+                      type="text"
+                      id="media-label-input"
+                      placeholder="e.g. Celestial Chart"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-white dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff]"
+                    />
                   </div>
                 </div>
+                <button
+                  type="button"
+                  id="btn-add-media-url"
+                  class="w-full py-2 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25]/15 dark:bg-purple-900/40 text-[#855b25] dark:text-[#e5c98f] hover:bg-[#855b25]/25 border border-[#855b25]/25 transition-colors cursor-pointer"
+                >
+                  + Add Web Image to Library
+                </button>
               </div>
-            ))}
+            </div>
+          </div>
+
+          <!-- Dynamic Media Gallery Grid -->
+          <div id="media-gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <!-- Rendered dynamically via JS -->
+          </div>
+        </section>
+
+        <!-- TAB 5: TEAM & USER ACCESS MANAGEMENT -->
+        <section id="view-users" class="hidden space-y-8">
+          <!-- Add / Edit User Form Card -->
+          <div class="p-6 rounded-2xl bg-white/95 dark:bg-[#0f0b24]/95 border border-[#28231e]/10 dark:border-purple-500/20 shadow-sm space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#28231e]/10 dark:border-purple-500/15">
+              <div>
+                <h3 class="font-serif text-lg font-bold text-[#110f0d] dark:text-[#ffffff]">
+                  Authorize Publishing User
+                </h3>
+                <p class="text-xs text-[#5a534b] dark:text-[#a8a29a]">
+                  Create or update accounts with permission to log in, write, edit, and publish articles.
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Cloudflare D1 Auth Active
+                </span>
+              </div>
+            </div>
+
+            <form id="form-manage-user" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div class="md:col-span-4 space-y-1.5">
+                <label for="input-new-username" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                  Username *
+                </label>
+                <div class="relative">
+                  <span class="absolute left-3 top-2.5 text-xs text-[#5a534b] dark:text-[#a8a29a]">@</span>
+                  <input
+                    type="text"
+                    id="input-new-username"
+                    required
+                    placeholder="e.g. journalist_priya"
+                    pattern="[a-zA-Z0-9_.-]{3,30}"
+                    title="3-30 alphanumeric characters, hyphens, periods, or underscores"
+                    class="w-full pl-7 pr-3.5 py-2.5 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  />
+                </div>
+              </div>
+
+              <div class="md:col-span-5 space-y-1.5">
+                <label for="input-new-password" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                  Password *
+                </label>
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="input-new-password"
+                    required
+                    minlength="6"
+                    placeholder="Min 6 characters (e.g. SecretPass2026!)"
+                    class="w-full px-3.5 py-2.5 pr-10 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  />
+                  <button
+                    type="button"
+                    id="btn-toggle-password-visibility"
+                    class="absolute right-2.5 top-2.5 text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#855b25] cursor-pointer"
+                    title="Show/hide password"
+                  >
+                    👁
+                  </button>
+                </div>
+              </div>
+
+              <div class="md:col-span-3 space-y-1.5">
+                <label for="input-new-role" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                  Role & Permissions
+                </label>
+                <select
+                  id="input-new-role"
+                  class="w-full px-3.5 py-2.5 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                >
+                  <option value="editor">Editor (Write, Edit & Publish)</option>
+                  <option value="author">Author (Draft & Submit)</option>
+                  <option value="admin">Administrator (Full Access)</option>
+                </select>
+              </div>
+
+              <div class="md:col-span-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                <p class="text-[11px] text-[#5a534b] dark:text-[#a8a29a]">
+                  Tip: Submitting an existing username securely updates their password in D1 with SHA-256 encryption.
+                </p>
+                <button
+                  type="submit"
+                  id="btn-save-user"
+                  class="px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] text-white dark:bg-[#e5c98f] dark:text-[#060410] hover:opacity-90 transition-opacity cursor-pointer shadow-xs flex items-center gap-2 whitespace-nowrap"
+                >
+                  <span>Save & Grant Access</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Existing Authorized Users List -->
+          <div class="p-6 rounded-2xl bg-white/95 dark:bg-[#0f0b24]/95 border border-[#28231e]/10 dark:border-purple-500/20 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-serif text-base font-bold text-[#110f0d] dark:text-[#ffffff]">
+                  Authorized Publishing Accounts (<span id="users-table-count">{initialUsers.length}</span>)
+                </h4>
+                <p class="text-xs text-[#5a534b] dark:text-[#a8a29a]">
+                  Stored securely in Cloudflare D1 with active credentials.
+                </p>
+              </div>
+              <button
+                type="button"
+                id="btn-refresh-users"
+                class="px-3 py-1.5 text-xs text-[#855b25] dark:text-[#e5c98f] border border-[#855b25]/25 rounded-lg hover:bg-[#855b25]/10 cursor-pointer flex items-center gap-1.5"
+              >
+                <span>↻ Refresh</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-[#28231e]/10 dark:border-purple-500/15">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5] dark:bg-[#0a071c] text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider text-[10px] font-semibold">
+                    <th class="py-3 px-4 sm:px-6">User</th>
+                    <th class="py-3 px-4">Role</th>
+                    <th class="py-3 px-4">Authentication</th>
+                    <th class="py-3 px-4 sm:px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body" class="divide-y divide-[#28231e]/10 dark:divide-purple-500/15">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
       </div>
 
       <!-- Client-Side State Management Script -->
-      <script is:inline define:vars={{ initialArticles }}>
+      <script is:inline define:vars={{ initialArticles, PRESET_IMAGES, initialUsers }}>
         let articles = Array.isArray(initialArticles) ? initialArticles : [];
+        let users = Array.isArray(initialUsers) ? initialUsers : [];
         let currentEditingSlug = null;
         let autoSaveTimer = null;
 
@@ -672,15 +963,23 @@ const PRESET_IMAGES = [
         const tabBtnEditor = document.getElementById('tab-btn-editor');
         const tabBtnDrafts = document.getElementById('tab-btn-drafts');
         const tabBtnMedia = document.getElementById('tab-btn-media');
+        const tabBtnUsers = document.getElementById('tab-btn-users');
+        const tabEditorBadge = document.getElementById('tab-editor-badge');
 
         const viewList = document.getElementById('view-list');
         const viewEditor = document.getElementById('view-editor');
         const viewDrafts = document.getElementById('view-drafts');
         const viewMedia = document.getElementById('view-media');
+        const viewUsers = document.getElementById('view-users');
 
         const tableBody = document.getElementById('articles-table-body');
         const searchInput = document.getElementById('search-articles-input');
         const filterCategory = document.getElementById('filter-category-select');
+
+        const editModeBanner = document.getElementById('edit-mode-banner');
+        const editBannerTitle = document.getElementById('edit-banner-title');
+        const editBannerSlug = document.getElementById('edit-banner-slug');
+        const btnCancelEditing = document.getElementById('btn-cancel-editing');
 
         const inputTitle = document.getElementById('input-title');
         const inputSlug = document.getElementById('input-slug');
@@ -691,8 +990,15 @@ const PRESET_IMAGES = [
         const inputFeaturedImage = document.getElementById('input-featured-image');
         const inputTags = document.getElementById('input-tags');
         const inputContent = document.getElementById('input-content');
-        const livePreview = document.getElementById('live-preview-content');
+        const visualCanvas = document.getElementById('visual-canvas');
+        const paneVisual = document.getElementById('pane-visual');
+        const paneMarkdown = document.getElementById('pane-markdown');
+        const btnModeVisual = document.getElementById('btn-mode-visual');
+        const btnModeSplit = document.getElementById('btn-mode-split');
+        const btnModeMarkdown = document.getElementById('btn-mode-markdown');
+        const workspace = document.getElementById('editor-workspace');
         const editorHeading = document.getElementById('editor-heading');
+        const publishBtnText = document.getElementById('publish-btn-text');
 
         const statsWords = document.getElementById('stats-words');
         const statsChars = document.getElementById('stats-chars');
@@ -724,8 +1030,8 @@ const PRESET_IMAGES = [
         }
 
         function setTab(tabName) {
-          [viewList, viewEditor, viewDrafts, viewMedia].forEach((v) => v?.classList.add('hidden'));
-          [tabBtnList, tabBtnEditor, tabBtnDrafts, tabBtnMedia].forEach((b) => {
+          [viewList, viewEditor, viewDrafts, viewMedia, viewUsers].forEach((v) => v?.classList.add('hidden'));
+          [tabBtnList, tabBtnEditor, tabBtnDrafts, tabBtnMedia, tabBtnUsers].forEach((b) => {
             b?.classList.remove('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
             b?.classList.add('text-[#5a534b]', 'dark:text-[#a8a29a]');
           });
@@ -743,6 +1049,11 @@ const PRESET_IMAGES = [
           } else if (tabName === 'media' && viewMedia) {
             viewMedia.classList.remove('hidden');
             tabBtnMedia?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            renderMediaGallery();
+          } else if (tabName === 'users' && viewUsers) {
+            viewUsers.classList.remove('hidden');
+            tabBtnUsers?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            renderUsersTable();
           }
         }
 
@@ -750,11 +1061,18 @@ const PRESET_IMAGES = [
         tabBtnEditor?.addEventListener('click', () => setTab('editor'));
         tabBtnDrafts?.addEventListener('click', () => setTab('drafts'));
         tabBtnMedia?.addEventListener('click', () => setTab('media'));
+        tabBtnUsers?.addEventListener('click', () => setTab('users'));
         document.getElementById('btn-quick-new')?.addEventListener('click', () => {
           resetEditor();
           setTab('editor');
         });
+        document.getElementById('btn-return-to-editor-from-media')?.addEventListener('click', () => {
+          setTab('editor');
+        });
 
+        // ----------------------------------------------------
+        // EDITING & ARTICLES TABLE
+        // ----------------------------------------------------
         function renderArticlesTable() {
           if (!tableBody) return;
           const query = (searchInput?.value || '').toLowerCase().trim();
@@ -763,9 +1081,9 @@ const PRESET_IMAGES = [
           const filtered = articles.filter((a) => {
             const matchesQuery =
               !query ||
-              a.title.toLowerCase().includes(query) ||
-              a.excerpt.toLowerCase().includes(query) ||
-              (a.tags && a.tags.some((t) => t.toLowerCase().includes(query)));
+              (a.title || '').toLowerCase().includes(query) ||
+              (a.excerpt || '').toLowerCase().includes(query) ||
+              (a.tags && a.tags.some((t) => (t || '').toLowerCase().includes(query)));
             const matchesCat = cat === 'ALL' || a.category === cat;
             return matchesQuery && matchesCat;
           });
@@ -790,7 +1108,7 @@ const PRESET_IMAGES = [
                   ${art.title}
                 </span>
                 <span class="text-[11px] text-[#5a534b] dark:text-[#a8a29a] line-clamp-1 mt-0.5 font-light">
-                  ${art.excerpt}
+                  ${art.excerpt || 'No summary'}
                 </span>
                 <span class="text-[10px] font-mono text-[#855b25] dark:text-[#e5c98f] block mt-0.5">
                   /articles/${art.slug}
@@ -798,14 +1116,14 @@ const PRESET_IMAGES = [
               </td>
               <td class="py-3.5 px-4 whitespace-nowrap">
                 <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#855b25]/10 dark:bg-purple-950/60 text-[#855b25] dark:text-[#e5c98f] border border-[#855b25]/20 dark:border-purple-500/30">
-                  ${art.category}
+                  ${art.category || 'Vedic Astrology'}
                 </span>
               </td>
               <td class="py-3.5 px-4 hidden md:table-cell whitespace-nowrap text-[#5a534b] dark:text-[#ded9d0]">
-                ${art.readingTime}
+                ${art.readingTime || '5 min read'}
               </td>
               <td class="py-3.5 px-4 hidden lg:table-cell whitespace-nowrap text-[#5a534b] dark:text-[#ded9d0]">
-                ${art.date}
+                ${art.date || ''}
               </td>
               <td class="py-3.5 px-4 text-center whitespace-nowrap">
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
@@ -815,26 +1133,18 @@ const PRESET_IMAGES = [
               <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap space-x-2">
                 <button
                   type="button"
-                  class="btn-table-edit text-xs font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline cursor-pointer"
+                  class="btn-table-edit px-2 py-1 rounded text-xs font-semibold bg-[#855b25]/10 text-[#855b25] dark:bg-purple-950/60 dark:text-[#e5c98f] hover:bg-[#855b25] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#060410] transition-colors cursor-pointer"
                   data-slug="${art.slug}"
                 >
-                  Edit
+                  Edit Article
                 </button>
                 <a
                   href="/articles/${art.slug}"
                   target="_blank"
                   class="text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors"
                 >
-                  View
+                  View &nearr;
                 </a>
-                <button
-                  type="button"
-                  class="btn-table-export text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#855b25] transition-colors cursor-pointer"
-                  data-slug="${art.slug}"
-                  title="Download Markdown"
-                >
-                  .md
-                </button>
                 <button
                   type="button"
                   class="btn-table-delete text-xs text-red-600/70 hover:text-red-600 transition-colors cursor-pointer"
@@ -851,15 +1161,7 @@ const PRESET_IMAGES = [
           document.querySelectorAll('.btn-table-edit').forEach((btn) => {
             btn.addEventListener('click', () => {
               const slug = btn.getAttribute('data-slug');
-              loadArticleIntoEditor(slug);
-            });
-          });
-
-          document.querySelectorAll('.btn-table-export').forEach((btn) => {
-            btn.addEventListener('click', () => {
-              const slug = btn.getAttribute('data-slug');
-              const art = articles.find((a) => a.slug === slug);
-              if (art) downloadMarkdownFile(art);
+              editArticle(slug);
             });
           });
 
@@ -876,19 +1178,129 @@ const PRESET_IMAGES = [
         searchInput?.addEventListener('input', renderArticlesTable);
         filterCategory?.addEventListener('change', renderArticlesTable);
 
-        inputTitle?.addEventListener('input', () => {
-          if (!currentEditingSlug) {
-            inputSlug.value = inputTitle.value
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/(^-|-$)+/g, '');
-          }
-          updatePreview();
-          triggerAutoSave();
-        });
+        // ----------------------------------------------------
+        // VISUAL & MARKDOWN CONVERSION ENGINES
+        // ----------------------------------------------------
+        let turndownService = null;
+        try {
+          if (typeof TurndownService !== 'undefined') {
+            turndownService = new TurndownService({
+              headingStyle: 'atx',
+              hr: '---',
+              bulletListMarker: '-',
+              codeBlockStyle: 'fenced',
+              emDelimiter: '*',
+              strongDelimiter: '**',
+            });
 
-        function updatePreview() {
-          const content = inputContent?.value || '';
+            // Clean paragraph rule that preserves lead class if present
+            turndownService.addRule('paragraph', {
+              filter: 'p',
+              replacement: function (content, node) {
+                if (!content.trim() && !node.querySelector('img')) return '';
+                if (node.classList && node.classList.contains('lead')) {
+                  return '\n\n<p class="lead">' + content + '</p>\n\n';
+                }
+                return '\n\n' + content + '\n\n';
+              },
+            });
+
+            // Convert contenteditable div lines cleanly
+            turndownService.addRule('editableDiv', {
+              filter: function (node) {
+                return (
+                  node.nodeName === 'DIV' &&
+                  !node.classList.contains('visual-canvas') &&
+                  !node.querySelector('h1, h2, h3, h4, blockquote, ul, ol')
+                );
+              },
+              replacement: function (content, node) {
+                if (!content.trim() && !node.querySelector('img')) return '';
+                return '\n\n' + content + '\n\n';
+              },
+            });
+
+            // Blockquote rule
+            turndownService.addRule('blockquote', {
+              filter: 'blockquote',
+              replacement: function (content) {
+                content = content.trim().replace(/^/gm, '> ');
+                return '\n\n' + content + '\n\n';
+              },
+            });
+
+            // Image rule
+            turndownService.addRule('image', {
+              filter: 'img',
+              replacement: function (content, node) {
+                const alt = node.getAttribute('alt') || 'Image';
+                const src = node.getAttribute('src') || '';
+                return '\n\n![' + alt + '](' + src + ')\n\n';
+              },
+            });
+          }
+        } catch (e) {
+          console.warn('TurndownService initialization warning:', e);
+        }
+
+        function simpleHtmlToMarkdown(html) {
+          if (!html) return '';
+          let md = html
+            .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+            .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+            .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+            .replace(/<p[^>]*class="[^"]*lead[^"]*"[^>]*>(.*?)<\/p>/gi, '<p class="lead">$1</p>\n\n')
+            .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+            .replace(/<b[^>]*>(.*?)<\/b>/gi, '**$1**')
+            .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+            .replace(/<i[^>]*>(.*?)<\/i>/gi, '*$1*')
+            .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
+            .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+            .replace(/<ul[^>]*>(.*?)<\/ul>/gi, '$1\n')
+            .replace(/<ol[^>]*>(.*?)<\/ol>/gi, '$1\n')
+            .replace(/<a[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+            .replace(/<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"[^>]*>/gi, '![$2]($1)\n\n')
+            .replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n')
+            .replace(/<br\s*[\/]?>/gi, '\n')
+            .replace(/&nbsp;/gi, ' ');
+          return md.replace(/\n{3,}/g, '\n\n').trim();
+        }
+
+        function htmlToMarkdown(html) {
+          if (!html || html === '<p><br></p>' || html.trim() === '') return '';
+          try {
+            if (turndownService) {
+              const res = turndownService.turndown(html);
+              return res.replace(/\n{3,}/g, '\n\n').trim();
+            }
+          } catch (e) {
+            console.warn('Turndown error, using fallback:', e);
+          }
+          return simpleHtmlToMarkdown(html);
+        }
+
+        function markdownToHtml(md) {
+          if (!md || !md.trim()) return '';
+          try {
+            if (typeof marked !== 'undefined') {
+              return marked.parse(md, {
+                gfm: true,
+                breaks: false,
+              });
+            }
+          } catch (e) {
+            console.warn('Marked parse error:', e);
+          }
+          return md;
+        }
+
+        // ----------------------------------------------------
+        // BIDIRECTIONAL REAL-TIME SYNCHRONIZATION
+        // ----------------------------------------------------
+        let isSyncing = false;
+
+        function updateStats(text) {
+          const content = text || '';
           const words = content.trim() ? content.trim().split(/\s+/).filter(Boolean).length : 0;
           const chars = content.length;
           const readMinutes = Math.max(1, Math.ceil(words / 200));
@@ -899,89 +1311,186 @@ const PRESET_IMAGES = [
           if (!inputReadingTime.value || !currentEditingSlug) {
             inputReadingTime.placeholder = `${readMinutes} min read`;
           }
-
-          if (typeof marked !== 'undefined' && livePreview) {
-            try {
-              livePreview.innerHTML = marked.parse(content || '*No content written yet...*');
-            } catch (e) {
-              livePreview.innerHTML = `<pre class="text-xs text-red-500">${e.message}</pre>`;
-            }
-          }
         }
 
-        inputContent?.addEventListener('input', () => {
-          updatePreview();
+        function syncFromVisualToMarkdown() {
+          if (isSyncing || !visualCanvas || !inputContent) return;
+          isSyncing = true;
+          const md = htmlToMarkdown(visualCanvas.innerHTML);
+          inputContent.value = md;
+          updateStats(visualCanvas.innerText || visualCanvas.textContent || '');
           triggerAutoSave();
-        });
-        [inputExcerpt, inputCategory, inputDate, inputFeaturedImage, inputTags].forEach((inp) => {
-          inp?.addEventListener('input', triggerAutoSave);
-        });
+          isSyncing = false;
+        }
 
-        document.querySelectorAll('.toolbar-btn').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const mdSyntax = btn.getAttribute('data-md');
-            if (!mdSyntax || !inputContent) return;
+        function syncFromMarkdownToVisual() {
+          if (isSyncing || !visualCanvas || !inputContent) return;
+          isSyncing = true;
+          const html = markdownToHtml(inputContent.value);
+          visualCanvas.innerHTML = html;
+          updateStats(inputContent.value);
+          triggerAutoSave();
+          isSyncing = false;
+        }
 
-            const start = inputContent.selectionStart;
-            const end = inputContent.selectionEnd;
-            const selected = inputContent.value.substring(start, end);
+        visualCanvas?.addEventListener('input', syncFromVisualToMarkdown);
+        inputContent?.addEventListener('input', syncFromMarkdownToVisual);
 
-            let replacement = '';
-            if (mdSyntax.includes('|')) {
-              const parts = mdSyntax.split('|');
-              replacement = parts[0] + (selected || 'text') + parts[1];
-            } else {
-              replacement = mdSyntax + '\n';
+        // ----------------------------------------------------
+        // VISUAL FORMATTING ACTIONS
+        // ----------------------------------------------------
+        function execFormat(command, value = null) {
+          if (currentEditorMode === 'markdown') {
+            const syntaxMap = {
+              'bold': '**|**',
+              'italic': '*|*',
+              'h2': '## |',
+              'h3': '### |',
+              'p': '\n\n|',
+              'lead': '<p class="lead">|</p>',
+              'quote': '> |',
+              'ul': '- |',
+              'ol': '1. |',
+              'hr': '---\n',
+              'link': '[Link Text](|https://)',
+            };
+            const mdSyntax = syntaxMap[command];
+            if (mdSyntax && inputContent) {
+              const start = inputContent.selectionStart;
+              const end = inputContent.selectionEnd;
+              const selected = inputContent.value.substring(start, end);
+              const rep = mdSyntax.includes('|')
+                ? mdSyntax.split('|')[0] + (selected || 'text') + mdSyntax.split('|')[1]
+                : mdSyntax;
+              inputContent.setRangeText(rep, start, end, 'select');
+              inputContent.focus();
+              syncFromMarkdownToVisual();
             }
+            return;
+          }
 
-            inputContent.setRangeText(replacement, start, end, 'select');
-            inputContent.focus();
-            updatePreview();
-            triggerAutoSave();
-          });
+          if (!visualCanvas) return;
+          visualCanvas.focus();
+
+          function applyFormatBlock(tagName) {
+            const clean = tagName.replace(/[<>]/g, '');
+            let ok = false;
+            try {
+              ok = document.execCommand('formatBlock', false, `<${clean}>`);
+            } catch (e) {}
+            if (!ok) {
+              try {
+                ok = document.execCommand('formatBlock', false, clean);
+              } catch (e) {}
+            }
+            return ok;
+          }
+
+          if (command === 'p') {
+            applyFormatBlock('p');
+          } else if (command === 'lead') {
+            const sel = window.getSelection();
+            if (sel && sel.anchorNode) {
+              let node = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentNode : sel.anchorNode;
+              while (node && node !== visualCanvas && node.nodeName !== 'P') {
+                node = node.parentNode;
+              }
+              if (node && node.nodeName === 'P') {
+                node.classList.toggle('lead');
+              } else {
+                applyFormatBlock('p');
+                const newSel = window.getSelection();
+                let pNode = newSel?.anchorNode?.nodeType === 3 ? newSel.anchorNode.parentNode : newSel?.anchorNode;
+                if (pNode && pNode.nodeName === 'P') pNode.classList.add('lead');
+              }
+            }
+          } else if (command === 'h2') {
+            applyFormatBlock('h2');
+          } else if (command === 'h3') {
+            applyFormatBlock('h3');
+          } else if (command === 'quote') {
+            applyFormatBlock('blockquote');
+          } else if (command === 'link') {
+            const url = prompt('Enter link URL (e.g. https://...):');
+            if (url) document.execCommand('createLink', false, url);
+          } else if (command === 'ul') {
+            document.execCommand('insertUnorderedList', false, null);
+          } else if (command === 'ol') {
+            document.execCommand('insertOrderedList', false, null);
+          } else if (command === 'hr') {
+            document.execCommand('insertHorizontalRule', false, null);
+          } else {
+            document.execCommand(command, false, value);
+          }
+          syncFromVisualToMarkdown();
+        }
+
+        document.getElementById('tool-p')?.addEventListener('click', () => execFormat('p'));
+        document.getElementById('tool-lead')?.addEventListener('click', () => execFormat('lead'));
+        document.getElementById('tool-h2')?.addEventListener('click', () => execFormat('h2'));
+        document.getElementById('tool-h3')?.addEventListener('click', () => execFormat('h3'));
+        document.getElementById('tool-bold')?.addEventListener('click', () => execFormat('bold'));
+        document.getElementById('tool-italic')?.addEventListener('click', () => execFormat('italic'));
+        document.getElementById('tool-quote')?.addEventListener('click', () => execFormat('quote'));
+        document.getElementById('tool-ul')?.addEventListener('click', () => execFormat('ul'));
+        document.getElementById('tool-ol')?.addEventListener('click', () => execFormat('ol'));
+        document.getElementById('tool-hr')?.addEventListener('click', () => execFormat('hr'));
+        document.getElementById('tool-link')?.addEventListener('click', () => execFormat('link'));
+
+        // Insert Image Toolbar Button
+        document.getElementById('toolbar-btn-insert-image')?.addEventListener('click', () => {
+          setTab('media');
+          showToast('Select an image from the library or upload one, then click "Insert into Article".');
         });
 
-        const btnModeSplit = document.getElementById('btn-mode-split');
-        const btnModeWrite = document.getElementById('btn-mode-write');
-        const btnModePreview = document.getElementById('btn-mode-preview');
-        const paneWrite = document.getElementById('pane-write');
-        const panePreview = document.getElementById('pane-preview');
-        const workspace = document.getElementById('editor-workspace');
+        // ----------------------------------------------------
+        // WORKSPACE MODE SWITCHER (VISUAL / SPLIT / MARKDOWN)
+        // ----------------------------------------------------
+        let currentEditorMode = 'visual';
 
         function setEditorMode(mode) {
-          [btnModeSplit, btnModeWrite, btnModePreview].forEach((b) => {
+          currentEditorMode = mode;
+          [btnModeVisual, btnModeSplit, btnModeMarkdown].forEach((b) => {
             b?.classList.remove('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
             b?.classList.add('text-[#5a534b]', 'dark:text-[#a8a29a]');
           });
 
-          if (mode === 'split' && workspace && paneWrite && panePreview) {
+          if (mode === 'visual' && workspace && paneVisual && paneMarkdown) {
+            btnModeVisual?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            workspace.className = 'grid grid-cols-1 min-h-[520px]';
+            paneVisual.classList.remove('hidden');
+            paneMarkdown.classList.add('hidden');
+          } else if (mode === 'split' && workspace && paneVisual && paneMarkdown) {
             btnModeSplit?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
-            workspace.className = 'grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#28231e]/10 dark:divide-purple-500/20 min-h-[500px]';
-            paneWrite.classList.remove('hidden');
-            panePreview.classList.remove('hidden');
-          } else if (mode === 'write' && workspace && paneWrite && panePreview) {
-            btnModeWrite?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
-            workspace.className = 'grid grid-cols-1 min-h-[500px]';
-            paneWrite.classList.remove('hidden');
-            panePreview.classList.add('hidden');
-          } else if (mode === 'preview' && workspace && paneWrite && panePreview) {
-            btnModePreview?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
-            workspace.className = 'grid grid-cols-1 min-h-[500px]';
-            paneWrite.classList.add('hidden');
-            panePreview.classList.remove('hidden');
+            workspace.className = 'grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#28231e]/10 dark:divide-purple-500/20 min-h-[520px]';
+            paneVisual.classList.remove('hidden');
+            paneMarkdown.classList.remove('hidden');
+          } else if (mode === 'markdown' && workspace && paneVisual && paneMarkdown) {
+            btnModeMarkdown?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            workspace.className = 'grid grid-cols-1 min-h-[520px]';
+            paneVisual.classList.add('hidden');
+            paneMarkdown.classList.remove('hidden');
           }
         }
 
+        btnModeVisual?.addEventListener('click', () => setEditorMode('visual'));
         btnModeSplit?.addEventListener('click', () => setEditorMode('split'));
-        btnModeWrite?.addEventListener('click', () => setEditorMode('write'));
-        btnModePreview?.addEventListener('click', () => setEditorMode('preview'));
+        btnModeMarkdown?.addEventListener('click', () => setEditorMode('markdown'));
 
-        function loadArticleIntoEditor(slug) {
+        function editArticle(slug) {
           const art = articles.find((a) => a.slug === slug);
           if (!art) return;
 
-          currentEditingSlug = art.slug;
-          if (editorHeading) editorHeading.textContent = `Editing: ${art.title}`;
+          currentEditingSlug = slug;
+          if (editorHeading) editorHeading.textContent = `Edit: ${art.title}`;
+          if (publishBtnText) publishBtnText.textContent = 'Update & Publish Article';
+          if (tabEditorBadge) tabEditorBadge.classList.remove('hidden');
+
+          if (editModeBanner) {
+            editModeBanner.classList.remove('hidden');
+            if (editBannerTitle) editBannerTitle.textContent = art.title;
+            if (editBannerSlug) editBannerSlug.textContent = `/articles/${art.slug}`;
+          }
 
           inputTitle.value = art.title || '';
           inputSlug.value = art.slug || '';
@@ -993,13 +1502,21 @@ const PRESET_IMAGES = [
           inputTags.value = Array.isArray(art.tags) ? art.tags.join(', ') : (art.tags || '');
           inputContent.value = art.content || '';
 
-          updatePreview();
+          if (visualCanvas) {
+            visualCanvas.innerHTML = markdownToHtml(art.content || '');
+          }
+          updateStats(visualCanvas?.innerText || art.content || '');
+          setEditorMode('visual');
           setTab('editor');
+          showToast(`Loaded "${art.title}" into Visual Editor.`);
         }
 
         function resetEditor() {
           currentEditingSlug = null;
           if (editorHeading) editorHeading.textContent = 'Write New Article';
+          if (publishBtnText) publishBtnText.textContent = 'Save & Publish';
+          if (tabEditorBadge) tabEditorBadge.classList.add('hidden');
+          if (editModeBanner) editModeBanner.classList.add('hidden');
 
           inputTitle.value = '';
           inputSlug.value = '';
@@ -1011,8 +1528,31 @@ const PRESET_IMAGES = [
           inputTags.value = '';
           inputContent.value = '';
 
-          updatePreview();
+          if (visualCanvas) {
+            visualCanvas.innerHTML = '';
+          }
+          updateStats('');
+          setEditorMode('visual');
         }
+
+        btnCancelEditing?.addEventListener('click', () => {
+          resetEditor();
+          showToast('Cancelled editing. Ready for new article.');
+        });
+
+        inputTitle?.addEventListener('input', () => {
+          if (!currentEditingSlug) {
+            inputSlug.value = inputTitle.value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)+/g, '');
+          }
+          triggerAutoSave();
+        });
+
+        [inputExcerpt, inputCategory, inputDate, inputFeaturedImage, inputTags].forEach((inp) => {
+          inp?.addEventListener('input', triggerAutoSave);
+        });
 
         function triggerAutoSave() {
           clearTimeout(autoSaveTimer);
@@ -1032,6 +1572,9 @@ const PRESET_IMAGES = [
         }
 
         function saveDraftLocally() {
+          if (currentEditorMode === 'visual' && visualCanvas) {
+            inputContent.value = htmlToMarkdown(visualCanvas.innerHTML);
+          }
           if (!inputTitle.value && !inputContent.value) return;
 
           const draft = {
@@ -1126,7 +1669,11 @@ const PRESET_IMAGES = [
                 inputFeaturedImage.value = draft.featuredImage || '/images/studio.jpg';
                 inputTags.value = draft.tags || '';
                 inputContent.value = draft.content || '';
-                updatePreview();
+                if (visualCanvas) {
+                  visualCanvas.innerHTML = markdownToHtml(draft.content || '');
+                }
+                updateStats(visualCanvas?.innerText || draft.content || '');
+                setEditorMode('visual');
                 setTab('editor');
               }
             });
@@ -1187,6 +1734,9 @@ ${(art.content || '').trim()}
         }
 
         document.getElementById('btn-export-markdown')?.addEventListener('click', () => {
+          if (currentEditorMode === 'visual' && visualCanvas) {
+            inputContent.value = htmlToMarkdown(visualCanvas.innerHTML);
+          }
           const art = {
             title: inputTitle.value || 'Untitled',
             slug: inputSlug.value || 'untitled',
@@ -1201,7 +1751,13 @@ ${(art.content || '').trim()}
           downloadMarkdownFile(art);
         });
 
+        // ----------------------------------------------------
+        // PUBLISH / UPDATE HANDLER
+        // ----------------------------------------------------
         document.getElementById('btn-publish-article')?.addEventListener('click', async () => {
+          if (currentEditorMode === 'visual' && visualCanvas) {
+            inputContent.value = htmlToMarkdown(visualCanvas.innerHTML);
+          }
           const title = inputTitle.value.trim();
           if (!title) {
             alert('Please enter an article title');
@@ -1209,8 +1765,9 @@ ${(art.content || '').trim()}
             return;
           }
 
+          const originalSlug = currentEditingSlug;
           const payload = {
-            slug: inputSlug.value.trim(),
+            slug: inputSlug.value.trim() || originalSlug,
             title,
             excerpt: inputExcerpt.value.trim(),
             category: inputCategory.value,
@@ -1222,6 +1779,10 @@ ${(art.content || '').trim()}
           };
 
           try {
+            const btn = document.getElementById('btn-publish-article');
+            if (btn) btn.setAttribute('disabled', 'true');
+            if (publishBtnText) publishBtnText.textContent = 'Publishing to D1...';
+
             const res = await fetch('/api/articles', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1230,10 +1791,11 @@ ${(art.content || '').trim()}
 
             const data = await res.json();
             if (res.ok && data.success) {
-              showToast(`Published & saved ${data.slug}.md!`);
+              const savedSlug = data.slug || payload.slug;
+              showToast(originalSlug ? `Updated article "${title}" successfully!` : `Published "${title}" successfully!`);
 
-              const existingIdx = articles.findIndex((a) => a.slug === data.slug);
-              const updatedItem = { ...payload, slug: data.slug };
+              const existingIdx = articles.findIndex((a) => a.slug === (originalSlug || savedSlug));
+              const updatedItem = { ...payload, slug: savedSlug };
               if (existingIdx >= 0) {
                 articles[existingIdx] = updatedItem;
               } else {
@@ -1243,14 +1805,19 @@ ${(art.content || '').trim()}
               const countEl = document.getElementById('articles-count-label');
               if (countEl) countEl.textContent = articles.length;
               renderArticlesTable();
+              resetEditor();
               setTab('list');
             } else {
-              downloadMarkdownFile(payload);
-              showToast(data.error || 'Server error; downloaded .md file.', true);
+              showToast(data.error || 'Server error saving article.', true);
             }
           } catch (err) {
-            downloadMarkdownFile(payload);
-            showToast('Downloaded .md file directly.');
+            showToast('Network error while saving article.', true);
+          } finally {
+            const btn = document.getElementById('btn-publish-article');
+            if (btn) btn.removeAttribute('disabled');
+            if (publishBtnText) {
+              publishBtnText.textContent = currentEditingSlug ? 'Update & Publish Article' : 'Save & Publish';
+            }
           }
         });
 
@@ -1265,45 +1832,474 @@ ${(art.content || '').trim()}
               const countEl = document.getElementById('articles-count-label');
               if (countEl) countEl.textContent = articles.length;
               renderArticlesTable();
-              showToast(`Deleted ${slug}.md`);
+              showToast(`Deleted ${slug} successfully.`);
             } else {
-              showToast(data.error || 'Failed to delete file', true);
+              showToast(data.error || 'Failed to delete article', true);
             }
           } catch (e) {
             articles = articles.filter((a) => a.slug !== slug);
             renderArticlesTable();
-            showToast(`Removed ${slug} from view`);
+            showToast(`Removed ${slug} from list`);
           }
         }
 
-        document.querySelectorAll('.btn-use-featured').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const url = btn.getAttribute('data-url');
-            if (inputFeaturedImage && url) {
-              inputFeaturedImage.value = url;
-              showToast(`Set featured image: ${url}`);
-              setTab('editor');
-            }
+        // ----------------------------------------------------
+        // MEDIA LIBRARY ENGINE (CUSTOM UPLOADS + PRESETS)
+        // ----------------------------------------------------
+        function getCustomMedia() {
+          try {
+            return JSON.parse(localStorage.getItem('astro_custom_media') || '[]');
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function saveCustomMedia(items) {
+          localStorage.setItem('astro_custom_media', JSON.stringify(items));
+          renderMediaGallery();
+        }
+
+        function renderMediaGallery() {
+          const grid = document.getElementById('media-gallery-grid');
+          if (!grid) return;
+
+          const customItems = getCustomMedia();
+          const allMedia = [
+            ...customItems.map((c) => ({ ...c, isCustom: true })),
+            ...PRESET_IMAGES.map((p) => ({ ...p, isCustom: false })),
+          ];
+
+          const badge = document.getElementById('media-count-badge');
+          if (badge) badge.textContent = allMedia.length;
+
+          grid.innerHTML = allMedia
+            .map(
+              (img, idx) => `
+            <div class="group rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 overflow-hidden shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between">
+              <div class="aspect-video overflow-hidden bg-[#28231e]/5 relative">
+                <img src="${img.url}" alt="${img.label}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                ${
+                  img.isCustom
+                    ? `<span class="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#855b25] text-white uppercase">Custom</span>`
+                    : ''
+                }
+              </div>
+              <div class="p-3 text-xs space-y-2">
+                <span class="font-medium text-[#110f0d] dark:text-[#ffffff] block truncate" title="${img.label}">${img.label}</span>
+                <span class="text-[10px] font-mono text-[#5a534b] dark:text-[#a8a29a] block truncate" title="${img.url}">${img.url}</span>
+                
+                <div class="grid grid-cols-2 gap-1.5 pt-2 border-t border-[#28231e]/10 dark:border-purple-500/15">
+                  <button
+                    type="button"
+                    class="btn-media-featured w-full py-1 rounded text-[10px] font-semibold bg-[#855b25]/10 text-[#855b25] dark:bg-purple-950/60 dark:text-[#e5c98f] hover:bg-[#855b25] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#060410] transition-colors cursor-pointer text-center"
+                    data-url="${img.url}"
+                  >
+                    Set Featured
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-media-insert w-full py-1 rounded text-[10px] font-semibold bg-[#855b25] text-white dark:bg-[#e5c98f] dark:text-[#060410] hover:opacity-90 transition-opacity cursor-pointer text-center"
+                    data-url="${img.url}"
+                    data-label="${img.label}"
+                  >
+                    Insert In Text
+                  </button>
+                </div>
+
+                <div class="flex items-center justify-between text-[10px] text-[#5a534b] dark:text-[#a8a29a] pt-1">
+                  <button type="button" class="btn-copy-md hover:text-[#855b25] dark:hover:text-[#e5c98f] cursor-pointer" data-url="${img.url}" data-label="${img.label}">
+                    Copy MD
+                  </button>
+                  <span>&bull;</span>
+                  <button type="button" class="btn-copy-raw-url hover:text-[#855b25] dark:hover:text-[#e5c98f] cursor-pointer" data-url="${img.url}">
+                    Copy Link
+                  </button>
+                  ${
+                    img.isCustom
+                      ? `<span>&bull;</span><button type="button" class="btn-delete-custom-media text-red-600/70 hover:text-red-600 cursor-pointer" data-id="${img.id}">Delete</button>`
+                      : ''
+                  }
+                </div>
+              </div>
+            </div>
+          `
+            )
+            .join('');
+
+          // Set as Featured Image
+          grid.querySelectorAll('.btn-media-featured').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const url = btn.getAttribute('data-url');
+              if (inputFeaturedImage && url) {
+                inputFeaturedImage.value = url;
+                showToast(`Set featured image: ${url}`);
+                setTab('editor');
+              }
+            });
           });
+
+          // Insert directly into article content (Visual or Markdown)
+          grid.querySelectorAll('.btn-media-insert').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const url = btn.getAttribute('data-url');
+              const label = btn.getAttribute('data-label') || 'Image';
+              if (!url) return;
+
+              if (currentEditorMode === 'visual' && visualCanvas) {
+                visualCanvas.focus();
+                const imgHtml = `<p><img src="${url}" alt="${label}" class="my-4 rounded-xl shadow-md max-w-full" /></p><p><br></p>`;
+                document.execCommand('insertHTML', false, imgHtml);
+                syncFromVisualToMarkdown();
+              } else if (inputContent) {
+                const mdSyntax = `\n\n![${label}](${url})\n\n`;
+                const start = inputContent.selectionStart || inputContent.value.length;
+                const end = inputContent.selectionEnd || inputContent.value.length;
+                inputContent.setRangeText(mdSyntax, start, end, 'end');
+                inputContent.focus();
+                syncFromMarkdownToVisual();
+              }
+              setTab('editor');
+              showToast(`Inserted "${label}" into article!`);
+            });
+          });
+
+          // Copy Markdown
+          grid.querySelectorAll('.btn-copy-md').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const url = btn.getAttribute('data-url');
+              const label = btn.getAttribute('data-label') || 'Image';
+              const mdSyntax = `![${label}](${url})`;
+              navigator.clipboard.writeText(mdSyntax);
+              showToast(`Copied Markdown: ${mdSyntax}`);
+            });
+          });
+
+          // Copy Raw Link
+          grid.querySelectorAll('.btn-copy-raw-url').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const url = btn.getAttribute('data-url');
+              if (url) {
+                navigator.clipboard.writeText(url);
+                showToast(`Copied image link: ${url}`);
+              }
+            });
+          });
+
+          // Delete custom media
+          grid.querySelectorAll('.btn-delete-custom-media').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              const updated = getCustomMedia().filter((m) => m.id !== id);
+              saveCustomMedia(updated);
+              showToast('Removed custom image from library.');
+            });
+          });
+        }
+
+        // Add Image via Direct URL
+        document.getElementById('btn-add-media-url')?.addEventListener('click', () => {
+          const urlInput = document.getElementById('media-url-input');
+          const labelInput = document.getElementById('media-label-input');
+          const url = (urlInput?.value || '').trim();
+          const label = (labelInput?.value || '').trim() || 'Custom Image';
+
+          if (!url) {
+            alert('Please enter a valid image URL');
+            return;
+          }
+
+          const customItems = getCustomMedia();
+          customItems.unshift({
+            id: `media-${Date.now()}`,
+            url,
+            label,
+          });
+
+          saveCustomMedia(customItems);
+          if (urlInput) urlInput.value = '';
+          if (labelInput) labelInput.value = '';
+          showToast(`Added "${label}" to Media Library!`);
         });
 
-        document.querySelectorAll('.btn-copy-md').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const url = btn.getAttribute('data-url');
-            const label = btn.getAttribute('data-label') || 'Image';
-            const mdSyntax = `![${label}](${url})`;
-            navigator.clipboard.writeText(mdSyntax);
-            showToast(`Copied Markdown: ${mdSyntax}`);
-          });
+        // Upload Image from Local Computer
+        const fileInput = document.getElementById('media-file-input');
+        document.getElementById('btn-trigger-upload')?.addEventListener('click', () => {
+          fileInput?.click();
+        });
+
+        fileInput?.addEventListener('change', async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          const label = file.name.replace(/\.[^/.]+$/, '');
+          showToast(`Uploading "${label}" to storage...`);
+
+          try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('label', label);
+
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success && data.url) {
+                const customItems = getCustomMedia();
+                customItems.unshift({
+                  id: data.key || `upload-${Date.now()}`,
+                  url: data.url,
+                  label: data.label || label,
+                });
+                saveCustomMedia(customItems);
+                showToast(`Saved "${label}" to Cloudflare R2 Media Library!`);
+                fileInput.value = '';
+                return;
+              }
+            }
+          } catch (err) {
+            console.warn('R2 upload failed, falling back to local storage:', err);
+          }
+
+          // Fallback to local Data URL if R2 endpoint is unavailable or local dev
+          const reader = new FileReader();
+          reader.onload = (loadEvent) => {
+            const dataUrl = loadEvent.target?.result;
+            if (typeof dataUrl === 'string') {
+              const customItems = getCustomMedia();
+              customItems.unshift({
+                id: `upload-${Date.now()}`,
+                url: dataUrl,
+                label,
+              });
+              saveCustomMedia(customItems);
+              showToast(`Saved "${label}" to local Media Library!`);
+              fileInput.value = '';
+            }
+          };
+          reader.readAsDataURL(file);
         });
 
         document.getElementById('btn-pick-media-header')?.addEventListener('click', () => {
           setTab('media');
         });
 
+        // ----------------------------------------------------
+        // USER & ACCESS MANAGEMENT
+        // ----------------------------------------------------
+        function renderUsersTable() {
+          const tbody = document.getElementById('users-table-body');
+          const countEl = document.getElementById('users-table-count');
+          const badgeEl = document.getElementById('users-count-badge');
+          if (!tbody) return;
+
+          if (countEl) countEl.textContent = users.length;
+          if (badgeEl) badgeEl.textContent = users.length;
+
+          if (users.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="py-8 text-center text-xs text-[#5a534b] dark:text-[#a8a29a]">
+                  No publishing users found in D1.
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          tbody.innerHTML = users
+            .map((u) => {
+              const isRoot = u.username === 'admin' || u.username === 'anisha';
+              const roleBadgeClass =
+                u.role === 'admin'
+                  ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                  : u.role === 'editor'
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20';
+
+              return `
+                <tr class="hover:bg-[#faf8f5]/60 dark:hover:bg-[#150f33]/40 transition-colors">
+                  <td class="py-3.5 px-4 sm:px-6">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40 text-[#855b25] dark:text-[#e5c98f] flex items-center justify-center font-bold text-xs uppercase">
+                        ${u.username.charAt(0)}
+                      </div>
+                      <div>
+                        <span class="font-medium text-[#110f0d] dark:text-[#ffffff] block text-xs">
+                          @${u.username}
+                        </span>
+                        ${isRoot ? '<span class="text-[10px] text-[#855b25] dark:text-[#e5c98f] font-mono">Primary Root Admin</span>' : ''}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${roleBadgeClass}">
+                      ${u.role || 'author'}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      D1 Hash Stored
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 sm:px-6 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        class="btn-edit-user text-[11px] font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline cursor-pointer"
+                        data-username="${u.username}"
+                        data-role="${u.role || 'author'}"
+                      >
+                        Update Pass
+                      </button>
+                      ${
+                        !isRoot
+                          ? `
+                        <span class="text-[#5a534b]/40">|</span>
+                        <button
+                          type="button"
+                          class="btn-delete-user text-[11px] font-semibold text-red-600/80 hover:text-red-600 cursor-pointer"
+                          data-username="${u.username}"
+                        >
+                          Revoke
+                        </button>
+                      `
+                          : ''
+                      }
+                    </div>
+                  </td>
+                </tr>
+              `;
+            })
+            .join('');
+
+          // Bind edit buttons
+          tbody.querySelectorAll('.btn-edit-user').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const username = btn.getAttribute('data-username');
+              const role = btn.getAttribute('data-role');
+              const unameInput = document.getElementById('input-new-username');
+              const roleSelect = document.getElementById('input-new-role');
+              const passInput = document.getElementById('input-new-password');
+
+              if (unameInput && username) unameInput.value = username;
+              if (roleSelect && role) roleSelect.value = role;
+              if (passInput) {
+                passInput.focus();
+                showToast(`Enter new password for @${username} above and click Save.`);
+              }
+            });
+          });
+
+          // Bind delete buttons
+          tbody.querySelectorAll('.btn-delete-user').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              const username = btn.getAttribute('data-username');
+              if (!username) return;
+
+              if (confirm(`Revoke publishing permissions for user "@${username}"? They will no longer be able to log in.`)) {
+                try {
+                  const res = await fetch(`/api/users?username=${encodeURIComponent(username)}`, {
+                    method: 'DELETE',
+                  });
+                  const data = await res.json();
+                  if (res.ok && data.success) {
+                    users = users.filter((u) => u.username !== username);
+                    renderUsersTable();
+                    showToast(data.message || `Revoked user @${username}`);
+                  } else {
+                    showToast(data.error || 'Failed to delete user', true);
+                  }
+                } catch (e) {
+                  showToast('Network error deleting user', true);
+                }
+              }
+            });
+          });
+        }
+
+        // Manage User Form Handler
+        const formManageUser = document.getElementById('form-manage-user');
+        formManageUser?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const unameInput = document.getElementById('input-new-username');
+          const passInput = document.getElementById('input-new-password');
+          const roleSelect = document.getElementById('input-new-role');
+          const saveBtn = document.getElementById('btn-save-user');
+
+          const username = (unameInput?.value || '').trim();
+          const password = (passInput?.value || '').trim();
+          const role = roleSelect?.value || 'author';
+
+          if (!username || !password) {
+            showToast('Username and password are required', true);
+            return;
+          }
+
+          try {
+            if (saveBtn) saveBtn.setAttribute('disabled', 'true');
+            const res = await fetch('/api/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username, password, role }),
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+              showToast(data.message || `User @${username} authorized successfully!`);
+              if (passInput) passInput.value = '';
+              if (unameInput) unameInput.value = '';
+
+              const existingIdx = users.findIndex((u) => u.username === username);
+              if (existingIdx >= 0) {
+                users[existingIdx].role = role;
+              } else {
+                users.push({ id: Date.now(), username, role });
+              }
+              renderUsersTable();
+            } else {
+              showToast(data.error || 'Failed to save user', true);
+            }
+          } catch (err) {
+            showToast('Network error authorizing user', true);
+          } finally {
+            if (saveBtn) saveBtn.removeAttribute('disabled');
+          }
+        });
+
+        // Toggle password visibility
+        document.getElementById('btn-toggle-password-visibility')?.addEventListener('click', () => {
+          const passInput = document.getElementById('input-new-password');
+          if (passInput) {
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+          }
+        });
+
+        // Refresh users button
+        document.getElementById('btn-refresh-users')?.addEventListener('click', async () => {
+          try {
+            showToast('Refreshing accounts from D1...');
+            const res = await fetch('/api/users');
+            const data = await res.json();
+            if (res.ok && data.success && Array.isArray(data.users)) {
+              users = data.users;
+              renderUsersTable();
+              showToast('Refreshed user accounts from D1');
+            }
+          } catch (e) {
+            showToast('Failed to refresh users', true);
+          }
+        });
+
         setTab('list');
         renderArticlesTable();
         updateDraftsBadge();
+        renderMediaGallery();
+        renderUsersTable();
       </script>
     </div>
   )}
@@ -1351,14 +2347,13 @@ ${(art.content || '').trim()}
     #live-preview-content :global(p) {
       margin-bottom: 1rem;
       line-height: 1.7;
-      font-size: 0.95rem;
     }
     #live-preview-content :global(blockquote) {
-      border-left: 3px solid #855b25;
-      padding-left: 1rem;
+      border-left: 2px solid #855b25;
+      padding-left: 1.25rem;
+      margin: 1.5rem 0;
       font-style: italic;
       color: #5a534b;
-      margin: 1.5rem 0;
     }
     :global(.dark) #live-preview-content :global(blockquote) {
       border-left-color: #e5c98f;
@@ -1374,19 +2369,223 @@ ${(art.content || '').trim()}
       padding-left: 1.5rem;
       margin-bottom: 1rem;
     }
-    #live-preview-content :global(li) {
-      margin-bottom: 0.5rem;
-      font-size: 0.95rem;
-    }
     #live-preview-content :global(img) {
       border-radius: 0.75rem;
-      margin: 1.5rem 0;
       max-width: 100%;
       height: auto;
-      border: 1px solid rgba(40, 35, 30, 0.1);
+      margin: 1.5rem auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
-    :global(.dark) #live-preview-content :global(img) {
-      border-color: rgba(168, 85, 247, 0.2);
+
+    /* Visual Canvas ContentEditable Styling */
+    .visual-canvas {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 460px;
+      font-size: 1.1rem;
+      line-height: 1.85;
+      color: #2c2722;
+    }
+    .visual-canvas:empty:before {
+      content: attr(data-placeholder);
+      color: #8c827a;
+      font-style: italic;
+      pointer-events: none;
+      display: block;
+    }
+    :global(.dark) .visual-canvas:empty:before {
+      color: #78716c;
+    }
+
+    /* Headings in Visual Canvas */
+    .visual-canvas :global(h1),
+    .visual-canvas :global(h2),
+    .visual-canvas :global(h3),
+    .visual-canvas :global(h4) {
+      font-family: 'Cormorant Garamond', Georgia, serif !important;
+      font-weight: 600 !important;
+      color: #110f0d !important;
+      letter-spacing: -0.015em !important;
+      display: block !important;
+    }
+    :global(.dark) .visual-canvas :global(h1),
+    :global(.dark) .visual-canvas :global(h2),
+    :global(.dark) .visual-canvas :global(h3),
+    :global(.dark) .visual-canvas :global(h4) {
+      color: #ffffff !important;
+    }
+    .visual-canvas :global(h1) {
+      font-size: 2.25rem !important;
+      line-height: 1.2 !important;
+      margin-top: 2.5rem !important;
+      margin-bottom: 1rem !important;
+    }
+    .visual-canvas :global(h2) {
+      font-size: 1.875rem !important;
+      line-height: 1.25 !important;
+      margin-top: 2.25rem !important;
+      margin-bottom: 0.85rem !important;
+      border-bottom: 1px solid rgba(40, 35, 30, 0.08) !important;
+      padding-bottom: 0.4rem !important;
+    }
+    :global(.dark) .visual-canvas :global(h2) {
+      border-bottom-color: rgba(168, 85, 247, 0.2) !important;
+    }
+    .visual-canvas :global(h3) {
+      font-size: 1.45rem !important;
+      line-height: 1.3 !important;
+      margin-top: 1.85rem !important;
+      margin-bottom: 0.65rem !important;
+    }
+    .visual-canvas :global(h4) {
+      font-size: 1.25rem !important;
+      line-height: 1.4 !important;
+      margin-top: 1.5rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* Paragraphs in Visual Canvas */
+    .visual-canvas :global(p) {
+      margin-bottom: 1.5rem !important;
+      line-height: 1.85 !important;
+      font-size: 1.1rem !important;
+      color: #2c2722;
+    }
+    :global(.dark) .visual-canvas :global(p) {
+      color: #ded9d0;
+    }
+
+    /* Lead / First Paragraph */
+    .visual-canvas :global(p.lead),
+    .visual-canvas :global(> p:first-of-type),
+    .visual-canvas :global(> div > p:first-of-type) {
+      font-family: 'Cormorant Garamond', Georgia, serif !important;
+      font-size: 1.35rem !important;
+      line-height: 1.6 !important;
+      font-style: italic !important;
+      color: #443e37 !important;
+      margin-bottom: 2rem !important;
+      display: block !important;
+    }
+    @media (min-width: 640px) {
+      .visual-canvas :global(p.lead),
+      .visual-canvas :global(> p:first-of-type),
+      .visual-canvas :global(> div > p:first-of-type) {
+        font-size: 1.5rem !important;
+      }
+    }
+    :global(.dark) .visual-canvas :global(p.lead),
+    :global(.dark) .visual-canvas :global(> p:first-of-type),
+    :global(.dark) .visual-canvas :global(> div > p:first-of-type) {
+      color: #f0ebe1 !important;
+    }
+
+    /* Blockquotes */
+    .visual-canvas :global(blockquote) {
+      border-left: 3px solid #855b25 !important;
+      background: #faf8f5 !important;
+      padding: 1.25rem 1.5rem !important;
+      margin: 2rem 0 !important;
+      border-radius: 0.5rem !important;
+      font-family: 'Cormorant Garamond', Georgia, serif !important;
+      font-size: 1.25rem !important;
+      font-style: italic !important;
+      color: #110f0d !important;
+      line-height: 1.65 !important;
+      box-shadow: inset 0 0 0 1px rgba(133, 91, 37, 0.08) !important;
+      display: block !important;
+    }
+    :global(.dark) .visual-canvas :global(blockquote) {
+      border-left-color: #e5c98f !important;
+      background: rgba(15, 11, 36, 0.7) !important;
+      color: #ffffff !important;
+      box-shadow: inset 0 0 0 1px rgba(229, 201, 143, 0.15) !important;
+    }
+    .visual-canvas :global(blockquote p) {
+      margin-bottom: 0.5rem !important;
+      line-height: 1.65 !important;
+    }
+    .visual-canvas :global(blockquote p:last-child) {
+      margin-bottom: 0 !important;
+    }
+
+    /* Lists */
+    .visual-canvas :global(ul) {
+      list-style-type: disc !important;
+      padding-left: 1.75rem !important;
+      margin-top: 1.25rem !important;
+      margin-bottom: 1.5rem !important;
+      display: block !important;
+    }
+    .visual-canvas :global(ol) {
+      list-style-type: decimal !important;
+      padding-left: 1.75rem !important;
+      margin-top: 1.25rem !important;
+      margin-bottom: 1.5rem !important;
+      display: block !important;
+    }
+    .visual-canvas :global(li) {
+      margin-bottom: 0.5rem !important;
+      line-height: 1.75 !important;
+      padding-left: 0.25rem !important;
+      display: list-item !important;
+    }
+    .visual-canvas :global(li strong),
+    .visual-canvas :global(li b) {
+      color: #110f0d !important;
+      font-weight: 600 !important;
+    }
+    :global(.dark) .visual-canvas :global(li strong),
+    :global(.dark) .visual-canvas :global(li b) {
+      color: #ffffff !important;
+    }
+
+    /* Inline */
+    .visual-canvas :global(strong),
+    .visual-canvas :global(b) {
+      font-weight: 600 !important;
+      color: #110f0d !important;
+    }
+    :global(.dark) .visual-canvas :global(strong),
+    :global(.dark) .visual-canvas :global(b) {
+      color: #ffffff !important;
+    }
+    .visual-canvas :global(em),
+    .visual-canvas :global(i) {
+      font-style: italic !important;
+    }
+
+    /* Links */
+    .visual-canvas :global(a) {
+      color: #855b25 !important;
+      text-decoration: underline !important;
+      text-underline-offset: 3px !important;
+      font-weight: 500 !important;
+    }
+    :global(.dark) .visual-canvas :global(a) {
+      color: #e5c98f !important;
+    }
+
+    /* Images */
+    .visual-canvas :global(img) {
+      border-radius: 0.75rem !important;
+      margin: 2rem auto !important;
+      max-width: 100% !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+      display: block !important;
+      border: 1px solid rgba(40, 35, 30, 0.1) !important;
+    }
+    :global(.dark) .visual-canvas :global(img) {
+      border-color: rgba(168, 85, 247, 0.2) !important;
+    }
+
+    /* Dividers */
+    .visual-canvas :global(hr) {
+      border: 0 !important;
+      border-top: 1px solid rgba(133, 91, 37, 0.25) !important;
+      margin: 2.5rem 0 !important;
+    }
+    :global(.dark) .visual-canvas :global(hr) {
+      border-top-color: rgba(229, 201, 143, 0.25) !important;
     }
   </style>
 </Layout>

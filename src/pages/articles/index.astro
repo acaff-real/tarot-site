@@ -1,8 +1,56 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { getDatabase } from '../../lib/db';
 
-const articles = await getCollection('articles');
+export const prerender = false;
+
+const db = getDatabase();
+const articlesMap = new Map<string, any>();
+
+if (db) {
+  try {
+    const dbArticles = await db.prepare('SELECT * FROM articles ORDER BY published_at DESC').all();
+    if (dbArticles?.results) {
+      for (const r of dbArticles.results as any[]) {
+        let tagsArray = [];
+        try {
+          tagsArray = typeof r.tags === 'string' ? JSON.parse(r.tags) : (r.tags || []);
+        } catch {
+          tagsArray = typeof r.tags === 'string' ? r.tags.split(',').map((t: string) => t.trim()) : [];
+        }
+        articlesMap.set(r.slug, {
+          id: r.slug,
+          data: {
+            title: r.title,
+            excerpt: r.excerpt,
+            category: r.category,
+            date: r.date,
+            readingTime: r.reading_time,
+            featuredImage: r.featured_image,
+            tags: tagsArray,
+          },
+        });
+      }
+    }
+  } catch (e) {
+    console.error('D1 fetch articles error in /articles:', e);
+  }
+}
+
+// Fallback to static collection for any not in D1
+try {
+  const staticArticles = await getCollection('articles');
+  for (const a of staticArticles) {
+    if (!articlesMap.has(a.id)) {
+      articlesMap.set(a.id, a);
+    }
+  }
+} catch (e) {
+  // Collection fallback
+}
+
+const articles = Array.from(articlesMap.values());
 ---
 
 <Layout

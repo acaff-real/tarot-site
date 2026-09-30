@@ -19,12 +19,14 @@
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
     "astronomy-engine": "^2.1.19",
+    "marked": "^18.0.14",
     "tailwindcss": "^4.3.3"
   },
   "allowScripts": {
     "esbuild": true
   },
   "devDependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
     "wrangler": "^4.145.0"
   }
 }

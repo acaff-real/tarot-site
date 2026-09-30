@@ -1,12 +1,15 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
+import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://astrobyanisha.com',
+  security: {
+    checkOrigin: false
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover'
@@ -20,7 +23,5 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: node({
-    mode: 'standalone'
-  })
+  adapter: cloudflare()
 });

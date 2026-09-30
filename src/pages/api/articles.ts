@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import fs from 'node:fs';
 import path from 'node:path';
+import { getDatabase } from '../../lib/db';
 
 export const prerender = false;
 
@@ -98,35 +99,129 @@ ${article.content.trim()}
   return frontmatter;
 }
 
+function checkAuth(request: Request) {
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const authHeader = request.headers.get('Authorization') || '';
+  const hasCookie = cookieHeader.includes('astro_admin_auth=') || cookieHeader.includes('journalist_auth=');
+  const hasBearer = authHeader.startsWith('Bearer ');
+  return hasCookie || hasBearer;
+}
+
 // GET /api/articles - List all articles or single article by ?slug=xxx
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   try {
-    if (!fs.existsSync(ARTICLES_DIR)) {
-      fs.mkdirSync(ARTICLES_DIR, { recursive: true });
-    }
-
     const requestedSlug = url.searchParams.get('slug');
+    const db = getDatabase();
 
+    // 1. Single article lookup
     if (requestedSlug) {
-      const filePath = path.join(ARTICLES_DIR, `${requestedSlug}.md`);
-      if (!fs.existsSync(filePath)) {
-        return new Response(JSON.stringify({ error: 'Article not found' }), {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        });
+      // Try D1 first
+      if (db) {
+        try {
+          const row = await db.prepare('SELECT * FROM articles WHERE slug = ?').bind(requestedSlug).first();
+          if (row) {
+            let tagsArray = [];
+            try {
+              tagsArray = typeof row.tags === 'string' ? JSON.parse(row.tags) : (row.tags || []);
+            } catch {
+              tagsArray = typeof row.tags === 'string' ? row.tags.split(',').map((t: string) => t.trim()) : [];
+            }
+            return new Response(
+              JSON.stringify({
+                article: {
+                  slug: row.slug,
+                  title: row.title,
+                  excerpt: row.excerpt,
+                  category: row.category,
+                  date: row.date,
+                  readingTime: row.reading_time,
+                  featuredImage: row.featured_image,
+                  tags: tagsArray,
+                  content: row.content,
+                  publishedAt: row.published_at,
+                },
+              }),
+              { headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+        } catch (dbErr) {
+          console.error('D1 single article lookup error:', dbErr);
+        }
       }
-      const raw = fs.readFileSync(filePath, 'utf-8');
-      const article = parseArticleFile(`${requestedSlug}.md`, raw);
-      return new Response(JSON.stringify({ article }), {
+
+      // Try local markdown file
+      try {
+        if (fs.existsSync(ARTICLES_DIR)) {
+          const filePath = path.join(ARTICLES_DIR, `${requestedSlug}.md`);
+          if (fs.existsSync(filePath)) {
+            const raw = fs.readFileSync(filePath, 'utf-8');
+            const article = parseArticleFile(`${requestedSlug}.md`, raw);
+            return new Response(JSON.stringify({ article }), {
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+        }
+      } catch (fsErr) {
+        // Ignored on serverless edge
+      }
+
+      return new Response(JSON.stringify({ error: 'Article not found' }), {
+        status: 404,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const files = fs.readdirSync(ARTICLES_DIR).filter((f) => f.endsWith('.md'));
-    const articles = files.map((file) => {
-      const raw = fs.readFileSync(path.join(ARTICLES_DIR, file), 'utf-8');
-      return parseArticleFile(file, raw);
-    });
+    // 2. List all articles
+    const articlesMap = new Map<string, any>();
+
+    // Query D1 if available
+    if (db) {
+      try {
+        const rows = await db.prepare('SELECT * FROM articles ORDER BY published_at DESC').all();
+        if (rows && rows.results) {
+          for (const row of rows.results as any[]) {
+            let tagsArray = [];
+            try {
+              tagsArray = typeof row.tags === 'string' ? JSON.parse(row.tags) : (row.tags || []);
+            } catch {
+              tagsArray = typeof row.tags === 'string' ? row.tags.split(',').map((t: string) => t.trim()) : [];
+            }
+            articlesMap.set(row.slug, {
+              slug: row.slug,
+              title: row.title,
+              excerpt: row.excerpt,
+              category: row.category,
+              date: row.date,
+              readingTime: row.reading_time,
+              featuredImage: row.featured_image,
+              tags: tagsArray,
+              content: row.content,
+              publishedAt: row.published_at,
+            });
+          }
+        }
+      } catch (dbErr) {
+        console.error('D1 list articles error:', dbErr);
+      }
+    }
+
+    // Merge filesystem articles (if available in local Node dev)
+    try {
+      if (fs.existsSync(ARTICLES_DIR)) {
+        const files = fs.readdirSync(ARTICLES_DIR).filter((f) => f.endsWith('.md'));
+        for (const file of files) {
+          const slug = file.replace(/\.md$/, '');
+          if (!articlesMap.has(slug)) {
+            const raw = fs.readFileSync(path.join(ARTICLES_DIR, file), 'utf-8');
+            articlesMap.set(slug, parseArticleFile(file, raw));
+          }
+        }
+      }
+    } catch (fsErr) {
+      // Ignored on serverless edge
+    }
+
+    const articles = Array.from(articlesMap.values());
 
     return new Response(JSON.stringify({ articles }), {
       headers: { 'Content-Type': 'application/json' },
@@ -139,26 +234,17 @@ export const GET: APIRoute = async ({ url }) => {
   }
 };
 
-function checkAuth(request: Request) {
-  const cookieHeader = request.headers.get('Cookie') || '';
-  const authHeader = request.headers.get('Authorization') || '';
-  const hasCookie = cookieHeader.includes('astro_admin_auth=') || cookieHeader.includes('journalist_auth=');
-  const hasBearer = authHeader.startsWith('Bearer ');
-  return hasCookie || hasBearer;
-}
-
-// POST /api/articles - Create or update an article markdown file
-export const POST: APIRoute = async ({ request }) => {
+// POST /api/articles - Create or update an article in D1 and local files
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     if (!checkAuth(request)) {
-      return new Response(JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to save or edit articles.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    if (!fs.existsSync(ARTICLES_DIR)) {
-      fs.mkdirSync(ARTICLES_DIR, { recursive: true });
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to save or edit articles.' }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const body = await request.json();
@@ -191,26 +277,82 @@ export const POST: APIRoute = async ({ request }) => {
     // Auto-compute reading time if empty
     const wordCount = (content || '').trim().split(/\s+/).filter(Boolean).length;
     const computedReadingTime = readingTime || `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+    const normalizedTags = Array.isArray(tags)
+      ? tags
+      : (tags || '')
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter(Boolean);
 
-    const fileContent = serializeArticle({
-      title,
-      excerpt: excerpt || '',
-      category: category || 'Vedic Astrology',
-      date: formattedDate,
-      readingTime: computedReadingTime,
-      featuredImage: featuredImage || '/images/studio.jpg',
-      tags: Array.isArray(tags) ? tags : (tags || '').split(',').map((t: string) => t.trim()).filter(Boolean),
-      content: content || '',
-    });
+    const db = getDatabase();
 
-    const targetFile = path.join(ARTICLES_DIR, `${cleanSlug}.md`);
-    fs.writeFileSync(targetFile, fileContent, 'utf-8');
+    // 1. Save / Update to Cloudflare D1
+    if (db) {
+      try {
+        await db
+          .prepare(
+            `INSERT INTO articles (slug, title, excerpt, category, date, reading_time, featured_image, tags, content, published_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(slug) DO UPDATE SET
+               title = excluded.title,
+               excerpt = excluded.excerpt,
+               category = excluded.category,
+               date = excluded.date,
+               reading_time = excluded.reading_time,
+               featured_image = excluded.featured_image,
+               tags = excluded.tags,
+               content = excluded.content,
+               published_at = CURRENT_TIMESTAMP`
+          )
+          .bind(
+            cleanSlug,
+            title,
+            excerpt || '',
+            category || 'Vedic Astrology',
+            formattedDate,
+            computedReadingTime,
+            featuredImage || '/images/studio.jpg',
+            JSON.stringify(normalizedTags),
+            content || ''
+          )
+          .run();
+      } catch (dbErr: any) {
+        console.error('D1 article save error:', dbErr);
+        return new Response(JSON.stringify({ error: `Database error: ${dbErr.message}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // 2. In local dev environment, also save to Markdown file if filesystem is writable
+    try {
+      if (fs.existsSync && fs.writeFileSync) {
+        if (!fs.existsSync(ARTICLES_DIR)) {
+          fs.mkdirSync(ARTICLES_DIR, { recursive: true });
+        }
+        const fileContent = serializeArticle({
+          title,
+          excerpt: excerpt || '',
+          category: category || 'Vedic Astrology',
+          date: formattedDate,
+          readingTime: computedReadingTime,
+          featuredImage: featuredImage || '/images/studio.jpg',
+          tags: normalizedTags,
+          content: content || '',
+        });
+        const targetFile = path.join(ARTICLES_DIR, `${cleanSlug}.md`);
+        fs.writeFileSync(targetFile, fileContent, 'utf-8');
+      }
+    } catch (fsErr) {
+      // Normal and expected on Cloudflare edge runtime (read-only filesystem)
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
         slug: cleanSlug,
-        message: `Saved ${cleanSlug}.md successfully`,
+        message: `Article "${title}" published and saved successfully.`,
       }),
       {
         headers: { 'Content-Type': 'application/json' },
@@ -225,13 +367,16 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 // DELETE /api/articles?slug=xxx
-export const DELETE: APIRoute = async ({ request, url }) => {
+export const DELETE: APIRoute = async ({ request, url, locals }) => {
   try {
     if (!checkAuth(request)) {
-      return new Response(JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to delete articles.' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to delete articles.' }),
+        {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
     }
 
     const slug = url.searchParams.get('slug');
@@ -242,18 +387,36 @@ export const DELETE: APIRoute = async ({ request, url }) => {
       });
     }
 
-    const filePath = path.join(ARTICLES_DIR, `${slug}.md`);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      return new Response(JSON.stringify({ success: true, message: `Deleted ${slug}.md` }), {
-        headers: { 'Content-Type': 'application/json' },
-      });
+    const db = getDatabase();
+
+    // 1. Delete from D1
+    if (db) {
+      try {
+        await db.prepare('DELETE FROM articles WHERE slug = ?').bind(slug).run();
+      } catch (dbErr: any) {
+        console.error('D1 delete error:', dbErr);
+      }
     }
 
-    return new Response(JSON.stringify({ error: 'File not found' }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // 2. Delete local markdown file if writable
+    try {
+      const filePath = path.join(ARTICLES_DIR, `${slug}.md`);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (fsErr) {
+      // Ignored on serverless edge
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: `Deleted "${slug}" successfully.`,
+      }),
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,

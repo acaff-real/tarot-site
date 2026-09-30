@@ -2,6 +2,7 @@ name = "tarot-site"
 compatibility_date = "2026-06-13"
 compatibility_flags = ["nodejs_compat"]
 
+
 [assets]
 directory = "./dist/client"
 
@@ -10,6 +11,11 @@ directory = "./dist/client"
 binding = "DB"
 database_name = "astro-by-anisha-db"
 database_id = "17ea3e17-019b-4742-a156-d3a39eddb0f2"
+
+# Cloudflare KV binding for Astro sessions
+[[kv_namespaces]]
+binding = "SESSION"
+id = "09d7db6cd1bf4315b3905184f90ad803"
 
 # Cloudflare R2 Bucket binding for media uploads
 [[r2_buckets]]
