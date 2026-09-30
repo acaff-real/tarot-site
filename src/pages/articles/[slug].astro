@@ -13,6 +13,31 @@ export async function getStaticPaths() {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: article.data.title,
+  description: article.data.excerpt,
+  image: new URL(article.data.featuredImage, Astro.site || 'https://astrobyanisha.com').href,
+  datePublished: article.data.date,
+  author: {
+    '@type': 'Person',
+    name: 'Anisha Banerji',
+    jobTitle: 'Vedic Astrologer & Tarot Consultant',
+    url: 'https://astrobyanisha.com/about'
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Astro by Anisha',
+    url: 'https://astrobyanisha.com',
+    logo: 'https://astrobyanisha.com/favicon.svg'
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': new URL(`/articles/${article.id}`, Astro.site || 'https://astrobyanisha.com').href
+  }
+};
 ---
 
 <Layout
@@ -21,6 +46,8 @@ const { Content } = await render(article);
   currentPath={`/articles/${article.id}`}
   image={article.data.featuredImage}
 >
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(articleSchema)} />
+
   <!-- Article Header -->
   <article class="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#fcfbf9] dark:bg-[#060410] border-b border-[#28231e]/10 dark:border-purple-500/20">
     <div class="max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8">

@@ -1,0 +1,1358 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = false;
+
+// 1. Authentication Configuration & Session Checking
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'AstroAnisha2026!';
+
+// Check logout action
+const action = Astro.url.searchParams.get('action');
+if (action === 'logout') {
+  Astro.cookies.delete('astro_admin_auth', { path: '/' });
+  Astro.cookies.delete('journalist_auth', { path: '/' });
+  return Astro.redirect('/publish', 302);
+}
+
+let loginError = '';
+let isAuthenticated = false;
+
+// Check existing session cookie
+const authCookie = Astro.cookies.get('astro_admin_auth')?.value || Astro.cookies.get('journalist_auth')?.value;
+if (authCookie && authCookie.length >= 16) {
+  isAuthenticated = true;
+}
+
+// Handle Login Form POST
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData();
+    const username = formData.get('username')?.toString().trim();
+    const password = formData.get('password')?.toString();
+
+    // Check credentials (supports 'admin' or 'anisha')
+    const isValidUser = username === ADMIN_USER || username === 'anisha';
+    const isValidPass = password === ADMIN_PASSWORD;
+
+    if (isValidUser && isValidPass) {
+      const sessionToken = crypto.randomUUID();
+      const isHttps = Astro.url.protocol === 'https:';
+
+      Astro.cookies.set('astro_admin_auth', sessionToken, {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: isHttps,
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+
+      Astro.cookies.set('journalist_auth', sessionToken, {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: isHttps,
+        maxAge: 60 * 60 * 24 * 7,
+      });
+
+      return Astro.redirect('/publish', 302);
+    } else {
+      loginError = 'Invalid credentials. Please verify your username and password.';
+    }
+  } catch (err: any) {
+    loginError = 'Error processing login request. Please try again.';
+  }
+}
+
+// 2. Fetch existing markdown articles if authenticated
+let initialArticles: any[] = [];
+if (isAuthenticated) {
+  const articlesCollection = await getCollection('articles');
+  initialArticles = articlesCollection.map((a) => ({
+    slug: a.id,
+    title: a.data.title,
+    excerpt: a.data.excerpt,
+    category: a.data.category,
+    date: a.data.date,
+    readingTime: a.data.readingTime,
+    featuredImage: a.data.featuredImage,
+    tags: a.data.tags || [],
+    content: a.body || '',
+  }));
+}
+
+const CATEGORIES = [
+  'Vedic Astrology',
+  'Intuitive Tarot',
+  'Numerology',
+  'Editorial Insights'
+];
+
+const PRESET_IMAGES = [
+  { url: '/images/studio.jpg', label: 'Editorial Studio Space' },
+  { url: '/images/anisha.webp', label: 'Anisha Banerji Portrait' },
+  { url: '/images/og-image.jpg', label: 'Celestial Gold Star Chart' },
+  { url: '/images/tarot/card-back.webp', label: 'Tarot Deck Back' },
+  { url: '/images/tarot/the-star.webp', label: 'Tarot: The Star' },
+  { url: '/images/tarot/the-sun.webp', label: 'Tarot: The Sun' },
+  { url: '/images/tarot/the-hermit.webp', label: 'Tarot: The Hermit' },
+  { url: '/images/tarot/wheel-of-fortune.webp', label: 'Tarot: Wheel of Fortune' }
+];
+---
+
+<Layout
+  title={isAuthenticated ? "Editorial Studio & CMS — Astro by Anisha" : "Sign In — Author Studio"}
+  description="Editorial CMS and publishing studio for Astro by Anisha."
+  currentPath="/publish"
+  hideNavFooter={true}
+>
+  <!-- Load Marked for real-time Markdown rendering if authenticated -->
+  {isAuthenticated && (
+    <script is:inline src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  )}
+
+  {!isAuthenticated ? (
+    <section class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-radial from-[#ffffff] via-[#faf8f5] to-[#f4ede1] dark:from-[#150f33] dark:via-[#0d0922] dark:to-[#04030a]">
+      <div class="max-w-md w-full space-y-8 p-8 sm:p-10 rounded-2xl bg-white/95 dark:bg-[#0f0b24]/95 border border-[#28231e]/15 dark:border-purple-500/25 shadow-2xl backdrop-blur-md">
+        
+        <!-- Header Emblem -->
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#855b25]/10 dark:bg-purple-950/60 border border-[#855b25]/25 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
+            <svg class="w-8 h-8" viewBox="0 0 64 64" fill="currentColor">
+              <path d="M32 5 L35.5 27.5 L59 32 L35.5 36.5 L32 59 L28.5 36.5 L5 32 L28.5 27.5 Z" />
+            </svg>
+          </div>
+          <h1 class="font-serif text-3xl sm:text-4xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
+            Author Studio
+          </h1>
+          <p class="text-xs uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold mt-1">
+            Astro by Anisha
+          </p>
+          <p class="mt-3 text-xs text-[#5a534b] dark:text-[#ded9d0] leading-relaxed">
+            Sign in to access the editorial CMS, manage drafts, and publish articles.
+          </p>
+        </div>
+
+        {loginError && (
+          <div class="p-3.5 rounded-lg bg-red-500/10 border border-red-500/25 text-red-700 dark:text-red-400 text-xs font-medium text-center">
+            {loginError}
+          </div>
+        )}
+
+        <!-- Login Form -->
+        <form method="POST" action="/publish" class="mt-6 space-y-5">
+          <div class="space-y-1.5">
+            <label for="username" class="block text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+              Username
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              autocomplete="username"
+              placeholder="admin or anisha"
+              class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="password" class="block text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="••••••••••••"
+              class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+            />
+          </div>
+
+          <div class="pt-2">
+            <button
+              type="submit"
+              class="iridescent w-full py-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-white shadow-md cursor-pointer text-center block"
+            >
+              Sign In to Studio
+              <span class="drop-shadow"></span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Footer link back to site -->
+        <div class="pt-4 border-t border-[#28231e]/10 dark:border-purple-500/20 text-center flex items-center justify-between text-xs text-[#5a534b] dark:text-[#a8a29a]">
+          <a href="/" class="hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors">
+            &larr; Back to Website
+          </a>
+          <ThemeToggle id="theme-toggle-login" />
+        </div>
+
+      </div>
+    </section>
+  ) : (
+    <div>
+      <!-- Author Studio Header -->
+      <header class="sticky top-0 z-40 bg-[#fcfbf9]/90 dark:bg-[#060410]/90 backdrop-blur-md border-b border-[#28231e]/10 dark:border-purple-500/20 px-4 sm:px-6 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          
+          <!-- Brand & Section -->
+          <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 group">
+              <svg class="w-6 h-6 text-[#855b25] dark:text-[#e5c98f] transition-transform group-hover:rotate-45" viewBox="0 0 64 64" fill="currentColor">
+                <path d="M32 5 L35.5 27.5 L59 32 L35.5 36.5 L32 59 L28.5 36.5 L5 32 L28.5 27.5 Z" />
+              </svg>
+              <span class="font-serif text-xl sm:text-2xl font-medium tracking-tight text-[#110f0d] dark:text-[#ffffff]">
+                Astro by Anisha
+              </span>
+            </a>
+            <span class="hidden sm:inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-[#855b25]/10 dark:bg-purple-950/60 text-[#855b25] dark:text-[#e5c98f] border border-[#855b25]/20 dark:border-purple-500/30">
+              Publishing Studio (/publish)
+            </span>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="flex items-center gap-2 sm:gap-4">
+            <button
+              type="button"
+              id="btn-quick-new"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] shadow-xs transition-colors cursor-pointer"
+            >
+              <span>+</span>
+              <span>New Article</span>
+            </button>
+
+            <a
+              href="/articles"
+              target="_blank"
+              class="hidden md:inline-flex items-center gap-1 text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] font-medium transition-colors"
+            >
+              <span>View Site</span>
+              <span>&nearr;</span>
+            </a>
+
+            <a
+              href="/publish?action=logout"
+              class="px-2.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider text-red-600/80 hover:text-red-600 hover:bg-red-500/10 transition-colors"
+              title="End editorial session"
+            >
+              Log Out
+            </a>
+
+            <ThemeToggle id="theme-toggle-admin" />
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Main Container -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- Tab Navigation Bar -->
+        <div class="flex items-center gap-2 border-b border-[#28231e]/10 dark:border-purple-500/20 pb-4 mb-8 overflow-x-auto">
+          <button
+            type="button"
+            id="tab-btn-list"
+            class="tab-btn active px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            All Articles (<span id="articles-count-label">{initialArticles.length}</span>)
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-editor"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            Article Studio & Editor
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-drafts"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <span>Drafts</span>
+            <span id="drafts-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-[#855b25]/15 dark:bg-purple-900/50 text-[#855b25] dark:text-[#e5c98f] font-mono">0</span>
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-media"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer"
+          >
+            Media Assets
+          </button>
+        </div>
+
+        <!-- Notification Toast -->
+        <div
+          id="admin-toast"
+          class="fixed bottom-6 right-6 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none px-4 py-3 rounded-xl shadow-xl border bg-white dark:bg-[#0f0b24] text-xs font-medium flex items-center gap-2.5"
+        >
+          <span id="toast-icon">✓</span>
+          <span id="toast-message">Action successful</span>
+        </div>
+
+        <!-- TAB 1: ALL ARTICLES (MANAGE / LIST VIEW) -->
+        <section id="view-list" class="space-y-6">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+            <div class="relative flex-1 max-w-md">
+              <input
+                type="text"
+                id="search-articles-input"
+                placeholder="Search articles by title, excerpt, tag..."
+                class="w-full pl-9 pr-4 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+              />
+              <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#5a534b] dark:text-[#a8a29a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label for="filter-category-select" class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-medium hidden md:inline">
+                Category:
+              </label>
+              <select
+                id="filter-category-select"
+                class="px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              >
+                <option value="ALL">All Categories</option>
+                {CATEGORIES.map((cat) => (
+                  <option value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <!-- Articles Table -->
+          <div class="rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5] dark:bg-[#0a071c] text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider text-[10px] font-semibold">
+                    <th class="py-3 px-4 sm:px-6">Article</th>
+                    <th class="py-3 px-4">Category</th>
+                    <th class="py-3 px-4 hidden md:table-cell">Reading Time</th>
+                    <th class="py-3 px-4 hidden lg:table-cell">Date</th>
+                    <th class="py-3 px-4 text-center">Status</th>
+                    <th class="py-3 px-4 sm:px-6 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="articles-table-body" class="divide-y divide-[#28231e]/10 dark:divide-purple-500/15">
+                  <!-- Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: ARTICLE STUDIO & EDITOR -->
+        <section id="view-editor" class="hidden space-y-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
+            <div>
+              <h2 id="editor-heading" class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
+                Write New Article
+              </h2>
+              <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] mt-1">
+                Compose high-contrast contemplative articles with live markdown preview.
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="btn-save-draft"
+                class="px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider border border-[#28231e]/20 dark:border-purple-500/40 text-[#110f0d] dark:text-[#ffffff] hover:bg-[#faf8f5] dark:hover:bg-purple-950/40 transition-colors cursor-pointer"
+              >
+                Save Draft
+              </button>
+
+              <button
+                type="button"
+                id="btn-export-markdown"
+                class="px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider border border-[#855b25]/40 text-[#855b25] dark:text-[#e5c98f] hover:bg-[#855b25]/10 transition-colors cursor-pointer"
+                title="Download formatted .md file"
+              >
+                Export .md
+              </button>
+
+              <button
+                type="button"
+                id="btn-publish-article"
+                class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] shadow-sm transition-colors cursor-pointer"
+              >
+                Save & Publish
+              </button>
+            </div>
+          </div>
+
+          <!-- Metadata Fields Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5 p-5 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+            <div class="md:col-span-8 space-y-1.5">
+              <label for="input-title" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Article Title *
+              </label>
+              <input
+                type="text"
+                id="input-title"
+                placeholder="e.g. Navigating Saturn Transits with Sovereign Grace"
+                required
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              />
+            </div>
+
+            <div class="md:col-span-4 space-y-1.5">
+              <label for="input-slug" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                URL Slug (.md file name)
+              </label>
+              <input
+                type="text"
+                id="input-slug"
+                placeholder="auto-generated-from-title"
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm font-mono bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              />
+            </div>
+
+            <div class="md:col-span-12 space-y-1.5">
+              <label for="input-excerpt" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Article Excerpt / Summary * (Appears on cards & search engines)
+              </label>
+              <textarea
+                id="input-excerpt"
+                rows="2"
+                placeholder="A compelling 1-2 sentence introduction capturing the contemplative essence..."
+                required
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] resize-y"
+              ></textarea>
+            </div>
+
+            <div class="md:col-span-4 space-y-1.5">
+              <label for="input-category" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Category *
+              </label>
+              <select
+                id="input-category"
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div class="md:col-span-4 space-y-1.5">
+              <label for="input-date" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Published Date
+              </label>
+              <input
+                type="text"
+                id="input-date"
+                placeholder="e.g. October 15, 2026"
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              />
+            </div>
+
+            <div class="md:col-span-4 space-y-1.5">
+              <label for="input-reading-time" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Reading Time
+              </label>
+              <input
+                type="text"
+                id="input-reading-time"
+                placeholder="Auto-calculated (e.g. 6 min read)"
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              />
+            </div>
+
+            <div class="md:col-span-8 space-y-1.5">
+              <label for="input-featured-image" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Featured Image URL *
+              </label>
+              <div class="flex items-center gap-2">
+                <input
+                  type="text"
+                  id="input-featured-image"
+                  value="/images/studio.jpg"
+                  class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                />
+                <button
+                  type="button"
+                  id="btn-pick-media-header"
+                  class="px-3 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-lg border border-[#855b25]/30 text-[#855b25] dark:text-[#e5c98f] hover:bg-[#855b25]/10 whitespace-nowrap cursor-pointer"
+                >
+                  Browse
+                </button>
+              </div>
+            </div>
+
+            <div class="md:col-span-4 space-y-1.5">
+              <label for="input-tags" class="text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
+                Tags (comma-separated)
+              </label>
+              <input
+                type="text"
+                id="input-tags"
+                placeholder="Vedic Astrology, Saturn, Timing"
+                class="w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              />
+            </div>
+          </div>
+
+          <!-- Split Workspace -->
+          <div class="rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white dark:bg-[#0f0b24] shadow-sm overflow-hidden flex flex-col">
+            <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 border-b border-[#28231e]/10 dark:border-purple-500/20 bg-[#faf8f5] dark:bg-[#0a071c] text-xs">
+              <div class="flex items-center gap-1 overflow-x-auto">
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-bold" data-md="**|**" title="Bold">B</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 italic" data-md="*|*" title="Italic">I</button>
+                <span class="text-[#28231e]/20 dark:text-purple-500/30">|</span>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-serif font-bold text-sm" data-md="## |" title="Heading 2">H2</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 font-serif font-bold text-xs" data-md="### |" title="Heading 3">H3</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10 italic text-xs" data-md='<p class="lead text-lg font-serif italic text-[#5a534b] mb-6">|</p>' title="Editorial Lead Paragraph">Lead</button>
+                <span class="text-[#28231e]/20 dark:text-purple-500/30">|</span>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="> |" title="Blockquote">” Quote</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="- |" title="Bullet List">• List</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="1. |" title="Numbered List">1. List</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="[Link Text](|https://)" title="Insert Link">🔗 Link</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="![Image Alt](|/images/studio.jpg)" title="Insert Image">🖼 Image</button>
+                <button type="button" class="toolbar-btn px-2 py-1 rounded hover:bg-[#28231e]/10 dark:hover:bg-white/10" data-md="---" title="Divider">― Divider</button>
+              </div>
+
+              <div class="flex items-center gap-1 bg-[#28231e]/5 dark:bg-white/5 p-1 rounded-lg">
+                <button type="button" id="btn-mode-split" class="mode-btn active px-2.5 py-0.5 rounded text-[11px] font-semibold">Split</button>
+                <button type="button" id="btn-mode-write" class="mode-btn px-2.5 py-0.5 rounded text-[11px] font-semibold">Write</button>
+                <button type="button" id="btn-mode-preview" class="mode-btn px-2.5 py-0.5 rounded text-[11px] font-semibold">Preview</button>
+              </div>
+            </div>
+
+            <div id="editor-workspace" class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#28231e]/10 dark:divide-purple-500/20 min-h-[500px]">
+              <div id="pane-write" class="flex flex-col p-4 bg-[#faf8f5]/40 dark:bg-[#060410]/40">
+                <textarea
+                  id="input-content"
+                  class="w-full h-full min-h-[460px] bg-transparent text-[#110f0d] dark:text-[#ffffff] font-mono text-sm leading-relaxed outline-none resize-none focus:ring-0 border-0"
+                  placeholder="Start writing in markdown or paste your essay draft here..."
+                ></textarea>
+              </div>
+
+              <div id="pane-preview" class="p-6 sm:p-8 overflow-y-auto max-h-[600px] bg-white dark:bg-[#060410]">
+                <div id="live-preview-content" class="prose max-w-none text-[#2c2722] dark:text-[#ded9d0]">
+                  <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] italic">Live preview will appear as you type...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between px-4 py-2 text-[11px] bg-[#faf8f5] dark:bg-[#0a071c] border-t border-[#28231e]/10 dark:border-purple-500/20 text-[#5a534b] dark:text-[#a8a29a]">
+              <div class="flex items-center gap-4">
+                <span>Words: <strong id="stats-words" class="text-[#110f0d] dark:text-[#ffffff]">0</strong></span>
+                <span>Characters: <strong id="stats-chars" class="text-[#110f0d] dark:text-[#ffffff]">0</strong></span>
+                <span>Reading: <strong id="stats-reading" class="text-[#110f0d] dark:text-[#ffffff]">0 min</strong></span>
+              </div>
+              <div>
+                <span id="auto-save-indicator" class="text-[#855b25] dark:text-[#e5c98f]">Auto-save active</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: DRAFTS MANAGER -->
+        <section id="view-drafts" class="hidden space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
+            <div>
+              <h2 class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
+                Saved Local Drafts
+              </h2>
+              <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] mt-1">
+                Browser-persisted drafts are kept safely in your session.
+              </p>
+            </div>
+            <button
+              type="button"
+              id="btn-clear-all-drafts"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+            >
+              Clear All Drafts
+            </button>
+          </div>
+
+          <div id="drafts-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Rendered via JS -->
+          </div>
+        </section>
+
+        <!-- TAB 4: MEDIA ASSET PICKER -->
+        <section id="view-media" class="hidden space-y-6">
+          <div class="pb-4 border-b border-[#28231e]/10 dark:border-purple-500/20">
+            <h2 class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
+              Brand Media Library
+            </h2>
+            <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] mt-1">
+              Click any image to copy its Markdown syntax or set it as the featured banner.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {PRESET_IMAGES.map((img) => (
+              <div class="group rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 overflow-hidden shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between">
+                <div class="aspect-video overflow-hidden bg-[#28231e]/5 relative">
+                  <img src={img.url} alt={img.label} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div class="p-3 text-xs space-y-2">
+                  <span class="font-medium text-[#110f0d] dark:text-[#ffffff] block truncate">{img.label}</span>
+                  <span class="text-[10px] font-mono text-[#5a534b] dark:text-[#a8a29a] block truncate">{img.url}</span>
+                  <div class="flex items-center gap-2 pt-1 border-t border-[#28231e]/10 dark:border-purple-500/15">
+                    <button
+                      type="button"
+                      class="btn-use-featured text-[10px] font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline"
+                      data-url={img.url}
+                    >
+                      Set Featured
+                    </button>
+                    <span>&bull;</span>
+                    <button
+                      type="button"
+                      class="btn-copy-md text-[10px] text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff]"
+                      data-url={img.url}
+                      data-label={img.label}
+                    >
+                      Copy MD
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Client-Side State Management Script -->
+      <script is:inline define:vars={{ initialArticles }}>
+        let articles = Array.isArray(initialArticles) ? initialArticles : [];
+        let currentEditingSlug = null;
+        let autoSaveTimer = null;
+
+        const tabBtnList = document.getElementById('tab-btn-list');
+        const tabBtnEditor = document.getElementById('tab-btn-editor');
+        const tabBtnDrafts = document.getElementById('tab-btn-drafts');
+        const tabBtnMedia = document.getElementById('tab-btn-media');
+
+        const viewList = document.getElementById('view-list');
+        const viewEditor = document.getElementById('view-editor');
+        const viewDrafts = document.getElementById('view-drafts');
+        const viewMedia = document.getElementById('view-media');
+
+        const tableBody = document.getElementById('articles-table-body');
+        const searchInput = document.getElementById('search-articles-input');
+        const filterCategory = document.getElementById('filter-category-select');
+
+        const inputTitle = document.getElementById('input-title');
+        const inputSlug = document.getElementById('input-slug');
+        const inputExcerpt = document.getElementById('input-excerpt');
+        const inputCategory = document.getElementById('input-category');
+        const inputDate = document.getElementById('input-date');
+        const inputReadingTime = document.getElementById('input-reading-time');
+        const inputFeaturedImage = document.getElementById('input-featured-image');
+        const inputTags = document.getElementById('input-tags');
+        const inputContent = document.getElementById('input-content');
+        const livePreview = document.getElementById('live-preview-content');
+        const editorHeading = document.getElementById('editor-heading');
+
+        const statsWords = document.getElementById('stats-words');
+        const statsChars = document.getElementById('stats-chars');
+        const statsReading = document.getElementById('stats-reading');
+        const draftsBadge = document.getElementById('drafts-count-badge');
+        const autoSaveIndicator = document.getElementById('auto-save-indicator');
+
+        function showToast(message, isError = false) {
+          const toast = document.getElementById('admin-toast');
+          const toastMsg = document.getElementById('toast-message');
+          const toastIcon = document.getElementById('toast-icon');
+          if (!toast || !toastMsg) return;
+
+          toastMsg.textContent = message;
+          toastIcon.textContent = isError ? '⚠' : '✓';
+          toast.className = `fixed bottom-6 right-6 z-50 transition-all duration-300 px-4 py-3 rounded-xl shadow-xl border text-xs font-medium flex items-center gap-2.5 ${
+            isError
+              ? 'bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800 text-red-800 dark:text-red-200'
+              : 'bg-[#faf8f5] dark:bg-[#0f0b24] border-[#855b25]/30 text-[#855b25] dark:text-[#e5c98f]'
+          }`;
+
+          toast.style.transform = 'translateY(0)';
+          toast.style.opacity = '1';
+
+          setTimeout(() => {
+            toast.style.transform = 'translateY(4rem)';
+            toast.style.opacity = '0';
+          }, 3500);
+        }
+
+        function setTab(tabName) {
+          [viewList, viewEditor, viewDrafts, viewMedia].forEach((v) => v?.classList.add('hidden'));
+          [tabBtnList, tabBtnEditor, tabBtnDrafts, tabBtnMedia].forEach((b) => {
+            b?.classList.remove('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            b?.classList.add('text-[#5a534b]', 'dark:text-[#a8a29a]');
+          });
+
+          if (tabName === 'list' && viewList) {
+            viewList.classList.remove('hidden');
+            tabBtnList?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+          } else if (tabName === 'editor' && viewEditor) {
+            viewEditor.classList.remove('hidden');
+            tabBtnEditor?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+          } else if (tabName === 'drafts' && viewDrafts) {
+            viewDrafts.classList.remove('hidden');
+            tabBtnDrafts?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            renderDrafts();
+          } else if (tabName === 'media' && viewMedia) {
+            viewMedia.classList.remove('hidden');
+            tabBtnMedia?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+          }
+        }
+
+        tabBtnList?.addEventListener('click', () => setTab('list'));
+        tabBtnEditor?.addEventListener('click', () => setTab('editor'));
+        tabBtnDrafts?.addEventListener('click', () => setTab('drafts'));
+        tabBtnMedia?.addEventListener('click', () => setTab('media'));
+        document.getElementById('btn-quick-new')?.addEventListener('click', () => {
+          resetEditor();
+          setTab('editor');
+        });
+
+        function renderArticlesTable() {
+          if (!tableBody) return;
+          const query = (searchInput?.value || '').toLowerCase().trim();
+          const cat = filterCategory?.value || 'ALL';
+
+          const filtered = articles.filter((a) => {
+            const matchesQuery =
+              !query ||
+              a.title.toLowerCase().includes(query) ||
+              a.excerpt.toLowerCase().includes(query) ||
+              (a.tags && a.tags.some((t) => t.toLowerCase().includes(query)));
+            const matchesCat = cat === 'ALL' || a.category === cat;
+            return matchesQuery && matchesCat;
+          });
+
+          if (filtered.length === 0) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="6" class="py-12 text-center text-xs text-[#5a534b] dark:text-[#a8a29a]">
+                  No articles match your search or filter.
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          tableBody.innerHTML = filtered
+            .map(
+              (art) => `
+            <tr class="hover:bg-[#faf8f5] dark:hover:bg-purple-950/20 transition-colors">
+              <td class="py-3.5 px-4 sm:px-6">
+                <span class="font-serif text-sm font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-snug">
+                  ${art.title}
+                </span>
+                <span class="text-[11px] text-[#5a534b] dark:text-[#a8a29a] line-clamp-1 mt-0.5 font-light">
+                  ${art.excerpt}
+                </span>
+                <span class="text-[10px] font-mono text-[#855b25] dark:text-[#e5c98f] block mt-0.5">
+                  /articles/${art.slug}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#855b25]/10 dark:bg-purple-950/60 text-[#855b25] dark:text-[#e5c98f] border border-[#855b25]/20 dark:border-purple-500/30">
+                  ${art.category}
+                </span>
+              </td>
+              <td class="py-3.5 px-4 hidden md:table-cell whitespace-nowrap text-[#5a534b] dark:text-[#ded9d0]">
+                ${art.readingTime}
+              </td>
+              <td class="py-3.5 px-4 hidden lg:table-cell whitespace-nowrap text-[#5a534b] dark:text-[#ded9d0]">
+                ${art.date}
+              </td>
+              <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                  Published
+                </span>
+              </td>
+              <td class="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap space-x-2">
+                <button
+                  type="button"
+                  class="btn-table-edit text-xs font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline cursor-pointer"
+                  data-slug="${art.slug}"
+                >
+                  Edit
+                </button>
+                <a
+                  href="/articles/${art.slug}"
+                  target="_blank"
+                  class="text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors"
+                >
+                  View
+                </a>
+                <button
+                  type="button"
+                  class="btn-table-export text-xs text-[#5a534b] dark:text-[#a8a29a] hover:text-[#855b25] transition-colors cursor-pointer"
+                  data-slug="${art.slug}"
+                  title="Download Markdown"
+                >
+                  .md
+                </button>
+                <button
+                  type="button"
+                  class="btn-table-delete text-xs text-red-600/70 hover:text-red-600 transition-colors cursor-pointer"
+                  data-slug="${art.slug}"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          `
+            )
+            .join('');
+
+          document.querySelectorAll('.btn-table-edit').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const slug = btn.getAttribute('data-slug');
+              loadArticleIntoEditor(slug);
+            });
+          });
+
+          document.querySelectorAll('.btn-table-export').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const slug = btn.getAttribute('data-slug');
+              const art = articles.find((a) => a.slug === slug);
+              if (art) downloadMarkdownFile(art);
+            });
+          });
+
+          document.querySelectorAll('.btn-table-delete').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              const slug = btn.getAttribute('data-slug');
+              if (confirm(`Are you sure you want to delete article "${slug}"?`)) {
+                await deleteArticle(slug);
+              }
+            });
+          });
+        }
+
+        searchInput?.addEventListener('input', renderArticlesTable);
+        filterCategory?.addEventListener('change', renderArticlesTable);
+
+        inputTitle?.addEventListener('input', () => {
+          if (!currentEditingSlug) {
+            inputSlug.value = inputTitle.value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)+/g, '');
+          }
+          updatePreview();
+          triggerAutoSave();
+        });
+
+        function updatePreview() {
+          const content = inputContent?.value || '';
+          const words = content.trim() ? content.trim().split(/\s+/).filter(Boolean).length : 0;
+          const chars = content.length;
+          const readMinutes = Math.max(1, Math.ceil(words / 200));
+
+          if (statsWords) statsWords.textContent = words.toLocaleString();
+          if (statsChars) statsChars.textContent = chars.toLocaleString();
+          if (statsReading) statsReading.textContent = `${readMinutes} min`;
+          if (!inputReadingTime.value || !currentEditingSlug) {
+            inputReadingTime.placeholder = `${readMinutes} min read`;
+          }
+
+          if (typeof marked !== 'undefined' && livePreview) {
+            try {
+              livePreview.innerHTML = marked.parse(content || '*No content written yet...*');
+            } catch (e) {
+              livePreview.innerHTML = `<pre class="text-xs text-red-500">${e.message}</pre>`;
+            }
+          }
+        }
+
+        inputContent?.addEventListener('input', () => {
+          updatePreview();
+          triggerAutoSave();
+        });
+        [inputExcerpt, inputCategory, inputDate, inputFeaturedImage, inputTags].forEach((inp) => {
+          inp?.addEventListener('input', triggerAutoSave);
+        });
+
+        document.querySelectorAll('.toolbar-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const mdSyntax = btn.getAttribute('data-md');
+            if (!mdSyntax || !inputContent) return;
+
+            const start = inputContent.selectionStart;
+            const end = inputContent.selectionEnd;
+            const selected = inputContent.value.substring(start, end);
+
+            let replacement = '';
+            if (mdSyntax.includes('|')) {
+              const parts = mdSyntax.split('|');
+              replacement = parts[0] + (selected || 'text') + parts[1];
+            } else {
+              replacement = mdSyntax + '\n';
+            }
+
+            inputContent.setRangeText(replacement, start, end, 'select');
+            inputContent.focus();
+            updatePreview();
+            triggerAutoSave();
+          });
+        });
+
+        const btnModeSplit = document.getElementById('btn-mode-split');
+        const btnModeWrite = document.getElementById('btn-mode-write');
+        const btnModePreview = document.getElementById('btn-mode-preview');
+        const paneWrite = document.getElementById('pane-write');
+        const panePreview = document.getElementById('pane-preview');
+        const workspace = document.getElementById('editor-workspace');
+
+        function setEditorMode(mode) {
+          [btnModeSplit, btnModeWrite, btnModePreview].forEach((b) => {
+            b?.classList.remove('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            b?.classList.add('text-[#5a534b]', 'dark:text-[#a8a29a]');
+          });
+
+          if (mode === 'split' && workspace && paneWrite && panePreview) {
+            btnModeSplit?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            workspace.className = 'grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#28231e]/10 dark:divide-purple-500/20 min-h-[500px]';
+            paneWrite.classList.remove('hidden');
+            panePreview.classList.remove('hidden');
+          } else if (mode === 'write' && workspace && paneWrite && panePreview) {
+            btnModeWrite?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            workspace.className = 'grid grid-cols-1 min-h-[500px]';
+            paneWrite.classList.remove('hidden');
+            panePreview.classList.add('hidden');
+          } else if (mode === 'preview' && workspace && paneWrite && panePreview) {
+            btnModePreview?.classList.add('bg-white', 'dark:bg-purple-950', 'shadow-xs', 'text-[#110f0d]', 'dark:text-[#ffffff]');
+            workspace.className = 'grid grid-cols-1 min-h-[500px]';
+            paneWrite.classList.add('hidden');
+            panePreview.classList.remove('hidden');
+          }
+        }
+
+        btnModeSplit?.addEventListener('click', () => setEditorMode('split'));
+        btnModeWrite?.addEventListener('click', () => setEditorMode('write'));
+        btnModePreview?.addEventListener('click', () => setEditorMode('preview'));
+
+        function loadArticleIntoEditor(slug) {
+          const art = articles.find((a) => a.slug === slug);
+          if (!art) return;
+
+          currentEditingSlug = art.slug;
+          if (editorHeading) editorHeading.textContent = `Editing: ${art.title}`;
+
+          inputTitle.value = art.title || '';
+          inputSlug.value = art.slug || '';
+          inputExcerpt.value = art.excerpt || '';
+          inputCategory.value = art.category || 'Vedic Astrology';
+          inputDate.value = art.date || '';
+          inputReadingTime.value = art.readingTime || '';
+          inputFeaturedImage.value = art.featuredImage || '/images/studio.jpg';
+          inputTags.value = Array.isArray(art.tags) ? art.tags.join(', ') : (art.tags || '');
+          inputContent.value = art.content || '';
+
+          updatePreview();
+          setTab('editor');
+        }
+
+        function resetEditor() {
+          currentEditingSlug = null;
+          if (editorHeading) editorHeading.textContent = 'Write New Article';
+
+          inputTitle.value = '';
+          inputSlug.value = '';
+          inputExcerpt.value = '';
+          inputCategory.value = 'Vedic Astrology';
+          inputDate.value = new Date().toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+          inputReadingTime.value = '';
+          inputFeaturedImage.value = '/images/studio.jpg';
+          inputTags.value = '';
+          inputContent.value = '';
+
+          updatePreview();
+        }
+
+        function triggerAutoSave() {
+          clearTimeout(autoSaveTimer);
+          if (autoSaveIndicator) autoSaveIndicator.textContent = 'Saving draft...';
+
+          autoSaveTimer = setTimeout(() => {
+            saveDraftLocally();
+          }, 1500);
+        }
+
+        function getLocalDrafts() {
+          try {
+            return JSON.parse(localStorage.getItem('astro_article_drafts') || '[]');
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function saveDraftLocally() {
+          if (!inputTitle.value && !inputContent.value) return;
+
+          const draft = {
+            id: currentEditingSlug || `draft-${Date.now()}`,
+            title: inputTitle.value || 'Untitled Draft',
+            slug: inputSlug.value,
+            excerpt: inputExcerpt.value,
+            category: inputCategory.value,
+            date: inputDate.value,
+            readingTime: inputReadingTime.value,
+            featuredImage: inputFeaturedImage.value,
+            tags: inputTags.value,
+            content: inputContent.value,
+            savedAt: new Date().toLocaleTimeString(),
+          };
+
+          const drafts = getLocalDrafts().filter((d) => d.id !== draft.id);
+          drafts.unshift(draft);
+          localStorage.setItem('astro_article_drafts', JSON.stringify(drafts.slice(0, 20)));
+
+          if (autoSaveIndicator) autoSaveIndicator.textContent = `Draft saved ${draft.savedAt}`;
+          updateDraftsBadge();
+        }
+
+        function updateDraftsBadge() {
+          const count = getLocalDrafts().length;
+          if (draftsBadge) draftsBadge.textContent = count;
+        }
+
+        function renderDrafts() {
+          const container = document.getElementById('drafts-list-container');
+          if (!container) return;
+
+          const drafts = getLocalDrafts();
+          if (drafts.length === 0) {
+            container.innerHTML = `
+              <div class="col-span-2 py-12 text-center text-xs text-[#5a534b] dark:text-[#a8a29a]">
+                No saved drafts in this browser.
+              </div>
+            `;
+            return;
+          }
+
+          container.innerHTML = drafts
+            .map(
+              (d) => `
+            <div class="p-4 rounded-xl border border-[#28231e]/10 dark:border-purple-500/20 bg-white/90 dark:bg-[#0f0b24]/90 space-y-2 shadow-xs">
+              <div class="flex items-center justify-between">
+                <span class="font-serif text-base font-semibold text-[#110f0d] dark:text-[#ffffff] truncate">
+                  ${d.title}
+                </span>
+                <span class="text-[10px] font-mono text-[#855b25] dark:text-[#e5c98f]">
+                  ${d.savedAt}
+                </span>
+              </div>
+              <p class="text-xs text-[#5a534b] dark:text-[#a8a29a] line-clamp-2">
+                ${d.excerpt || d.content.substring(0, 100) || 'No excerpt'}
+              </p>
+              <div class="flex items-center gap-3 pt-2 border-t border-[#28231e]/10 dark:border-purple-500/15">
+                <button
+                  type="button"
+                  class="btn-resume-draft text-xs font-semibold text-[#855b25] dark:text-[#e5c98f] hover:underline cursor-pointer"
+                  data-id="${d.id}"
+                >
+                  Resume Editing &rarr;
+                </button>
+                <button
+                  type="button"
+                  class="btn-delete-draft text-xs text-red-600/70 hover:text-red-600 cursor-pointer"
+                  data-id="${d.id}"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          `
+            )
+            .join('');
+
+          container.querySelectorAll('.btn-resume-draft').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              const draft = drafts.find((d) => d.id === id);
+              if (draft) {
+                currentEditingSlug = draft.id.startsWith('draft-') ? null : draft.id;
+                inputTitle.value = draft.title || '';
+                inputSlug.value = draft.slug || '';
+                inputExcerpt.value = draft.excerpt || '';
+                inputCategory.value = draft.category || 'Vedic Astrology';
+                inputDate.value = draft.date || '';
+                inputReadingTime.value = draft.readingTime || '';
+                inputFeaturedImage.value = draft.featuredImage || '/images/studio.jpg';
+                inputTags.value = draft.tags || '';
+                inputContent.value = draft.content || '';
+                updatePreview();
+                setTab('editor');
+              }
+            });
+          });
+
+          container.querySelectorAll('.btn-delete-draft').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const id = btn.getAttribute('data-id');
+              const updated = drafts.filter((d) => d.id !== id);
+              localStorage.setItem('astro_article_drafts', JSON.stringify(updated));
+              renderDrafts();
+              updateDraftsBadge();
+            });
+          });
+        }
+
+        document.getElementById('btn-clear-all-drafts')?.addEventListener('click', () => {
+          if (confirm('Clear all local browser drafts?')) {
+            localStorage.removeItem('astro_article_drafts');
+            renderDrafts();
+            updateDraftsBadge();
+          }
+        });
+
+        document.getElementById('btn-save-draft')?.addEventListener('click', () => {
+          saveDraftLocally();
+          showToast('Draft saved successfully to local browser state');
+        });
+
+        function downloadMarkdownFile(art) {
+          const tagsArray = Array.isArray(art.tags)
+            ? art.tags
+            : (art.tags || '').split(',').map((t) => t.trim()).filter(Boolean);
+          const tagsYaml = tagsArray.map((t) => `  - "${t.replace(/"/g, '\\"')}"`).join('\n');
+
+          const fileContent = `---
+title: "${(art.title || '').replace(/"/g, '\\"')}"
+excerpt: "${(art.excerpt || '').replace(/"/g, '\\"')}"
+category: "${art.category || 'Vedic Astrology'}"
+date: "${art.date || ''}"
+readingTime: "${art.readingTime || '5 min read'}"
+featuredImage: "${art.featuredImage || '/images/studio.jpg'}"
+tags:
+${tagsYaml || '  - "Astrology"'}
+---
+
+${(art.content || '').trim()}
+`;
+
+          const blob = new Blob([fileContent], { type: 'text/markdown;charset=utf-8' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `${art.slug || 'article'}.md`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast(`Exported ${a.download}`);
+        }
+
+        document.getElementById('btn-export-markdown')?.addEventListener('click', () => {
+          const art = {
+            title: inputTitle.value || 'Untitled',
+            slug: inputSlug.value || 'untitled',
+            excerpt: inputExcerpt.value,
+            category: inputCategory.value,
+            date: inputDate.value,
+            readingTime: inputReadingTime.value || statsReading?.textContent || '5 min read',
+            featuredImage: inputFeaturedImage.value,
+            tags: inputTags.value,
+            content: inputContent.value,
+          };
+          downloadMarkdownFile(art);
+        });
+
+        document.getElementById('btn-publish-article')?.addEventListener('click', async () => {
+          const title = inputTitle.value.trim();
+          if (!title) {
+            alert('Please enter an article title');
+            inputTitle.focus();
+            return;
+          }
+
+          const payload = {
+            slug: inputSlug.value.trim(),
+            title,
+            excerpt: inputExcerpt.value.trim(),
+            category: inputCategory.value,
+            date: inputDate.value.trim(),
+            readingTime: inputReadingTime.value.trim() || statsReading?.textContent || '5 min read',
+            featuredImage: inputFeaturedImage.value.trim() || '/images/studio.jpg',
+            tags: inputTags.value,
+            content: inputContent.value,
+          };
+
+          try {
+            const res = await fetch('/api/articles', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+              showToast(`Published & saved ${data.slug}.md!`);
+
+              const existingIdx = articles.findIndex((a) => a.slug === data.slug);
+              const updatedItem = { ...payload, slug: data.slug };
+              if (existingIdx >= 0) {
+                articles[existingIdx] = updatedItem;
+              } else {
+                articles.unshift(updatedItem);
+              }
+
+              const countEl = document.getElementById('articles-count-label');
+              if (countEl) countEl.textContent = articles.length;
+              renderArticlesTable();
+              setTab('list');
+            } else {
+              downloadMarkdownFile(payload);
+              showToast(data.error || 'Server error; downloaded .md file.', true);
+            }
+          } catch (err) {
+            downloadMarkdownFile(payload);
+            showToast('Downloaded .md file directly.');
+          }
+        });
+
+        async function deleteArticle(slug) {
+          try {
+            const res = await fetch(`/api/articles?slug=${encodeURIComponent(slug)}`, {
+              method: 'DELETE',
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              articles = articles.filter((a) => a.slug !== slug);
+              const countEl = document.getElementById('articles-count-label');
+              if (countEl) countEl.textContent = articles.length;
+              renderArticlesTable();
+              showToast(`Deleted ${slug}.md`);
+            } else {
+              showToast(data.error || 'Failed to delete file', true);
+            }
+          } catch (e) {
+            articles = articles.filter((a) => a.slug !== slug);
+            renderArticlesTable();
+            showToast(`Removed ${slug} from view`);
+          }
+        }
+
+        document.querySelectorAll('.btn-use-featured').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-url');
+            if (inputFeaturedImage && url) {
+              inputFeaturedImage.value = url;
+              showToast(`Set featured image: ${url}`);
+              setTab('editor');
+            }
+          });
+        });
+
+        document.querySelectorAll('.btn-copy-md').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-url');
+            const label = btn.getAttribute('data-label') || 'Image';
+            const mdSyntax = `![${label}](${url})`;
+            navigator.clipboard.writeText(mdSyntax);
+            showToast(`Copied Markdown: ${mdSyntax}`);
+          });
+        });
+
+        document.getElementById('btn-pick-media-header')?.addEventListener('click', () => {
+          setTab('media');
+        });
+
+        setTab('list');
+        renderArticlesTable();
+        updateDraftsBadge();
+      </script>
+    </div>
+  )}
+
+  <style>
+    .tab-btn {
+      color: #5a534b;
+    }
+    :global(.dark) .tab-btn {
+      color: #a8a29a;
+    }
+    .tab-btn.active {
+      background-color: #855b25;
+      color: #ffffff;
+    }
+    :global(.dark) .tab-btn.active {
+      background-color: #e5c98f;
+      color: #060410;
+    }
+
+    /* Live Preview Prose Styling */
+    #live-preview-content :global(h1),
+    #live-preview-content :global(h2),
+    #live-preview-content :global(h3) {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      color: #110f0d;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.015em;
+    }
+    :global(.dark) #live-preview-content :global(h1),
+    :global(.dark) #live-preview-content :global(h2),
+    :global(.dark) #live-preview-content :global(h3) {
+      color: #ffffff;
+    }
+    #live-preview-content :global(h2) {
+      font-size: 1.5rem;
+      line-height: 1.25;
+    }
+    #live-preview-content :global(h3) {
+      font-size: 1.25rem;
+      line-height: 1.3;
+    }
+    #live-preview-content :global(p) {
+      margin-bottom: 1rem;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    #live-preview-content :global(blockquote) {
+      border-left: 3px solid #855b25;
+      padding-left: 1rem;
+      font-style: italic;
+      color: #5a534b;
+      margin: 1.5rem 0;
+    }
+    :global(.dark) #live-preview-content :global(blockquote) {
+      border-left-color: #e5c98f;
+      color: #ded9d0;
+    }
+    #live-preview-content :global(ul) {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    #live-preview-content :global(ol) {
+      list-style-type: decimal;
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    #live-preview-content :global(li) {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    #live-preview-content :global(img) {
+      border-radius: 0.75rem;
+      margin: 1.5rem 0;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid rgba(40, 35, 30, 0.1);
+    }
+    :global(.dark) #live-preview-content :global(img) {
+      border-color: rgba(168, 85, 247, 0.2);
+    }
+  </style>
+</Layout>

@@ -11,7 +11,11 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'hover'
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/404') && !page.includes('/admin') && !page.includes('/journalist') && !page.includes('/publish')
+    })
+  ],
   vite: {
     plugins: [tailwindcss()]
   },

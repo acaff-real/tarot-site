@@ -1,0 +1,21 @@
+{
+  "name": "Astro by Anisha — Vedic Astrology & Contemplative Tarot",
+  "short_name": "Astro by Anisha",
+  "description": "High-precision Vedic birth chart calculations, contemplative tarot consultations, and grounded guidance by Anisha Banerji.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcfbf9",
+  "theme_color": "#855b25",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

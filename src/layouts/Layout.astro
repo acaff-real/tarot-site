@@ -9,32 +9,64 @@ interface Props {
   description?: string;
   currentPath?: string;
   image?: string;
+  hideNavFooter?: boolean;
 }
 
 const {
   title = 'Astro by Anisha — Vedic Astrology & Contemplative Tarot',
   description = 'High-precision Vedic birth chart calculations, contemplative tarot consultations, and grounded guidance by Anisha Banerji. Intelligent, modern spiritual clarity.',
   currentPath = Astro.url.pathname,
-  image = '/images/anisha.webp',
+  image = '/images/og-image.jpg',
+  hideNavFooter = false,
 } = Astro.props;
 
 const canonicalUrl = new URL(currentPath, Astro.site || 'https://astrobyanisha.com').href;
 const ogImageUrl = new URL(image, Astro.site || 'https://astrobyanisha.com').href;
+const isArticle = currentPath.startsWith('/articles/') && currentPath !== '/articles/';
 
-const schemaData = {
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Astro by Anisha',
+  alternateName: ['Astro By Anisha', 'Anisha Banerji Astrology'],
+  url: 'https://astrobyanisha.com',
+  description: 'Contemporary Vedic astrology, high-precision astronomical birth chart calculations, and contemplative tarot consultations with Anisha Banerji.',
+  publisher: {
+    '@type': 'Person',
+    name: 'Anisha Banerji'
+  }
+};
+
+const professionalServiceSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: 'Astro by Anisha',
   url: 'https://astrobyanisha.com',
-  image: 'https://astrobyanisha.com/images/anisha.webp',
-  description: 'Grounded Vedic astrology and contemplative tarot consultations by Anisha Banerji.',
+  logo: 'https://astrobyanisha.com/favicon.svg',
+  image: 'https://astrobyanisha.com/images/og-image.jpg',
+  description: 'Grounded Vedic astrology, Chaldean numerology, and contemplative tarot consultations by Anisha Banerji.',
   founder: {
     '@type': 'Person',
     name: 'Anisha Banerji',
-    jobTitle: 'Vedic Astrologer & Tarot Consultant',
-    sameAs: ['https://instagram.com/astrobyanisha']
+    jobTitle: 'Vedic Astrologer & Contemplative Tarot Consultant',
+    sameAs: [
+      'https://www.instagram.com/tarotbyanisha/',
+      'https://www.youtube.com/tarotbyanisha',
+      'https://twitter.com/tarotbyanishaa',
+      'https://www.facebook.com/Tarotbyanisha',
+      'https://www.linkedin.com/in/tarotbyanisha/'
+    ]
   },
-  email: 'anishabanerji@gmail.com'
+  email: 'anishabanerji@gmail.com',
+  areaServed: 'Worldwide',
+  knowsAbout: [
+    'Vedic Astrology (Parashari Jyotish)',
+    'Western Astrology (Tropical)',
+    'Vimshottari Dasha Timing',
+    'Kundali Chart Calculation',
+    'Contemplative Tarot',
+    'Chaldean Numerology'
+  ]
 };
 ---
 
@@ -43,24 +75,51 @@ const schemaData = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content={currentPath === '/404' ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
 
+    <!-- Favicon & PWA App Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#fcfbf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#060410" media="(prefers-color-scheme: dark)" />
+
+    <!-- Primary Metadata -->
     <title>{title}</title>
+    <meta name="title" content={title} />
     <meta name="description" content={description} />
+    <meta name="author" content="Anisha Banerji" />
+
+    <!-- Open Graph / Facebook / WhatsApp / iMessage -->
+    <meta property="og:type" content={isArticle ? 'article' : 'website'} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1376" />
+    <meta property="og:image:height" content="768" />
+    <meta property="og:image:alt" content="Astro by Anisha — Vedic Astrology & Contemplative Tarot" />
+    <meta property="og:site_name" content="Astro by Anisha" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@tarotbyanishaa" />
+    <meta name="twitter:creator" content="@tarotbyanishaa" />
+    <meta name="twitter:url" content={canonicalUrl} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Astro by Anisha — Vedic Astrology & Contemplative Tarot" />
 
     <!-- Structured Data (JSON-LD) for Search Engine Rich Results -->
-    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaData)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(professionalServiceSchema)} />
 
     <!-- Instant Client-Side SPA Transitions -->
     <ClientRouter />
@@ -96,10 +155,10 @@ const schemaData = {
     </script>
   </head>
   <body class="bg-[#fcfbf9] dark:bg-[#060410] text-[#110f0d] dark:text-[#ffffff] selection:bg-[#855b25]/20 selection:text-[#110f0d] dark:selection:bg-[#e5c98f]/25 dark:selection:text-[#ffffff] min-h-screen flex flex-col antialiased">
-    <Navbar currentPath={currentPath} />
+    {!hideNavFooter && <Navbar currentPath={currentPath} />}
     <main class="flex-grow">
       <slot />
     </main>
-    <Footer />
+    {!hideNavFooter && <Footer />}
   </body>
 </html>
