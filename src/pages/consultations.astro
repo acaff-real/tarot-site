@@ -10,52 +10,52 @@ import { SERVICES } from '../data/services';
   currentPath="/consultations"
 >
   <!-- Header -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
-    <div class="max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
         1-on-1 Appointments
       </span>
-      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-tight">
+      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
         Consultation Offerings
       </h1>
-      <p class="mt-4 text-sm sm:text-base md:text-lg text-[#57534e] font-light max-w-xl mx-auto leading-relaxed">
+      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
         Confidential, collaborative sessions designed to illuminate your life timing and pivotal crossroads with Anisha Banerji. Conducted via private high-definition video worldwide.
       </p>
     </div>
   </section>
 
   <!-- Detailed Service Cards: Clean, Light, No Prices -->
-  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5]">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5] dark:bg-[#060410]">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-6 lg:gap-8 xl:gap-10 mb-16 sm:mb-20">
         {
           SERVICES.map((s) => (
-            <div class="glass-card rounded-lg p-6 sm:p-7 md:p-8 lg:p-9 border border-[#28231e]/10 bg-white/70 flex flex-col justify-between shadow-xs">
+            <div class="glass-card rounded-xl p-6 sm:p-7 md:p-8 lg:p-9 border border-[#28231e]/15 dark:border-purple-500/25 bg-white/90 dark:bg-[#0f0b24]/90 flex flex-col justify-between shadow-xs">
               <div>
-                <span class="text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-2">
+                <span class="text-xs uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-2">
                   {s.duration}
                 </span>
 
-                <h2 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] font-medium leading-snug mb-2">
+                <h2 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-2">
                   {s.title}
                 </h2>
-                <p class="text-xs uppercase tracking-wider text-[#857f77] mb-3 sm:mb-4 font-medium">
+                <p class="text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] mb-3 sm:mb-4 font-semibold">
                   {s.subtitle}
                 </p>
 
-                <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-6">
+                <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mb-6">
                   {s.shortDesc}
                 </p>
 
-                <div class="border-t border-[#28231e]/10 pt-5 mb-8">
-                  <span class="text-[11px] uppercase tracking-wider text-[#857f77] font-semibold block mb-3">
+                <div class="border-t border-[#28231e]/15 dark:border-purple-500/20 pt-5 mb-8">
+                  <span class="text-[11px] uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] font-semibold block mb-3">
                     Session Inclusions:
                   </span>
-                  <ul class="space-y-2.5 text-xs text-[#57534e]">
+                  <ul class="space-y-2.5 text-xs text-[#2c2722] dark:text-[#ded9d0]">
                     {s.deliverables.map((item) => (
                       <li class="flex items-start gap-2.5">
-                        <span class="text-[#a37a4c] font-bold mt-0.5">&bull;</span>
+                        <span class="text-[#855b25] dark:text-[#e5c98f] font-bold mt-0.5">&bull;</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -66,7 +66,7 @@ import { SERVICES } from '../data/services';
               <div class="pt-2">
                 <a
                   href="#booking-form"
-                  class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 px-6 text-center w-full justify-center bg-white/80 hover:bg-[#1c1917] hover:text-white transition-all text-[#1c1917]"
+                  class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 px-6 text-center w-full justify-center bg-white/90 dark:bg-purple-950/60 hover:bg-[#110f0d] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#0c091f] transition-all text-[#110f0d] dark:text-[#ffffff]"
                   data-service-select={s.title}
                 >
                   Book a Consultation
@@ -78,32 +78,32 @@ import { SERVICES } from '../data/services';
       </div>
 
       <!-- Consultation Protocol -->
-      <div class="rounded-xl bg-white border border-[#28231e]/10 p-6 sm:p-8 md:p-10 lg:p-12 mb-16 sm:mb-20 shadow-xs">
-        <h3 class="font-serif text-2xl sm:text-3xl text-[#1c1917] text-center mb-8 sm:mb-12">
+      <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/15 dark:border-purple-500/25 p-6 sm:p-8 md:p-10 lg:p-12 mb-16 sm:mb-20 shadow-xs">
+        <h3 class="font-serif text-2xl sm:text-3xl text-[#110f0d] dark:text-[#ffffff] text-center mb-8 sm:mb-12 font-medium">
           The Consultation Protocol
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
           <div>
-            <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">01</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Pre-Session Preparation</h4>
-            <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
+            <span class="font-serif text-3xl text-[#855b25] dark:text-[#e5c98f] font-normal block mb-2">01</span>
+            <h4 class="font-semibold text-base text-[#110f0d] dark:text-[#ffffff] mb-2">Pre-Session Preparation</h4>
+            <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
               Upon booking, you share your exact birth coordinates and primary questions. Anisha pre-calculates and analyzes your planetary charts and transits before opening the call.
             </p>
           </div>
 
           <div>
-            <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">02</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">The Live Video Dialogue</h4>
-            <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
+            <span class="font-serif text-3xl text-[#855b25] dark:text-[#e5c98f] font-normal block mb-2">02</span>
+            <h4 class="font-semibold text-base text-[#110f0d] dark:text-[#ffffff] mb-2">The Live Video Dialogue</h4>
+            <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
               We meet via private high-resolution video. The conversation is collaborative, compassionate, and grounded—focused on real timelines, crossroads, and practical timing.
             </p>
           </div>
 
           <div>
-            <span class="font-serif text-3xl text-[#a37a4c] font-light block mb-2">03</span>
-            <h4 class="font-semibold text-base text-[#1c1917] mb-2">Integration & Aftercare</h4>
-            <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed">
+            <span class="font-serif text-3xl text-[#855b25] dark:text-[#e5c98f] font-normal block mb-2">03</span>
+            <h4 class="font-semibold text-base text-[#110f0d] dark:text-[#ffffff] mb-2">Integration & Aftercare</h4>
+            <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
               Following our session, you receive the full video recording and tailored notes to support your personal integration and decision-making.
             </p>
           </div>
@@ -111,63 +111,63 @@ import { SERVICES } from '../data/services';
       </div>
 
       <!-- Booking / Enquiry Form (Direct to anishabanerji@gmail.com) -->
-      <div id="booking-form" class="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto rounded-xl glass-panel p-6 sm:p-8 md:p-10 lg:p-12 border border-[#28231e]/10 shadow-xl bg-white/90">
+      <div id="booking-form" class="max-w-3xl lg:max-w-4xl mx-auto rounded-xl glass-panel p-6 sm:p-8 md:p-10 lg:p-12 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xl bg-white/90 dark:bg-[#0f0b24]/90">
         <div class="text-center mb-8">
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">Direct Enquiry</span>
-          <h3 class="font-serif text-3xl sm:text-4xl text-[#1c1917]">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-2">Direct Enquiry</span>
+          <h3 class="font-serif text-3xl sm:text-4xl text-[#110f0d] dark:text-[#ffffff] font-medium">
             Book a Consultation
           </h3>
-          <p class="text-xs sm:text-sm text-[#57534e] font-light mt-2 max-w-md mx-auto">
-            Please fill in your details below. This will deliver your inquiry directly to Anisha Banerji's inbox (<span class="font-medium text-[#1c1917]">anishabanerji@gmail.com</span>).
+          <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal mt-2 max-w-md mx-auto">
+            Please fill in your details below. This will deliver your inquiry directly to Anisha Banerji's inbox (<span class="font-semibold text-[#110f0d] dark:text-[#ffffff]">anishabanerji@gmail.com</span>).
           </p>
         </div>
 
         <form id="consultation-enquiry-form" class="space-y-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your Full Name</label>
-              <input type="text" id="booking-name" required class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. Maya Patel" />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Your Full Name</label>
+              <input type="text" id="booking-name" required class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="e.g. Maya Patel" />
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Email Address</label>
-              <input type="email" id="booking-email" required class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="email@domain.com" />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Email Address</label>
+              <input type="email" id="booking-email" required class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="email@domain.com" />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Select Consultation</label>
-              <select id="booking-service" class="w-full px-4 py-3 rounded-md glass-input text-sm bg-white cursor-pointer font-medium text-[#1c1917]">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Select Consultation</label>
+              <select id="booking-service" class="w-full px-4 py-3 rounded-md glass-input text-sm bg-white dark:bg-[#120d2c] cursor-pointer font-medium text-[#110f0d] dark:text-[#ffffff]">
                 <option value="Vedic Astrology Consultation">Vedic Astrology Consultation (75 Min)</option>
                 <option value="Intuitive Tarot Reading">Intuitive Tarot Reading (50 Min)</option>
                 <option value="Numerology & Name Consultation">Numerology & Name Consultation (60 Min)</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Phone / WhatsApp (Optional)</label>
-              <input type="text" id="booking-phone" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="+1 / +44 / +91 ..." />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Phone / WhatsApp (Optional)</label>
+              <input type="text" id="booking-phone" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="+1 / +44 / +91 ..." />
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Preferred Date / Time</label>
-              <input type="text" id="booking-schedule" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. Next Tuesday morning" />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Preferred Date / Time</label>
+              <input type="text" id="booking-schedule" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="e.g. Next Tuesday morning" />
             </div>
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Your City & Timezone</label>
-              <input type="text" id="booking-tz" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. London (GMT) / Delhi (IST)" />
+              <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Your City & Timezone</label>
+              <input type="text" id="booking-tz" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="e.g. London (GMT) / Delhi (IST)" />
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Birth Details (Date, Exact Time, Place of Birth)</label>
-            <input type="text" id="booking-birth" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="e.g. 18 April 1996, 14:30, New Delhi, India" />
+            <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Birth Details (Date, Exact Time, Place of Birth)</label>
+            <input type="text" id="booking-birth" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="e.g. 18 April 1996, 14:30, New Delhi, India" />
           </div>
 
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">Primary Questions / Focus Areas</label>
-            <textarea id="booking-notes" rows="4" class="w-full px-4 py-3 rounded-md glass-input text-sm" placeholder="Please share any specific life questions, decisions, or transitions you wish to explore..."></textarea>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Primary Questions / Focus Areas</label>
+            <textarea id="booking-notes" rows="4" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="Please share any specific life questions, decisions, or transitions you wish to explore..."></textarea>
           </div>
 
           <div class="pt-2">
@@ -181,14 +181,14 @@ import { SERVICES } from '../data/services';
         </form>
 
         <!-- Dynamic Success Confirmation Modal / Banner -->
-        <div id="booking-success-box" class="hidden mt-6 p-6 rounded-lg bg-[#f7f4ed] border border-[#a37a4c]/30 text-center space-y-4">
-          <div class="w-10 h-10 rounded-md bg-[#a37a4c]/10 text-[#a37a4c] mx-auto flex items-center justify-center font-bold text-lg">
+        <div id="booking-success-box" class="hidden mt-6 p-6 rounded-lg bg-[#f7f4ed] dark:bg-[#120d2c] border border-[#855b25]/30 dark:border-purple-500/30 text-center space-y-4">
+          <div class="w-10 h-10 rounded-md bg-[#855b25]/15 dark:bg-[#e5c98f]/20 text-[#855b25] dark:text-[#e5c98f] mx-auto flex items-center justify-center font-bold text-lg">
             &#10003;
           </div>
-          <h4 class="font-serif text-2xl text-[#1c1917]">
+          <h4 class="font-serif text-2xl text-[#110f0d] dark:text-[#ffffff] font-medium">
             Opening Direct Email to Anisha
           </h4>
-          <p class="text-xs sm:text-sm text-[#57534e] font-light max-w-md mx-auto">
+          <p class="text-sm text-[#38322c] dark:text-[#ded9d0] max-w-md mx-auto">
             Your consultation request has been prepared and opened in your email client. If it did not open automatically, click below to open directly in Gmail:
           </p>
           <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
@@ -197,14 +197,14 @@ import { SERVICES } from '../data/services';
               href="#"
               target="_blank"
               rel="noopener noreferrer"
-              class="px-5 py-2.5 rounded-full bg-[#1c1917] text-white text-xs font-semibold uppercase tracking-wider hover:bg-[#a37a4c] transition-colors"
+              class="px-5 py-2.5 rounded-full bg-[#110f0d] text-white text-xs font-semibold uppercase tracking-wider hover:bg-[#855b25] transition-colors"
             >
               Open in Gmail
             </a>
             <button
               type="button"
               id="copy-details-btn"
-              class="px-5 py-2.5 rounded-full border border-[#28231e]/20 text-xs font-semibold uppercase tracking-wider hover:bg-black/5 transition-colors"
+              class="px-5 py-2.5 rounded-full border border-[#28231e]/20 dark:border-purple-500/30 text-xs font-semibold uppercase tracking-wider text-[#110f0d] dark:text-[#ffffff] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
             >
               Copy Details
             </button>

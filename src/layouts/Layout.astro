@@ -39,7 +39,7 @@ const schemaData = {
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth overflow-x-hidden w-full max-w-full">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -95,9 +95,9 @@ const schemaData = {
       document.addEventListener('astro:after-swap', applyTheme);
     </script>
   </head>
-  <body class="bg-[#fcfbf9] text-[#1c1917] selection:bg-[#c29b68]/20 selection:text-[#1c1917] dark:selection:bg-[#2dd4bf]/25 dark:selection:text-[#f8fafc] min-h-screen flex flex-col antialiased overflow-x-hidden w-full max-w-full">
+  <body class="bg-[#fcfbf9] dark:bg-[#060410] text-[#110f0d] dark:text-[#ffffff] selection:bg-[#855b25]/20 selection:text-[#110f0d] dark:selection:bg-[#e5c98f]/25 dark:selection:text-[#ffffff] min-h-screen flex flex-col antialiased">
     <Navbar currentPath={currentPath} />
-    <main class="flex-grow overflow-x-clip w-full max-w-full">
+    <main class="flex-grow">
       <slot />
     </main>
     <Footer />

@@ -11,58 +11,59 @@ const articles = await getCollection('articles');
   currentPath="/articles"
 >
   <!-- Header -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
-    <div class="max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white border border-[#28231e]/10 text-[#a37a4c] mb-4">
+  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
         <span>Essays & Inquiries</span>
       </div>
-      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight">
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
         Articles & Reflections
       </h1>
-      <p class="mt-4 text-sm sm:text-base md:text-lg text-[#57534e] font-light max-w-2xl mx-auto leading-relaxed">
+      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
         Contemplative essays designed to demystify ancient celestial sciences and offer grounded perspectives for modern living.
       </p>
     </div>
   </section>
 
   <!-- Articles Grid -->
-  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5]">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5] dark:bg-[#060410]">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-8 xl:gap-10">
         {
           articles.map((art) => (
-            <article class="glass-card rounded-lg overflow-hidden border border-[#28231e]/10 bg-white/80 flex flex-col justify-between">
+            <article class="glass-card rounded-xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/25 bg-white/90 dark:bg-[#0f0b24]/90 flex flex-col justify-between shadow-xs">
               <div>
-                <div class="aspect-[16/9] overflow-hidden bg-[#e8e2d5]">
+                <div class="aspect-[16/9] overflow-hidden bg-[#e8e2d5] dark:bg-[#120d2c]">
                   <img
                     src={art.data.featuredImage}
                     alt={art.data.title}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
                 <div class="p-6 sm:p-7 md:p-8">
-                  <div class="flex items-center gap-3 text-xs uppercase tracking-wider text-[#857f77] mb-3 font-semibold">
-                    <span class="text-[#a37a4c]">{art.data.category}</span>
+                  <div class="flex items-center gap-3 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] mb-3 font-semibold">
+                    <span class="text-[#855b25] dark:text-[#e5c98f]">{art.data.category}</span>
                     <span>&bull;</span>
                     <span>{art.data.readingTime}</span>
                   </div>
 
-                  <h2 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] font-medium leading-snug mb-3 hover:text-[#a37a4c] transition-colors">
+                  <h2 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-3 hover:text-[#855b25] dark:hover:text-[#e5c98f] transition-colors">
                     <a href={`/articles/${art.id}`}>{art.data.title}</a>
                   </h2>
 
-                  <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-6">
+                  <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mb-6">
                     {art.data.excerpt}
                   </p>
                 </div>
               </div>
 
-              <div class="px-8 pb-8 pt-2 border-t border-[#28231e]/5 flex items-center justify-between">
-                <span class="text-xs text-[#857f77]">{art.data.date}</span>
+              <div class="px-6 sm:px-8 pb-6 sm:pb-8 pt-4 border-t border-[#28231e]/10 dark:border-purple-500/20 flex items-center justify-between">
+                <span class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-medium">{art.data.date}</span>
                 <a
                   href={`/articles/${art.id}`}
-                  class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] hover:text-[#a37a4c] transition-colors"
+                  class="text-xs font-semibold uppercase tracking-wider text-[#110f0d] dark:text-[#ffffff] hover:text-[#855b25] dark:hover:text-[#e5c98f] transition-colors"
                 >
                   Read Essay &rarr;
                 </a>

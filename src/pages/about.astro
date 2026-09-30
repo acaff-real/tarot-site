@@ -9,28 +9,28 @@ import GlassButton from '../components/GlassButton.astro';
   currentPath="/about"
 >
   <!-- Header: Spacious & Editorial -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] border-b border-[#28231e]/10">
-    <div class="max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
         Personal Profile
       </span>
-      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#1c1917] tracking-tight leading-tight">
+      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
         Anisha Banerji
       </h1>
-      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#57534e] font-light max-w-xl mx-auto leading-relaxed italic">
+      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed italic">
         "Astrology is not an evasion of responsibility; it is an intimate conversation with the timing of your life."
       </p>
     </div>
   </section>
 
   <!-- Editorial Biography: High Presence Photograph & Breathing Room -->
-  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5]">
-    <div class="max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-10 lg:gap-16 xl:gap-20 items-start">
+  <section class="py-14 sm:py-18 md:py-20 lg:py-24 xl:py-28 bg-[#faf8f5] dark:bg-[#060410]">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-16 xl:gap-20 items-start">
         
         <!-- Sticky Left Portrait Column -->
-        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 md:sticky md:top-28">
-          <div class="rounded-xl overflow-hidden border border-[#28231e]/10 shadow-2xl bg-white aspect-[4/5] max-w-sm md:max-w-none mx-auto">
+        <div class="md:col-span-5 lg:col-span-4 xl:col-span-4 md:sticky md:top-24 lg:top-28 self-start z-10">
+          <div class="rounded-xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/25 shadow-2xl bg-white dark:bg-[#0c091f] aspect-[4/5] max-w-sm md:max-w-none mx-auto">
             <img
               src="/images/anisha.webp"
               alt="Anisha Banerji"
@@ -39,27 +39,27 @@ import GlassButton from '../components/GlassButton.astro';
             />
           </div>
 
-          <div class="mt-6 p-5 sm:p-6 rounded-lg bg-white border border-[#28231e]/10 text-xs text-[#57534e] space-y-3 max-w-sm md:max-w-none mx-auto">
+          <div class="mt-6 p-5 sm:p-6 rounded-lg bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/15 dark:border-purple-500/25 text-xs text-[#2c2722] dark:text-[#ded9d0] space-y-3 max-w-sm md:max-w-none mx-auto shadow-xs">
             <div class="flex justify-between items-center">
-              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Tradition</span>
-              <span class="font-semibold text-[#1c1917]">Parashari Jyotish</span>
+              <span class="text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider text-[10px] font-medium">Tradition</span>
+              <span class="font-semibold text-[#110f0d] dark:text-[#ffffff]">Parashari Jyotish</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Disciplines</span>
-              <span class="font-semibold text-[#1c1917]">Vedic Astrology &bull; Tarot</span>
+              <span class="text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider text-[10px] font-medium">Disciplines</span>
+              <span class="font-semibold text-[#110f0d] dark:text-[#ffffff]">Vedic Astrology &bull; Tarot</span>
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-[#857f77] uppercase tracking-wider text-[10px]">Consultations</span>
-              <span class="font-semibold text-[#1c1917]">Private Video Worldwide</span>
+              <span class="text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider text-[10px] font-medium">Consultations</span>
+              <span class="font-semibold text-[#110f0d] dark:text-[#ffffff]">Private Video Worldwide</span>
             </div>
           </div>
         </div>
 
         <!-- Narrative Column with Generous Whitespace -->
-        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 space-y-8 sm:space-y-10 text-sm sm:text-base text-[#57534e] font-light leading-relaxed">
+        <div class="md:col-span-7 lg:col-span-8 xl:col-span-8 space-y-8 sm:space-y-10 text-base sm:text-lg text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed">
           
           <div>
-            <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] mb-5 tracking-tight">
+            <h2 class="font-serif text-3xl sm:text-4xl text-[#110f0d] dark:text-[#ffffff] mb-5 tracking-tight font-medium">
               A Refined Approach to Sacred Timing
             </h2>
             <p>
@@ -70,23 +70,23 @@ import GlassButton from '../components/GlassButton.astro';
             </p>
           </div>
 
-          <div class="p-8 rounded-lg bg-white border border-[#28231e]/10 shadow-xs space-y-4">
-            <h3 class="font-serif text-2xl text-[#1c1917] tracking-tight">Guiding Principles</h3>
-            <div class="space-y-3 text-sm text-[#57534e]">
+          <div class="p-8 rounded-lg bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs space-y-4">
+            <h3 class="font-serif text-2xl text-[#110f0d] dark:text-[#ffffff] tracking-tight font-medium">Guiding Principles</h3>
+            <div class="space-y-3.5 text-sm sm:text-base text-[#38322c] dark:text-[#ded9d0]">
               <p>
-                <strong class="text-[#1c1917] font-semibold">Self-Sovereignty:</strong> Planets indicate seasons and energetic currents; they do not dictate your character or negate your free will.
+                <strong class="text-[#110f0d] dark:text-[#ffffff] font-semibold">Self-Sovereignty:</strong> Planets indicate seasons and energetic currents; they do not dictate your character or negate your free will.
               </p>
               <p>
-                <strong class="text-[#1c1917] font-semibold">Astronomical Rigor:</strong> Every calculation is computed from exact planetary ephemeris, whether in sidereal Parashari coordinates or western tropical placements.
+                <strong class="text-[#110f0d] dark:text-[#ffffff] font-semibold">Astronomical Rigor:</strong> Every calculation is computed from exact planetary ephemeris, whether in sidereal Parashari coordinates or western tropical placements.
               </p>
               <p>
-                <strong class="text-[#1c1917] font-semibold">Collaborative Dialogue:</strong> Consultations are not passive readings—they are intelligent conversations centered on your real-world decisions and timing.
+                <strong class="text-[#110f0d] dark:text-[#ffffff] font-semibold">Collaborative Dialogue:</strong> Consultations are not passive readings—they are intelligent conversations centered on your real-world decisions and timing.
               </p>
             </div>
           </div>
 
           <div>
-            <h2 class="font-serif text-3xl sm:text-4xl text-[#1c1917] mb-5 tracking-tight">
+            <h2 class="font-serif text-3xl sm:text-4xl text-[#110f0d] dark:text-[#ffffff] mb-5 tracking-tight font-medium">
               The Consultation Space
             </h2>
             <p>
@@ -97,7 +97,7 @@ import GlassButton from '../components/GlassButton.astro';
             </p>
           </div>
 
-          <div class="pt-6 border-t border-[#28231e]/10 flex flex-col sm:flex-row items-center gap-4">
+          <div class="pt-6 border-t border-[#28231e]/15 dark:border-purple-500/25 flex flex-col sm:flex-row items-center gap-4">
             <GlassButton
               text="Book a Consultation"
               href="/consultations"
@@ -105,7 +105,7 @@ import GlassButton from '../components/GlassButton.astro';
             />
             <a
               href="/articles"
-              class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline px-4 py-2"
+              class="text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] hover:underline px-4 py-2 transition-colors"
             >
               Read Articles & Essays &rarr;
             </a>

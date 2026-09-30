@@ -6,29 +6,28 @@ const YEAR = new Date().getFullYear();
 const ESSENTIAL_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Birth Chart', href: '/#birth-chart' },
   { label: 'Articles', href: '/articles' },
   { label: 'Contact', href: '/contact' },
   { label: 'Book a Consultation', href: '/consultations' },
 ];
 ---
 
-<footer class="border-t border-[#28231e]/10 dark:border-purple-500/20 bg-[#f7f4ed] dark:bg-[#070512] text-[#1c1917] dark:text-[#f8fafc] transition-colors">
-  <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-12 sm:py-16 md:py-20">
-    <div class="flex flex-col md:flex-row md:items-start justify-between gap-10 md:gap-12 pb-10 sm:pb-14 border-b border-[#28231e]/10 dark:border-purple-500/20">
+<footer class="border-t border-[#28231e]/15 dark:border-purple-500/25 bg-[#f7f4ed] dark:bg-[#070512] text-[#110f0d] dark:text-[#ffffff] transition-colors">
+  <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-12 sm:py-16 md:py-20">
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-10 md:gap-12 pb-10 sm:pb-14 border-b border-[#28231e]/15 dark:border-purple-500/25">
       
       <!-- Left: Logo & Short Brand Description -->
       <div class="max-w-md">
         <a href="/" class="inline-block select-none" aria-label="Astro by Anisha — Homepage">
           <BrandLogo />
         </a>
-        <p class="mt-4 text-sm leading-relaxed text-[#57534e] dark:text-[#c4b5fd] font-light">
+        <p class="mt-4 text-sm leading-relaxed text-[#2c2722] dark:text-[#ded9d0] font-normal">
           Grounded Vedic astrology and contemplative tarot consultations by Anisha Banerji. An intelligent, dignified space dedicated to self-knowledge and timing.
         </p>
         <div class="mt-4">
           <a
             href="mailto:anishabanerji@gmail.com"
-            class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] hover:underline"
+            class="text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] hover:underline"
           >
             anishabanerji@gmail.com
           </a>
@@ -37,7 +36,7 @@ const ESSENTIAL_LINKS = [
 
       <!-- Center: Essential Navigation -->
       <div class="flex flex-col">
-        <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#857f77] dark:text-[#a78bfa] mb-4">
+        <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5a534b] dark:text-[#a8a29a] mb-4">
           Navigation
         </span>
         <ul class="space-y-3 text-sm">
@@ -46,7 +45,7 @@ const ESSENTIAL_LINKS = [
               <li>
                 <a
                   href={item.href}
-                  class="text-[#57534e] dark:text-[#c4b5fd] hover:text-[#1c1917] dark:hover:text-[#2dd4bf] transition-colors"
+                  class="text-[#2c2722] dark:text-[#ded9d0] hover:text-[#110f0d] dark:hover:text-[#e5c98f] transition-colors font-medium"
                 >
                   {item.label}
                 </a>
@@ -58,7 +57,7 @@ const ESSENTIAL_LINKS = [
 
       <!-- Right: Social Channels (Instagram Primary, YouTube Secondary) -->
       <div class="flex flex-col">
-        <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#857f77] dark:text-[#a78bfa] mb-4">
+        <span class="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5a534b] dark:text-[#a8a29a] mb-4">
           Connect
         </span>
         <div class="space-y-3 text-sm">
@@ -67,13 +66,13 @@ const ESSENTIAL_LINKS = [
               href="https://instagram.com/astrobyanisha"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-[#1c1917] dark:text-[#f8fafc] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] font-medium transition-colors"
+              class="inline-flex items-center gap-2 text-[#110f0d] dark:text-[#ffffff] hover:text-[#855b25] dark:hover:text-[#e5c98f] font-medium transition-colors"
             >
-              <svg class="w-4 h-4 text-[#a37a4c] dark:text-[#2dd4bf]" fill="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-[#855b25] dark:text-[#e5c98f]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
               <span>Instagram</span>
-              <span class="text-xs text-[#857f77] dark:text-[#94a3b8] font-normal">@astrobyanisha</span>
+              <span class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-normal">@astrobyanisha</span>
             </a>
           </div>
           <div>
@@ -81,13 +80,13 @@ const ESSENTIAL_LINKS = [
               href="https://youtube.com"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-[#57534e] dark:text-[#c4b5fd] hover:text-[#1c1917] dark:hover:text-[#2dd4bf] transition-colors"
+              class="inline-flex items-center gap-2 text-[#2c2722] dark:text-[#ded9d0] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors"
             >
-              <svg class="w-4 h-4 text-[#857f77] dark:text-[#a78bfa]" fill="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 text-[#5a534b] dark:text-[#a8a29a]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
               </svg>
               <span>YouTube</span>
-              <span class="text-xs text-[#857f77] dark:text-[#94a3b8] font-normal">Astro by Anisha</span>
+              <span class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-normal">Astro by Anisha</span>
             </a>
           </div>
         </div>
@@ -96,7 +95,7 @@ const ESSENTIAL_LINKS = [
     </div>
 
     <!-- Bottom Bar -->
-    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#857f77] dark:text-[#94a3b8] gap-4">
+    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#5a534b] dark:text-[#a8a29a] gap-4">
       <p>&copy; {YEAR} Astro by Anisha. All rights reserved.</p>
       <div class="flex items-center gap-4">
         <span>Curated for thoughtful seekers</span>

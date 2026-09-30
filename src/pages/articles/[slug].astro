@@ -22,35 +22,35 @@ const { Content } = await render(article);
   image={article.data.featuredImage}
 >
   <!-- Article Header -->
-  <article class="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#fcfbf9]">
-    <div class="max-w-3xl lg:max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+  <article class="py-12 sm:py-16 md:py-20 lg:py-24 bg-[#fcfbf9] dark:bg-[#060410] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8">
       
       <!-- Back Link -->
-      <a href="/articles" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#857f77] hover:text-[#1c1917] mb-8 transition-colors">
+      <a href="/articles" class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] mb-8 transition-colors font-medium">
         &larr; Back to all essays
       </a>
 
       <!-- Category & Reading Time -->
-      <div class="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[#a37a4c] font-semibold mb-4">
+      <div class="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold mb-4">
         <span>{article.data.category}</span>
         <span>&bull;</span>
         <span>{article.data.readingTime}</span>
       </div>
 
       <!-- Title -->
-      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-[1.12] mb-6">
+      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-[1.15] mb-6 font-medium">
         {article.data.title}
       </h1>
 
       <!-- Date & Author Meta -->
-      <div class="flex items-center gap-4 py-4 border-y border-[#28231e]/10 text-xs text-[#57534e] mb-10">
-        <span class="font-semibold text-[#1c1917]">By Anisha Banerji</span>
+      <div class="flex items-center gap-4 py-4 border-y border-[#28231e]/15 dark:border-purple-500/20 text-xs text-[#5a534b] dark:text-[#a8a29a] mb-10 font-medium">
+        <span class="font-semibold text-[#110f0d] dark:text-[#ffffff]">By Anisha Banerji</span>
         <span>&bull;</span>
         <span>{article.data.date}</span>
       </div>
 
       <!-- Featured Image -->
-      <div class="rounded-xl overflow-hidden border border-[#28231e]/10 shadow-lg mb-12 aspect-[16/10] bg-[#e8e2d5]">
+      <div class="rounded-xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/25 shadow-lg mb-12 aspect-[16/10] bg-[#e8e2d5] dark:bg-[#120d2c]">
         <img
           src={article.data.featuredImage}
           alt={article.data.title}
@@ -59,15 +59,15 @@ const { Content } = await render(article);
       </div>
 
       <!-- Article Body -->
-      <div class="prose prose-stone max-w-none text-[#3a3734] font-light leading-relaxed text-base sm:text-lg space-y-6 [&>p.lead]:font-serif [&>p.lead]:text-2xl [&>p.lead]:text-[#1c1917] [&>p.lead]:leading-snug [&>h2]:font-serif [&>h2]:text-3xl [&>h2]:text-[#1c1917] [&>h2]:mt-10 [&>h2]:mb-4 [&>blockquote]:border-l-2 [&>blockquote]:border-[#a37a4c] [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:my-8 [&>blockquote]:font-serif [&>blockquote]:text-xl [&>blockquote]:text-[#1c1917] [&>ul]:space-y-2 [&>ol]:space-y-2">
+      <div class="prose prose-stone dark:prose-invert max-w-none text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed text-base sm:text-lg space-y-6 [&>p.lead]:font-serif [&>p.lead]:text-2xl [&>p.lead]:text-[#110f0d] dark:[&>p.lead]:text-[#ffffff] [&>p.lead]:leading-snug [&>h2]:font-serif [&>h2]:text-3xl [&>h2]:text-[#110f0d] dark:[&>h2]:text-[#ffffff] [&>h2]:mt-10 [&>h2]:mb-4 [&>blockquote]:border-l-2 [&>blockquote]:border-[#855b25] dark:[&>blockquote]:border-[#e5c98f] [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:my-8 [&>blockquote]:font-serif [&>blockquote]:text-xl [&>blockquote]:text-[#110f0d] dark:[&>blockquote]:text-[#ffffff] [&>ul]:space-y-2 [&>ol]:space-y-2">
         <Content />
       </div>
 
       <!-- Article Footer Tags -->
-      <div class="mt-12 pt-8 border-t border-[#28231e]/10 flex flex-wrap gap-2">
+      <div class="mt-12 pt-8 border-t border-[#28231e]/15 dark:border-purple-500/20 flex flex-wrap gap-2">
         {
           article.data.tags.map((tag) => (
-            <span class="px-3 py-1 rounded-md text-xs bg-black/[0.03] text-[#57534e] border border-[#28231e]/5">
+            <span class="px-3 py-1 rounded-md text-xs bg-[#28231e]/5 dark:bg-purple-950/50 text-[#38322c] dark:text-[#ded9d0] border border-[#28231e]/10 dark:border-purple-500/25 font-medium">
               #{tag}
             </span>
           ))
@@ -75,17 +75,17 @@ const { Content } = await render(article);
       </div>
 
       <!-- Author Bio Card -->
-      <div class="mt-12 p-8 rounded-xl bg-[#faf8f5] border border-[#28231e]/10 flex flex-col sm:flex-row items-center gap-6">
-        <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border border-[#28231e]/10">
+      <div class="mt-12 p-8 rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs flex flex-col sm:flex-row items-center gap-6">
+        <div class="w-20 h-20 rounded-md overflow-hidden flex-shrink-0 border border-[#28231e]/15 dark:border-purple-500/30">
           <img src="/images/anisha.webp" alt="Anisha Banerji" class="w-full h-full object-cover" />
         </div>
         <div>
-          <span class="font-serif text-xl text-[#1c1917] font-medium block">Anisha Banerji</span>
-          <p class="text-xs text-[#57534e] font-light leading-relaxed mt-1">
+          <span class="font-serif text-xl text-[#110f0d] dark:text-[#ffffff] font-medium block">Anisha Banerji</span>
+          <p class="text-xs text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mt-1">
             Vedic astrologer and intuitive tarot consultant. Working with private clients globally to guide life thresholds through clear astronomical timing and grounded counsel.
           </p>
           <div class="mt-3">
-            <a href="/consultations" class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline">
+            <a href="/consultations" class="text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] hover:underline">
               Book a Consultation with Anisha &rarr;
             </a>
           </div>

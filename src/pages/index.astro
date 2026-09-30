@@ -22,8 +22,8 @@ const articles = (await getCollection('articles')).slice(0, 3);
     <div class="absolute top-1/6 right-10 w-72 sm:w-96 lg:w-[26rem] h-72 sm:h-96 lg:h-[26rem] rounded-full bg-[#f4eee4]/60 dark:bg-purple-900/10 blur-3xl pointer-events-none"></div>
     <div class="absolute bottom-10 left-10 w-64 sm:w-80 lg:w-96 h-64 sm:h-80 lg:h-96 rounded-full bg-[#efe8dc]/40 dark:bg-teal-900/10 blur-3xl pointer-events-none"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 relative z-10">
-      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-10 lg:gap-16 xl:gap-20 items-center">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 relative z-10">
+      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-10 lg:gap-14 xl:gap-16 items-center">
         
         <!-- Left: Prominent Portrait of Anisha with Breathing Room & Presence -->
         <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 w-full order-2 md:order-1">
@@ -36,16 +36,16 @@ const articles = (await getCollection('articles')).slice(0, 3);
               <img
                 src="/images/anisha.webp"
                 alt="Anisha Banerji — Founder of Astro by Anisha"
-                class="w-full h-full object-cover object-[center_14%] hover:scale-[1.02] transition-transform duration-700 ease-out"
+                class="w-full h-full object-cover object-[center_14%]"
                 loading="eager"
               />
               
               <!-- Subtle Clean Float Badge -->
               <div class="absolute bottom-3.5 left-3.5 right-3.5 sm:bottom-4 sm:left-4 sm:right-4 p-3.5 sm:p-4 rounded-xl glass-card backdrop-blur-md bg-white/90 dark:bg-[#0c091f]/90 border border-white/80 dark:border-purple-500/30 shadow-lg">
-                <span class="text-[10px] uppercase tracking-[0.22em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block">
+                <span class="text-[10px] uppercase tracking-[0.22em] text-[#855b25] dark:text-[#e5c98f] font-semibold block">
                   Anisha Banerji
                 </span>
-                <p class="text-xs sm:text-sm text-[#1c1917] dark:text-[#f8fafc] font-medium mt-0.5">
+                <p class="text-xs sm:text-sm text-[#110f0d] dark:text-[#ffffff] font-medium mt-0.5">
                   Vedic Astrologer & Tarot Consultant
                 </p>
               </div>
@@ -56,19 +56,19 @@ const articles = (await getCollection('articles')).slice(0, 3);
         <!-- Right: Dignified Introduction, Who I Am -> What I Do -> What You Can Do Next -->
         <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left order-1 md:order-2">
           
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/80 dark:bg-purple-950/40 border border-[#28231e]/10 dark:border-purple-500/30 text-[#a37a4c] dark:text-[#2dd4bf] mb-4 shadow-xs">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
             <span>Astro by Anisha</span>
           </div>
 
-          <h1 class="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight leading-[1.1] mb-5 sm:mb-6">
+          <h1 class="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight leading-[1.12] mb-5 sm:mb-6">
             A contemporary approach to ancient wisdom.
           </h1>
 
-          <p class="font-serif text-base sm:text-lg lg:text-xl text-[#57534e] dark:text-[#c4b5fd] font-light leading-snug mb-4 max-w-xl">
+          <p class="font-serif text-lg sm:text-xl lg:text-2xl text-[#2c2722] dark:text-[#f0ebe1] font-normal leading-snug mb-5 max-w-2xl xl:max-w-3xl">
             Intelligent, grounded guidance through classical Vedic astrology and contemplative tarot.
           </p>
 
-          <div class="space-y-3.5 text-xs sm:text-sm md:text-base text-[#78716c] dark:text-[#94a3b8] font-light leading-relaxed mb-8 max-w-xl">
+          <div class="space-y-4 text-sm sm:text-base text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mb-8 max-w-2xl xl:max-w-3xl">
             <p>
               I founded Astro by Anisha to bring intellectual rigor, psychological clarity, and quiet dignity back to traditional astrology and tarot.
             </p>
@@ -88,7 +88,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
             <a
               href="/about"
-              class="glass-pill-btn text-xs font-semibold uppercase tracking-[0.16em] py-3.5 px-6 rounded-full border border-[#28231e]/15 dark:border-purple-500/30 bg-white/80 dark:bg-purple-950/40 text-[#1c1917] dark:text-[#f8fafc] hover:bg-[#1c1917] hover:text-white dark:hover:bg-[#2dd4bf] dark:hover:text-[#0c091f] transition-all text-center"
+              class="glass-pill-btn text-xs font-semibold uppercase tracking-[0.16em] py-3.5 px-6 rounded-full border border-[#28231e]/15 dark:border-purple-500/30 bg-white/90 dark:bg-purple-950/60 text-[#110f0d] dark:text-[#ffffff] hover:bg-[#110f0d] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#0c091f] transition-all text-center"
             >
               Read Full Profile
             </a>
@@ -97,7 +97,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
           <!-- Scroll Anchor to Birth Chart -->
           <a
             href="#birth-chart"
-            class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#857f77] dark:text-[#a78bfa] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] transition-colors pt-2"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#5a534b] dark:text-[#a8a29a] hover:text-[#855b25] dark:hover:text-[#e5c98f] transition-colors pt-2"
           >
             <span>Discover Your Birth Chart</span>
             <span class="text-sm">&darr;</span>
@@ -122,17 +122,17 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
   <!-- 5. SERVICES: Clean, Restrained, No Prices (Reference: chani.com/chart) -->
   <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] dark:bg-[#070512] relative border-t border-[#28231e]/10 dark:border-purple-500/20">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
       <!-- Section Header -->
       <div class="text-center max-w-2xl lg:max-w-3xl mx-auto mb-12 sm:mb-16">
-        <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-3">
+        <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
           1-on-1 Consultations
         </span>
-        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
+        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
           Consultation Offerings
         </h2>
-        <p class="mt-3 text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed">
+        <p class="mt-3 text-sm sm:text-base text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed">
           Structured, confidential sessions conducted online via private video worldwide.
         </p>
       </div>
@@ -141,18 +141,18 @@ const articles = (await getCollection('articles')).slice(0, 3);
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-6 lg:gap-8 xl:gap-10">
         {
           SERVICES.map((s) => (
-            <div class="glass-card rounded-xl p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between border border-[#28231e]/10 dark:border-purple-500/20 bg-white/70 dark:bg-[#0f0b24]/70 hover:bg-white dark:hover:bg-[#150f33] transition-all duration-300 shadow-xs">
+            <div class="glass-card rounded-xl p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between border border-[#28231e]/15 dark:border-purple-500/25 bg-white/85 dark:bg-[#0f0b24]/85 shadow-xs">
               <div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-2">
                   {s.duration}
                 </span>
-                <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-2">
+                <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-2">
                   {s.title}
                 </h3>
-                <p class="text-xs uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] mb-3 sm:mb-4 font-medium">
+                <p class="text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] mb-3 sm:mb-4 font-semibold">
                   {s.subtitle}
                 </p>
-                <p class="text-xs sm:text-sm text-[#57534e] dark:text-[#e2e8f0] font-light leading-relaxed mb-6">
+                <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mb-6">
                   {s.shortDesc}
                 </p>
               </div>
@@ -175,14 +175,14 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
   <!-- 6. CURATED SOCIAL CARDS: Instagram First (2 Cards/Reels) & YouTube Second (Scaled-down Embed) -->
   <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] dark:bg-[#090716] border-t border-[#28231e]/10 dark:border-purple-500/20 relative">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-2">
             Social & Insights
           </span>
-          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
             Follow on Instagram & YouTube
           </h2>
         </div>
@@ -191,7 +191,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
             href="https://instagram.com/astrobyanisha"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[#1c1917] dark:text-[#f8fafc] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] inline-flex items-center gap-1.5 transition-colors"
+            class="text-[#110f0d] dark:text-[#ffffff] hover:text-[#855b25] dark:hover:text-[#e5c98f] inline-flex items-center gap-1.5 transition-colors"
           >
             <span>Instagram: @astrobyanisha</span>
             <span>&rarr;</span>
@@ -207,34 +207,34 @@ const articles = (await getCollection('articles')).slice(0, 3);
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-xl bg-white dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between"
         >
           <div>
             <!-- Header -->
-            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/5 dark:border-purple-500/15 text-xs">
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
               <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#a37a4c]/30">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
                   <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
-                  <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] block leading-tight">astrobyanisha</span>
-                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Anisha Banerji</span>
+                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">astrobyanisha</span>
+                  <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Anisha Banerji</span>
                 </div>
               </div>
-              <span class="text-[10px] uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] font-semibold px-2 py-0.5 rounded-full bg-[#a37a4c]/10 dark:bg-purple-900/30">
+              <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">
                 Reel
               </span>
             </div>
 
             <!-- Video Thumbnail Mockup -->
-            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#1c1917] mb-4">
+            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#110f0d] mb-4">
               <img
                 src="/images/studio.jpg"
                 alt="Planetary transit contemplation"
                 class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
-                <div class="w-11 h-11 rounded-full bg-white/90 dark:bg-[#0c091f]/90 text-[#1c1917] dark:text-[#f8fafc] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <div class="w-11 h-11 rounded-full bg-white/95 dark:bg-[#0c091f]/95 text-[#110f0d] dark:text-[#ffffff] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                   <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
@@ -245,14 +245,14 @@ const articles = (await getCollection('articles')).slice(0, 3);
               </span>
             </div>
 
-            <p class="font-serif text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors mb-3">
+            <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors mb-3">
               "Saturn tests where your foundations were built on obligation rather than authenticity. Slow down and rebuild with truth."
             </p>
           </div>
 
-          <div class="pt-3.5 border-t border-[#28231e]/5 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] flex items-center justify-between">
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
             <span>Watch on Instagram</span>
-            <span class="text-[#a37a4c] dark:text-[#2dd4bf] group-hover:translate-x-1 transition-transform">&rarr;</span>
+            <span class="text-[#855b25] dark:text-[#e5c98f] group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
         </a>
 
@@ -261,21 +261,21 @@ const articles = (await getCollection('articles')).slice(0, 3);
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-xl bg-white dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between"
         >
           <div>
             <!-- Header -->
-            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/5 dark:border-purple-500/15 text-xs">
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
               <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#a37a4c]/30">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
                   <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
-                  <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] block leading-tight">astrobyanisha</span>
-                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Tarot Archetypes</span>
+                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">astrobyanisha</span>
+                  <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Tarot Archetypes</span>
                 </div>
               </div>
-              <span class="text-[10px] uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] font-semibold px-2 py-0.5 rounded-full bg-[#a37a4c]/10 dark:bg-purple-900/30">
+              <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">
                 1/4
               </span>
             </div>
@@ -283,21 +283,21 @@ const articles = (await getCollection('articles')).slice(0, 3);
             <!-- Post Graphic Preview -->
             <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4">
               <div class="text-center">
-                <span class="text-[10px] uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-1">IX • The Hermit</span>
-                <p class="font-serif italic text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] leading-snug">
+                <span class="text-[10px] uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-1">IX • The Hermit</span>
+                <p class="font-serif italic text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] leading-snug">
                   "Silence is not empty; it is the ground of revelation."
                 </p>
               </div>
             </div>
 
-            <p class="font-serif text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors mb-3">
+            <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors mb-3">
               "The Hermit invites you to step outside the noise of external counsel and listen to the voice that only speaks in stillness."
             </p>
           </div>
 
-          <div class="pt-3.5 border-t border-[#28231e]/5 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] flex items-center justify-between">
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
             <span>View on Instagram</span>
-            <span class="text-[#a37a4c] dark:text-[#2dd4bf] group-hover:translate-x-1 transition-transform">&rarr;</span>
+            <span class="text-[#855b25] dark:text-[#e5c98f] group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
         </a>
 
@@ -306,7 +306,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
           href="https://youtube.com"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-xl bg-[#f8f5ee] dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
+          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
         >
           <div>
             <!-- YouTube Channel Banner Mockup -->
@@ -319,10 +319,10 @@ const articles = (await getCollection('articles')).slice(0, 3);
                 </div>
                 <div>
                   <div class="flex items-center gap-1">
-                    <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] text-xs">Astro by Anisha</span>
-                    <span class="text-[10px] text-[#857f77]">&bull; 18.4K</span>
+                    <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] text-xs">Astro by Anisha</span>
+                    <span class="text-[10px] text-[#5a534b] dark:text-[#a8a29a]">&bull; 18.4K</span>
                   </div>
-                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Official Channel</span>
+                  <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Official Channel</span>
                 </div>
               </div>
               <span class="text-[10px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
@@ -331,7 +331,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
             </div>
 
             <!-- YouTube Video Player Mockup -->
-            <div class="relative aspect-[16/9] rounded-lg overflow-hidden bg-[#1c1917] mb-3.5">
+            <div class="relative aspect-[16/9] rounded-lg overflow-hidden bg-[#110f0d] mb-3.5">
               <img
                 src="/images/anisha.webp"
                 alt="Video preview: Understanding Your Lagna"
@@ -349,15 +349,15 @@ const articles = (await getCollection('articles')).slice(0, 3);
               </span>
             </div>
 
-            <h4 class="font-serif text-base sm:text-lg text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-1 group-hover:text-[#a37a4c] transition-colors">
+            <h4 class="font-serif text-base sm:text-lg text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-1 group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors">
               Understanding Your Lagna & Current Dashas
             </h4>
-            <p class="text-xs text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed">
+            <p class="text-xs text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
               In-depth contemplative video breakdown exploring planetary seasons, Saturn cycles, and self-inquiry.
             </p>
           </div>
 
-          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] flex items-center justify-between mt-4">
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] flex items-center justify-between mt-4">
             <span>Watch on YouTube</span>
             <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
@@ -370,14 +370,14 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
   <!-- 7. SELECTED ARTICLES -->
   <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] dark:bg-[#070512] relative border-t border-[#28231e]/10 dark:border-purple-500/20">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
+    <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-2">
             Essays & Reflections
           </span>
-          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#110f0d] dark:text-[#ffffff] tracking-tight font-medium">
             Articles by Anisha
           </h2>
         </div>
@@ -391,35 +391,35 @@ const articles = (await getCollection('articles')).slice(0, 3);
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
         {
           articles.map((art) => (
-            <article class="glass-card rounded-xl overflow-hidden border border-[#28231e]/10 dark:border-purple-500/20 bg-white/70 dark:bg-[#0f0b24]/70 flex flex-col justify-between">
+            <article class="glass-card rounded-xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/25 bg-white/85 dark:bg-[#0f0b24]/85 flex flex-col justify-between shadow-xs">
               <div>
                 <div class="aspect-[16/10] overflow-hidden bg-[#eee8dc] dark:bg-[#1b143a]">
                   <img
                     src={art.data.featuredImage}
                     alt={art.data.title}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    class="w-full h-full object-cover"
                     loading="lazy"
                   />
                 </div>
                 <div class="p-5 sm:p-6">
-                  <div class="flex items-center gap-3 text-[10px] uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] mb-2 font-medium">
-                    <span class="text-[#a37a4c] dark:text-[#2dd4bf]">{art.data.category}</span>
+                  <div class="flex items-center gap-3 text-[10px] uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] mb-2 font-semibold">
+                    <span class="text-[#855b25] dark:text-[#e5c98f]">{art.data.category}</span>
                     <span>&bull;</span>
                     <span>{art.data.readingTime}</span>
                   </div>
-                  <h3 class="font-serif text-lg sm:text-xl text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-2 hover:text-[#a37a4c] transition-colors">
+                  <h3 class="font-serif text-lg sm:text-xl text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-2 hover:text-[#855b25] dark:hover:text-[#e5c98f] transition-colors">
                     <a href={`/articles/${art.id}`}>{art.data.title}</a>
                   </h3>
-                  <p class="text-xs text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed line-clamp-2">
+                  <p class="text-sm text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed line-clamp-2">
                     {art.data.excerpt}
                   </p>
                 </div>
               </div>
 
-              <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#28231e]/5 dark:border-purple-500/15">
+              <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#28231e]/10 dark:border-purple-500/15">
                 <a
                   href={`/articles/${art.id}`}
-                  class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] dark:text-[#f8fafc] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] transition-colors"
+                  class="text-xs font-semibold uppercase tracking-wider text-[#110f0d] dark:text-[#ffffff] hover:text-[#855b25] dark:hover:text-[#e5c98f] transition-colors"
                 >
                   Read Essay &rarr;
                 </a>
@@ -434,17 +434,17 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
   <!-- 8. FINAL CTA: Restrained & Elegant -->
   <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] dark:from-[#090716] dark:to-[#05030c] border-t border-[#28231e]/10 dark:border-purple-500/20 text-center relative">
-    <div class="max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+    <div class="max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
       
-      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-3">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
         Take The Next Step
       </span>
 
-      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight leading-tight mb-5">
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight leading-tight mb-5">
         Ready to explore your chart?
       </h2>
 
-      <p class="text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg mx-auto">
+      <p class="text-sm sm:text-base md:text-lg text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed mb-8 sm:mb-10 max-w-xl mx-auto">
         Step into an intelligent, confidential space dedicated to your clarity, life timing, and soul alignment with Anisha Banerji.
       </p>
 
@@ -457,7 +457,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
         <a
           href="#birth-chart"
-          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/70 dark:bg-purple-950/40 text-[#1c1917] dark:text-[#f8fafc] hover:bg-[#1c1917] hover:text-white dark:hover:bg-[#2dd4bf] dark:hover:text-[#0c091f] transition-all"
+          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/90 dark:bg-purple-950/60 text-[#110f0d] dark:text-[#ffffff] hover:bg-[#110f0d] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#0c091f] transition-all"
         >
           Calculate Chart Again
         </a>

@@ -68,3 +68,28 @@ const inlineStyle = [
     </button>
   )
 }
+
+<script>
+  // Dynamic refractive pointer tracking for optical crystal glass buttons
+  if (typeof window !== 'undefined' && !window.__iridescentInitialized) {
+    window.__iridescentInitialized = true;
+
+    document.addEventListener('pointermove', (e) => {
+      const target = (e.target as HTMLElement | null)?.closest('.iridescent') as HTMLElement | null;
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      target.style.setProperty('--x', `${x.toFixed(1)}%`);
+      target.style.setProperty('--y', `${y.toFixed(1)}%`);
+    });
+
+    document.addEventListener('pointerout', (e) => {
+      const target = (e.target as HTMLElement | null)?.closest('.iridescent') as HTMLElement | null;
+      if (!target) return;
+      target.style.removeProperty('--x');
+      target.style.removeProperty('--y');
+    });
+  }
+</script>

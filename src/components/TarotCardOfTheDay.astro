@@ -7,17 +7,17 @@ import GlassButton from './GlassButton.astro';
   <!-- Subtle ambient glow -->
   <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 sm:w-[32rem] h-96 sm:h-[32rem] rounded-full bg-[#f4eee4]/50 dark:bg-purple-900/10 blur-3xl pointer-events-none"></div>
 
-  <div class="max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
+  <div class="max-w-[1400px] 2xl:max-w-[1520px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 relative z-10">
     
     <!-- Section Header -->
-    <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/80 dark:bg-purple-950/40 border border-[#28231e]/10 dark:border-purple-500/30 text-[#a37a4c] dark:text-[#2dd4bf] mb-3 shadow-xs">
+    <div class="text-center max-w-2xl lg:max-w-3xl mx-auto mb-10 sm:mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-3 shadow-xs">
         <span>Contemplative Mirror</span>
       </div>
-      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
         Tarot Card of the Day
       </h2>
-      <p class="mt-3 text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed max-w-xl mx-auto">
+      <p class="mt-3 text-sm sm:text-base text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed max-w-xl mx-auto">
         Pause, take a quiet breath, and pull an archetypal key to illuminate the subconscious currents guiding your day.
       </p>
     </div>
@@ -26,29 +26,29 @@ import GlassButton from './GlassButton.astro';
     <div class="glass-card rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xl bg-white/70 dark:bg-[#0f0b24]/70 backdrop-blur-md">
       
       <!-- State 1: Deck & Draw Stage (Shown initially or when reshuffling) -->
-      <div id="tarot-draw-stage" class="flex flex-col items-center justify-center py-6 sm:py-10 transition-all duration-500">
+      <div id="tarot-draw-stage" class="flex flex-col items-center justify-center py-6 sm:py-10 transition-all duration-500 ease-out">
         
         <!-- Fanned Deck Cards -->
         <div id="deck-fan-container" class="relative w-64 sm:w-80 h-72 sm:h-88 flex items-center justify-center mb-8 cursor-pointer select-none">
           <!-- Card Backs Stack -->
-          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#a37a4c]/30 overflow-hidden transition-all duration-500 transform -rotate-12 -translate-x-6 sm:-translate-x-10 translate-y-2 hover:-translate-y-2">
+          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#855b25]/30 overflow-hidden transition-all duration-500 transform -rotate-12 -translate-x-6 sm:-translate-x-10 translate-y-2 hover:-translate-y-2">
             <img src="/images/tarot/card-back.webp" alt="Tarot Card Back" class="w-full h-full object-cover" />
           </div>
-          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#a37a4c]/30 overflow-hidden transition-all duration-500 transform -rotate-6 -translate-x-3 sm:-translate-x-5 translate-y-1 hover:-translate-y-2">
+          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#855b25]/30 overflow-hidden transition-all duration-500 transform -rotate-6 -translate-x-3 sm:-translate-x-5 translate-y-1 hover:-translate-y-2">
             <img src="/images/tarot/card-back.webp" alt="Tarot Card Back" class="w-full h-full object-cover" />
           </div>
-          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-2xl border border-[#a37a4c]/40 overflow-hidden transition-all duration-500 transform rotate-0 hover:-translate-y-3 z-10">
+          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-2xl border border-[#855b25]/40 overflow-hidden transition-all duration-500 transform rotate-0 hover:-translate-y-3 z-10">
             <img src="/images/tarot/card-back.webp" alt="Tarot Card Back" class="w-full h-full object-cover" />
           </div>
-          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#a37a4c]/30 overflow-hidden transition-all duration-500 transform rotate-6 translate-x-3 sm:translate-x-5 translate-y-1 hover:-translate-y-2">
+          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#855b25]/30 overflow-hidden transition-all duration-500 transform rotate-6 translate-x-3 sm:translate-x-5 translate-y-1 hover:-translate-y-2">
             <img src="/images/tarot/card-back.webp" alt="Tarot Card Back" class="w-full h-full object-cover" />
           </div>
-          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#a37a4c]/30 overflow-hidden transition-all duration-500 transform rotate-12 translate-x-6 sm:translate-x-10 translate-y-2 hover:-translate-y-2">
+          <div class="deck-card absolute w-36 sm:w-44 h-56 sm:h-68 rounded-xl shadow-lg border border-[#855b25]/30 overflow-hidden transition-all duration-500 transform rotate-12 translate-x-6 sm:translate-x-10 translate-y-2 hover:-translate-y-2">
             <img src="/images/tarot/card-back.webp" alt="Tarot Card Back" class="w-full h-full object-cover" />
           </div>
         </div>
 
-        <p class="text-xs sm:text-sm text-[#857f77] dark:text-[#a78bfa] font-light mb-6 text-center max-w-sm">
+        <p class="text-xs sm:text-sm text-[#5a534b] dark:text-[#ded9d0] font-normal mb-6 text-center max-w-sm">
           Tap the deck or click below to shuffle and reveal today’s archetype.
         </p>
 
@@ -57,7 +57,7 @@ import GlassButton from './GlassButton.astro';
           <button
             type="button"
             id="tarot-shuffle-btn"
-            class="iridescent iridescent-medium w-full sm:w-auto px-6"
+            class="iridescent iridescent-medium w-full sm:w-auto px-6 cursor-pointer"
             aria-label="Shuffle and Pull Your Tarot Card of the Day"
           >
             <span class="btn-text">Shuffle & Pull Card</span>
@@ -67,17 +67,17 @@ import GlassButton from './GlassButton.astro';
 
       </div>
 
-      <!-- State 2: Revealed Card & Meaning (Hidden by default, smooth animated reveal) -->
-      <div id="tarot-result-stage" class="hidden transition-all duration-700 ease-out">
+      <!-- State 2: Revealed Card & Meaning (Smooth animated fade reveal) -->
+      <div id="tarot-result-stage" class="hidden transition-all duration-700 ease-out opacity-0 translate-y-4">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 lg:gap-14 items-center">
           
           <!-- Card Display Column with 3D Flip -->
           <div class="md:col-span-5 lg:col-span-5 flex flex-col items-center">
             <div id="tarot-card-flip-wrap" class="perspective-1000 w-48 sm:w-56 md:w-60 lg:w-64 aspect-[360/600]">
-              <div id="tarot-card-flipper" class="relative w-full h-full transform-style-3d transition-transform duration-700 rounded-xl shadow-2xl border border-[#a37a4c]/30 bg-white">
+              <div id="tarot-card-flipper" class="relative w-full h-full transform-style-3d transition-transform duration-700 rounded-xl shadow-2xl border border-[#855b25]/30 bg-white dark:bg-[#0c091f]">
                 
                 <!-- Card Front Face -->
-                <div class="absolute inset-0 backface-hidden rounded-xl overflow-hidden bg-white">
+                <div class="absolute inset-0 backface-hidden rounded-xl overflow-hidden bg-white dark:bg-[#0c091f] shadow-2xl">
                   <img
                     id="tarot-card-img"
                     src="/images/tarot/the-sun.webp"
@@ -87,7 +87,7 @@ import GlassButton from './GlassButton.astro';
                 </div>
                 
                 <!-- Card Back Face -->
-                <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-xl overflow-hidden bg-[#1c1917]">
+                <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-xl overflow-hidden bg-[#1c1917] shadow-2xl">
                   <img
                     src="/images/tarot/card-back.webp"
                     alt="Tarot Back"
@@ -102,7 +102,7 @@ import GlassButton from './GlassButton.astro';
             <button
               type="button"
               id="tarot-redraw-btn"
-              class="mt-6 text-xs font-semibold uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] hover:underline cursor-pointer"
+              class="mt-6 text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] hover:underline cursor-pointer transition-colors"
             >
               &circlearrowleft; Draw Another Card
             </button>
@@ -113,15 +113,15 @@ import GlassButton from './GlassButton.astro';
             
             <div>
               <div class="flex items-center gap-3 mb-2">
-                <span id="tarot-card-num" class="text-xs font-semibold uppercase tracking-[0.2em] text-[#a37a4c] dark:text-[#2dd4bf]">
+                <span id="tarot-card-num" class="text-xs font-semibold uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f]">
                   XIX • Major Arcana
                 </span>
-                <span class="text-xs text-[#857f77]">&bull;</span>
-                <span id="tarot-card-archetype" class="text-xs font-serif italic text-[#857f77] dark:text-[#c4b5fd]">
+                <span class="text-xs text-[#5a534b] dark:text-[#a8a29a]">&bull;</span>
+                <span id="tarot-card-archetype" class="text-xs font-serif italic text-[#5a534b] dark:text-[#ded9d0]">
                   The Golden Radiance
                 </span>
               </div>
-              <h3 id="tarot-card-name" class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
+              <h3 id="tarot-card-name" class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight">
                 The Sun
               </h3>
             </div>
@@ -133,20 +133,20 @@ import GlassButton from './GlassButton.astro';
 
             <!-- Meaning Paragraph -->
             <div class="space-y-3 pt-2">
-              <span class="text-[11px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] block">
+              <span class="text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] block">
                 Today's Archetypal Reflection
               </span>
-              <p id="tarot-card-meaning" class="text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#e2e8f0] font-light leading-relaxed">
+              <p id="tarot-card-meaning" class="text-sm sm:text-base text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
                 The Sun dispels every shadow, bestowing warmth, vitality, and unmistakable transparency. Your efforts are illuminated; truth is obvious.
               </p>
             </div>
 
             <!-- Contemplative Question Box -->
-            <div class="p-4 sm:p-5 rounded-xl bg-[#f5f2eb]/70 dark:bg-purple-950/30 border border-[#28231e]/10 dark:border-purple-500/20 w-full">
-              <span class="text-[10px] font-semibold uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] block mb-1">
+            <div class="p-4 sm:p-5 rounded-xl bg-[#faf8f5] dark:bg-[#0c091f] border border-[#28231e]/15 dark:border-purple-500/25 w-full shadow-xs">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] block mb-1">
                 Contemplative Inquiry
               </span>
-              <p id="tarot-card-inquiry" class="font-serif italic text-xs sm:text-sm text-[#1c1917] dark:text-[#f8fafc] leading-relaxed">
+              <p id="tarot-card-inquiry" class="font-serif italic text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] leading-relaxed font-normal">
                 "What joy or creative success is available for you to wholeheartedly celebrate today?"
               </p>
             </div>
@@ -154,8 +154,8 @@ import GlassButton from './GlassButton.astro';
             <!-- Affirmation & Consultation Link -->
             <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full border-t border-[#28231e]/10 dark:border-purple-500/20">
               <div>
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#94a3b8] block">Daily Affirmation</span>
-                <p id="tarot-card-affirmation" class="text-xs text-[#1c1917] dark:text-[#f8fafc] font-medium italic mt-0.5">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] block">Daily Affirmation</span>
+                <p id="tarot-card-affirmation" class="text-xs sm:text-sm text-[#110f0d] dark:text-[#ffffff] font-medium italic mt-0.5">
                   "I radiate warmth, joy, and clarity; my path is bright and clear."
                 </p>
               </div>
@@ -207,9 +207,17 @@ import GlassButton from './GlassButton.astro';
       // Animate deck shuffle
       const cards = fanContainer?.querySelectorAll('.deck-card');
       cards?.forEach((c, idx) => {
-        c.style.transform = `translate(${(idx - 2) * 40}px, -20px) rotate(${(idx - 2) * 15}deg) scale(1.05)`;
+        c.style.transform = `translate(${(idx - 2) * 44}px, -24px) rotate(${(idx - 2) * 16}deg) scale(1.06)`;
       });
 
+      // Smoothly fade out draw stage
+      setTimeout(() => {
+        drawStage.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        drawStage.style.opacity = '0';
+        drawStage.style.transform = 'translateY(-12px) scale(0.97)';
+      }, 320);
+
+      // Once draw stage has faded out, populate card and smoothly fade in result stage
       setTimeout(() => {
         // Pick random card
         const randomIndex = Math.floor(Math.random() * TAROT_DECK.length);
@@ -228,35 +236,78 @@ import GlassButton from './GlassButton.astro';
           cardKeywords.innerHTML = card.keywords
             .map(
               (kw) =>
-                `<span class="px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#28231e]/5 dark:bg-purple-900/30 text-[#57534e] dark:text-[#c4b5fd] border border-[#28231e]/5 dark:border-purple-500/20">${kw}</span>`
+                `<span class="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#28231e]/5 dark:bg-purple-950/50 text-[#38322c] dark:text-[#ded9d0] border border-[#28231e]/15 dark:border-purple-500/25">${kw}</span>`
             )
             .join('');
         }
 
-        // Hide draw stage, show result stage
+        // Hide draw stage completely from layout
         drawStage.classList.add('hidden');
-        resultStage.classList.remove('hidden');
 
-        // Flip card with 3D animation
+        // Prepare result stage in invisible, prepared 3D state
+        resultStage.classList.remove('hidden');
+        resultStage.style.transition = 'none';
+        resultStage.style.opacity = '0';
+        resultStage.style.transform = 'translateY(16px) scale(0.97)';
         if (flipper) {
+          flipper.style.transition = 'none';
           flipper.style.transform = 'rotateY(180deg)';
-          setTimeout(() => {
-            flipper.style.transform = 'rotateY(0deg)';
-            isShuffling = false;
-          }, 150);
-        } else {
-          isShuffling = false;
         }
-      }, 600);
+
+        // Force browser layout repaint
+        void resultStage.offsetHeight;
+
+        // Smoothly fade in result stage with scale & position easing
+        resultStage.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+        resultStage.style.opacity = '1';
+        resultStage.style.transform = 'translateY(0) scale(1)';
+
+        // After fade-in starts, execute smooth 3D card turnover
+        setTimeout(() => {
+          if (flipper) {
+            flipper.style.transition = 'transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)';
+            flipper.style.transform = 'rotateY(0deg)';
+          }
+          isShuffling = false;
+        }, 180);
+
+      }, 740);
     }
 
     function resetDraw() {
-      resultStage.classList.add('hidden');
-      drawStage.classList.remove('hidden');
-      const cards = fanContainer?.querySelectorAll('.deck-card');
-      cards?.forEach((c) => {
-        c.style.transform = '';
-      });
+      if (isShuffling) return;
+      isShuffling = true;
+
+      // Smooth fade-out of resultStage
+      resultStage.style.transition = 'opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+      resultStage.style.opacity = '0';
+      resultStage.style.transform = 'translateY(-10px) scale(0.97)';
+
+      setTimeout(() => {
+        resultStage.classList.add('hidden');
+
+        // Reset deck cards
+        const cards = fanContainer?.querySelectorAll('.deck-card');
+        cards?.forEach((c) => {
+          c.style.transform = '';
+        });
+
+        // Prepare draw stage in hidden initial state
+        drawStage.classList.remove('hidden');
+        drawStage.style.transition = 'none';
+        drawStage.style.opacity = '0';
+        drawStage.style.transform = 'translateY(16px) scale(0.97)';
+
+        // Force reflow
+        void drawStage.offsetHeight;
+
+        // Smooth fade-in of draw stage
+        drawStage.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+        drawStage.style.opacity = '1';
+        drawStage.style.transform = 'translateY(0) scale(1)';
+
+        isShuffling = false;
+      }, 360);
     }
 
     shuffleBtn.addEventListener('click', pullCard);
@@ -265,7 +316,7 @@ import GlassButton from './GlassButton.astro';
   }
 
   setupTarotCard();
-  document.addEventListener('astro:after-swap', setupTarotCard);
+  document.addEventListener('astro:page-load', setupTarotCard);
 </script>
 
 <style>
