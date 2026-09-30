@@ -29,6 +29,12 @@
     --border-subtle: rgba(168, 85, 247, 0.2);
   }
 
+  html {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+  }
+
   body {
     background: radial-gradient(circle at 50% 20%, #ffffff 0%, #fbf9f5 50%, #f4ede1 100%);
     color: var(--text-primary);
@@ -36,6 +42,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
     min-height: 100vh;
     transition: background 0.3s ease, color 0.3s ease;
   }
@@ -370,8 +378,8 @@ a.iridescent {
 /* Outer glassy glow halo */
 .iridescent .drop-shadow:before {
   opacity: 0.8;
-  translate: 1.2em 1.1em;
-  scale: 1.5 0.8;
+  translate: 0.3em 0.25em;
+  scale: 1.05 0.85;
   background: rgba(254, 243, 199, 0.45);
   -webkit-mask: radial-gradient(
     closest-side,
@@ -459,12 +467,18 @@ a.iridescent {
 .iridescent:hover .drop-shadow:after,
 .iridescent.shine .drop-shadow:after {
   opacity: 0.45;
-  translate: 1.8em 1.2em;
+  translate: 0.5em 0.3em;
   scale: -1 1;
 }
 
 .iridescent:active {
   transform: translateY(1px) scale(0.99);
+}
+
+@media (max-width: 640px) {
+  .iridescent {
+    overflow: hidden !important;
+  }
 }
 
 /* ==========================================================================

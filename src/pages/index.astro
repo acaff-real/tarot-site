@@ -3,6 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import GlassButton from '../components/GlassButton.astro';
 import SteampunkButton from '../components/SteampunkButton.astro';
 import BirthChartCalculator from '../components/BirthChartCalculator.astro';
+import NumerologyCalculator from '../components/NumerologyCalculator.astro';
+import TarotCardOfTheDay from '../components/TarotCardOfTheDay.astro';
 import { SERVICES } from '../data/services';
 import { getCollection } from 'astro:content';
 
@@ -14,116 +16,59 @@ const articles = (await getCollection('articles')).slice(0, 3);
   description="Intelligent, grounded guidance by Anisha Banerji. High-precision Vedic and Western birth chart calculations, contemplative tarot, and personal timing consultations."
   currentPath="/"
 >
-  <!-- 1. HERO SECTION: Anisha & Astro by Anisha Dominate with Generous Whitespace -->
-  <section class="relative pt-8 pb-16 sm:pt-16 sm:pb-24 md:pt-20 md:pb-28 lg:pt-24 lg:pb-36 xl:pt-28 xl:pb-40 overflow-hidden">
+  <!-- 1. OPENING / HERO SECTION: About Anisha as the Opening Focus (Who I Am -> What I Do -> What You Can Do Next) -->
+  <section class="relative pt-8 pb-16 sm:pt-14 sm:pb-20 md:pt-18 md:pb-24 lg:pt-22 lg:pb-28 xl:pt-26 xl:pb-32 overflow-hidden border-b border-[#28231e]/10 dark:border-purple-500/20 bg-gradient-to-b from-[#fcfbf9] via-[#faf8f5] to-[#f5efe6]/40 dark:from-[#090716] dark:via-[#0c091f] dark:to-[#070512]">
     <!-- Soft luminous background warmth -->
-    <div class="absolute top-1/6 right-10 w-72 sm:w-96 lg:w-[28rem] xl:w-[32rem] h-72 sm:h-96 lg:h-[28rem] xl:h-[32rem] rounded-full bg-[#f4eee4]/60 blur-3xl pointer-events-none"></div>
-    <div class="absolute top-1/3 left-10 w-64 sm:w-80 lg:w-96 xl:w-[26rem] h-64 sm:h-80 lg:h-96 xl:h-[26rem] rounded-full bg-[#efe8dc]/40 blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/6 right-10 w-72 sm:w-96 lg:w-[26rem] h-72 sm:h-96 lg:h-[26rem] rounded-full bg-[#f4eee4]/60 dark:bg-purple-900/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 left-10 w-64 sm:w-80 lg:w-96 h-64 sm:h-80 lg:h-96 rounded-full bg-[#efe8dc]/40 dark:bg-teal-900/10 blur-3xl pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 relative z-10">
-      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-8 lg:gap-14 xl:gap-16 items-center">
+      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-10 md:gap-10 lg:gap-16 xl:gap-20 items-center">
         
-        <!-- Left: Who I Am -> What I Do -> What You Can Do Next -->
-        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left">
-          
-          <div class="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] bg-white/80 border border-[#28231e]/10 text-[#a37a4c] mb-5 sm:mb-6 shadow-xs">
-            <span>Anisha Banerji</span>
-          </div>
-
-          <h1 class="font-serif text-4xl sm:text-5xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-[#1c1917] tracking-tight leading-[1.04] mb-5 sm:mb-6">
-            Astro by <span class="italic font-light">Anisha</span>
-          </h1>
-
-          <p class="font-serif text-lg sm:text-xl md:text-xl lg:text-2xl text-[#57534e] font-light leading-snug mb-4 sm:mb-5 max-w-lg lg:max-w-xl">
-            Vedic astrology and contemplative tarot for clarity, life timing, and purposeful direction.
-          </p>
-
-          <p class="text-xs sm:text-sm md:text-sm lg:text-base text-[#78716c] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg lg:max-w-xl">
-            A quiet, intelligent sanctuary dedicated to self-knowledge. Grounded in astronomical precision and psychological depth—designed to help you navigate pivotal thresholds with confidence.
-          </p>
-
-          <!-- CTAs -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4 w-full sm:w-auto">
-            <GlassButton
-              text="Book a Consultation"
-              href="/consultations"
-              size="medium"
-              class="w-full sm:w-auto"
-            />
+        <!-- Left: Prominent Portrait of Anisha with Breathing Room & Presence -->
+        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 w-full order-2 md:order-1">
+          <div class="relative w-full max-w-sm sm:max-w-md md:max-w-none mx-auto">
+            <!-- Subtle Gold Bevel Underlay -->
+            <div class="absolute inset-0 translate-x-2.5 translate-y-2.5 sm:translate-x-3 sm:translate-y-3 rounded-2xl bg-[#ede5d8]/80 dark:bg-purple-950/40 blur-xs"></div>
             
-            <a
-              href="#birth-chart"
-              class="inline-flex items-center justify-center text-xs font-semibold uppercase tracking-[0.16em] text-[#57534e] hover:text-[#1c1917] transition-colors py-3 px-5 sm:py-3.5 sm:px-6"
-            >
-              Discover Your Birth Chart &darr;
-            </a>
-          </div>
-
-        </div>
-
-        <!-- Right: Dominant Photograph of Anisha -->
-        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 relative flex justify-center w-full">
-          <div class="relative w-full max-w-xs sm:max-w-sm md:max-w-sm lg:max-w-md xl:max-w-lg">
-            
-            <!-- Soft Underlay Frame -->
-            <div class="absolute inset-0 translate-x-2.5 translate-y-2.5 sm:translate-x-3 sm:translate-y-3 rounded-xl bg-[#ede5d8]/70 blur-xs"></div>
-            
-            <!-- Portrait Card -->
-            <div class="relative rounded-xl overflow-hidden border border-[#28231e]/10 shadow-2xl bg-white aspect-[4/5]">
+            <!-- Portrait Card Frame -->
+            <div class="relative rounded-2xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/30 shadow-2xl bg-white dark:bg-[#120d2b] aspect-[4/5]">
               <img
                 src="/images/anisha.webp"
-                alt="Anisha Banerji — Astro by Anisha"
-                class="w-full h-full object-cover object-[center_12%] hover:scale-[1.02] transition-transform duration-700 ease-out"
+                alt="Anisha Banerji — Founder of Astro by Anisha"
+                class="w-full h-full object-cover object-[center_14%] hover:scale-[1.02] transition-transform duration-700 ease-out"
                 loading="eager"
               />
               
-              <!-- Subtle Clean Caption -->
-              <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-3 sm:p-4 rounded-md glass-card backdrop-blur-md bg-white/85 border border-white/80 shadow-md">
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block">Anisha Banerji</span>
-                <p class="text-[11px] sm:text-xs text-[#1c1917] font-medium mt-0.5">
+              <!-- Subtle Clean Float Badge -->
+              <div class="absolute bottom-3.5 left-3.5 right-3.5 sm:bottom-4 sm:left-4 sm:right-4 p-3.5 sm:p-4 rounded-xl glass-card backdrop-blur-md bg-white/90 dark:bg-[#0c091f]/90 border border-white/80 dark:border-purple-500/30 shadow-lg">
+                <span class="text-[10px] uppercase tracking-[0.22em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block">
+                  Anisha Banerji
+                </span>
+                <p class="text-xs sm:text-sm text-[#1c1917] dark:text-[#f8fafc] font-medium mt-0.5">
                   Vedic Astrologer & Tarot Consultant
                 </p>
               </div>
             </div>
-
           </div>
         </div>
 
-      </div>
-    </div>
-  </section>
-
-  <!-- 2. STREAMLINED BIRTH CHART CALCULATOR -->
-  <BirthChartCalculator />
-
-  <!-- 3. ABOUT ANISHA: Premium Personal Profile with Breathing Room -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-[#faf8f5] border-y border-[#28231e]/10 relative">
-    <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
-      <div class="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-8 sm:gap-10 md:gap-10 lg:gap-16 xl:gap-20 items-center">
-        
-        <!-- Left: Prominent Portrait of Anisha -->
-        <div class="md:col-span-5 lg:col-span-5 xl:col-span-5 w-full">
-          <div class="relative rounded-xl overflow-hidden border border-[#28231e]/10 shadow-xl bg-white aspect-[4/5] max-w-sm md:max-w-none mx-auto">
-            <img
-              src="/images/anisha.webp"
-              alt="Anisha Banerji"
-              class="w-full h-full object-cover object-top"
-              loading="lazy"
-            />
+        <!-- Right: Dignified Introduction, Who I Am -> What I Do -> What You Can Do Next -->
+        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left order-1 md:order-2">
+          
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/80 dark:bg-purple-950/40 border border-[#28231e]/10 dark:border-purple-500/30 text-[#a37a4c] dark:text-[#2dd4bf] mb-4 shadow-xs">
+            <span>Astro by Anisha</span>
           </div>
-        </div>
 
-        <!-- Right: Restrained, Dignified Copy -->
-        <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start">
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
-            About Anisha
-          </span>
-
-          <h2 class="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl text-[#1c1917] tracking-tight leading-tight mb-5 sm:mb-6">
+          <h1 class="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight leading-[1.1] mb-5 sm:mb-6">
             A contemporary approach to ancient wisdom.
-          </h2>
+          </h1>
 
-          <div class="space-y-4 text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed mb-8">
+          <p class="font-serif text-base sm:text-lg lg:text-xl text-[#57534e] dark:text-[#c4b5fd] font-light leading-snug mb-4 max-w-xl">
+            Intelligent, grounded guidance through classical Vedic astrology and contemplative tarot.
+          </p>
+
+          <div class="space-y-3.5 text-xs sm:text-sm md:text-base text-[#78716c] dark:text-[#94a3b8] font-light leading-relaxed mb-8 max-w-xl">
             <p>
               I founded Astro by Anisha to bring intellectual rigor, psychological clarity, and quiet dignity back to traditional astrology and tarot.
             </p>
@@ -132,19 +77,31 @@ const articles = (await getCollection('articles')).slice(0, 3);
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+          <!-- Two Explicit Primary Links: Book a Consultation & Read Full Profile -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-5 w-full sm:w-auto mb-6">
             <GlassButton
-              text="Read Full Profile"
-              href="/about"
-              size="medium"
-            />
-            <a
+              text="Book a Consultation"
               href="/consultations"
-              class="text-xs font-semibold uppercase tracking-wider text-[#a37a4c] hover:underline"
+              size="large"
+              class="w-full sm:w-auto"
+            />
+
+            <a
+              href="/about"
+              class="glass-pill-btn text-xs font-semibold uppercase tracking-[0.16em] py-3.5 px-6 rounded-full border border-[#28231e]/15 dark:border-purple-500/30 bg-white/80 dark:bg-purple-950/40 text-[#1c1917] dark:text-[#f8fafc] hover:bg-[#1c1917] hover:text-white dark:hover:bg-[#2dd4bf] dark:hover:text-[#0c091f] transition-all text-center"
             >
-              Consultation Formats &rarr;
+              Read Full Profile
             </a>
           </div>
+
+          <!-- Scroll Anchor to Birth Chart -->
+          <a
+            href="#birth-chart"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#857f77] dark:text-[#a78bfa] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] transition-colors pt-2"
+          >
+            <span>Discover Your Birth Chart</span>
+            <span class="text-sm">&darr;</span>
+          </a>
 
         </div>
 
@@ -152,19 +109,30 @@ const articles = (await getCollection('articles')).slice(0, 3);
     </div>
   </section>
 
-  <!-- 4. SERVICES: Clean, Restrained, No Prices (Reference: chani.com/chart) -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-[#fcfbf9] relative">
+  <!-- 2. BIRTH CHART SECTION: The Next Section When Scrolling Down -->
+  <section id="birth-chart" class="relative">
+    <BirthChartCalculator />
+  </section>
+
+  <!-- 3. NUMEROLOGY CALCULATOR: Directly Below Birth Chart Calculator -->
+  <NumerologyCalculator />
+
+  <!-- 4. TAROT CARD OF THE DAY: Interactive Shuffle & Draw Generator -->
+  <TarotCardOfTheDay />
+
+  <!-- 5. SERVICES: Clean, Restrained, No Prices (Reference: chani.com/chart) -->
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] dark:bg-[#070512] relative border-t border-[#28231e]/10 dark:border-purple-500/20">
     <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
       <!-- Section Header -->
       <div class="text-center max-w-2xl lg:max-w-3xl mx-auto mb-12 sm:mb-16">
-        <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+        <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-3">
           1-on-1 Consultations
         </span>
-        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] tracking-tight">
+        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
           Consultation Offerings
         </h2>
-        <p class="mt-3 text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed">
+        <p class="mt-3 text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed">
           Structured, confidential sessions conducted online via private video worldwide.
         </p>
       </div>
@@ -173,23 +141,23 @@ const articles = (await getCollection('articles')).slice(0, 3);
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 md:gap-6 lg:gap-8 xl:gap-10">
         {
           SERVICES.map((s) => (
-            <div class="glass-card rounded-lg p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between border border-[#28231e]/10 bg-white/70 hover:bg-white transition-all duration-300 shadow-xs">
+            <div class="glass-card rounded-xl p-6 sm:p-7 md:p-8 lg:p-9 flex flex-col justify-between border border-[#28231e]/10 dark:border-purple-500/20 bg-white/70 dark:bg-[#0f0b24]/70 hover:bg-white dark:hover:bg-[#150f33] transition-all duration-300 shadow-xs">
               <div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] font-semibold block mb-2">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
                   {s.duration}
                 </span>
-                <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] font-medium leading-snug mb-2">
+                <h3 class="font-serif text-xl sm:text-2xl lg:text-3xl text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-2">
                   {s.title}
                 </h3>
-                <p class="text-xs uppercase tracking-wider text-[#857f77] mb-3 sm:mb-4 font-medium">
+                <p class="text-xs uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] mb-3 sm:mb-4 font-medium">
                   {s.subtitle}
                 </p>
-                <p class="text-xs sm:text-sm text-[#57534e] font-light leading-relaxed mb-6">
+                <p class="text-xs sm:text-sm text-[#57534e] dark:text-[#e2e8f0] font-light leading-relaxed mb-6">
                   {s.shortDesc}
                 </p>
               </div>
 
-              <div class="pt-5 sm:pt-6 border-t border-[#28231e]/10">
+              <div class="pt-5 sm:pt-6 border-t border-[#28231e]/10 dark:border-purple-500/20">
                 <GlassButton
                   text="Book a Consultation"
                   href="/consultations"
@@ -205,16 +173,16 @@ const articles = (await getCollection('articles')).slice(0, 3);
     </div>
   </section>
 
-  <!-- 5. INSTAGRAM FIRST & YOUTUBE SECOND (Curated, Elegant Presentation) -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] border-t border-[#28231e]/10 relative">
+  <!-- 6. CURATED SOCIAL CARDS: Instagram First (2 Cards/Reels) & YouTube Second (Scaled-down Embed) -->
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] dark:bg-[#090716] border-t border-[#28231e]/10 dark:border-purple-500/20 relative">
     <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
             Social & Insights
           </span>
-          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
             Follow on Instagram & YouTube
           </h2>
         </div>
@@ -223,7 +191,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
             href="https://instagram.com/astrobyanisha"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[#1c1917] hover:text-[#a37a4c] inline-flex items-center gap-1.5 transition-colors"
+            class="text-[#1c1917] dark:text-[#f8fafc] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] inline-flex items-center gap-1.5 transition-colors"
           >
             <span>Instagram: @astrobyanisha</span>
             <span>&rarr;</span>
@@ -231,91 +199,185 @@ const articles = (await getCollection('articles')).slice(0, 3);
         </div>
       </div>
 
-      <!-- Curated Social Cards (Responsive multi-viewport grid) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-        <!-- Post 1 -->
+      <!-- Curated Social Cards (2 Instagram + 1 Scaled-down YouTube Embed) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        
+        <!-- Post 1: Instagram Reel Embed Card -->
         <a
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-white p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-xl bg-white dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
         >
           <div>
-            <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
-              <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">Planetary Transit</span>
-              <span>@astrobyanisha</span>
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/5 dark:border-purple-500/15 text-xs">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#a37a4c]/30">
+                  <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
+                </div>
+                <div>
+                  <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] block leading-tight">astrobyanisha</span>
+                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Anisha Banerji</span>
+                </div>
+              </div>
+              <span class="text-[10px] uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] font-semibold px-2 py-0.5 rounded-full bg-[#a37a4c]/10 dark:bg-purple-900/30">
+                Reel
+              </span>
             </div>
-            <p class="font-serif text-base sm:text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
+
+            <!-- Video Thumbnail Mockup -->
+            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#1c1917] mb-4">
+              <img
+                src="/images/studio.jpg"
+                alt="Planetary transit contemplation"
+                class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
+                <div class="w-11 h-11 rounded-full bg-white/90 dark:bg-[#0c091f]/90 text-[#1c1917] dark:text-[#f8fafc] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+              <span class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white/90 bg-black/60 px-1.5 py-0.5 rounded">
+                0:58
+              </span>
+            </div>
+
+            <p class="font-serif text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors mb-3">
               "Saturn tests where your foundations were built on obligation rather than authenticity. Slow down and rebuild with truth."
             </p>
           </div>
-          <div class="pt-4 border-t border-[#28231e]/5 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] flex items-center justify-between mt-6">
-            <span>Read on Instagram</span>
-            <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+
+          <div class="pt-3.5 border-t border-[#28231e]/5 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] flex items-center justify-between">
+            <span>Watch on Instagram</span>
+            <span class="text-[#a37a4c] dark:text-[#2dd4bf] group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
         </a>
 
-        <!-- Post 2 -->
+        <!-- Post 2: Instagram Carousel Archetype Post -->
         <a
           href="https://instagram.com/astrobyanisha"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-white p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
+          class="group rounded-xl bg-white dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between"
         >
           <div>
-            <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
-              <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">Tarot Archetype</span>
-              <span>@astrobyanisha</span>
+            <!-- Header -->
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/5 dark:border-purple-500/15 text-xs">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#a37a4c]/30">
+                  <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
+                </div>
+                <div>
+                  <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] block leading-tight">astrobyanisha</span>
+                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Tarot Archetypes</span>
+                </div>
+              </div>
+              <span class="text-[10px] uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] font-semibold px-2 py-0.5 rounded-full bg-[#a37a4c]/10 dark:bg-purple-900/30">
+                1/4
+              </span>
             </div>
-            <p class="font-serif text-base sm:text-lg text-[#1c1917] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors">
+
+            <!-- Post Graphic Preview -->
+            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4">
+              <div class="text-center">
+                <span class="text-[10px] uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-1">IX • The Hermit</span>
+                <p class="font-serif italic text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] leading-snug">
+                  "Silence is not empty; it is the ground of revelation."
+                </p>
+              </div>
+            </div>
+
+            <p class="font-serif text-sm sm:text-base text-[#1c1917] dark:text-[#f8fafc] font-light italic leading-snug group-hover:text-[#a37a4c] transition-colors mb-3">
               "The Hermit invites you to step outside the noise of external counsel and listen to the voice that only speaks in stillness."
             </p>
           </div>
-          <div class="pt-4 border-t border-[#28231e]/5 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] flex items-center justify-between mt-6">
-            <span>Read on Instagram</span>
-            <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+
+          <div class="pt-3.5 border-t border-[#28231e]/5 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] flex items-center justify-between">
+            <span>View on Instagram</span>
+            <span class="text-[#a37a4c] dark:text-[#2dd4bf] group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
         </a>
 
-        <!-- YouTube Feature Card -->
+        <!-- Post 3: Scaled-down YouTube Channel & Video Embed Card -->
         <a
           href="https://youtube.com"
           target="_blank"
           rel="noopener noreferrer"
-          class="group rounded-lg bg-[#f7f4ed] p-6 sm:p-7 border border-[#28231e]/10 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
+          class="group rounded-xl bg-[#f8f5ee] dark:bg-[#0f0b24] p-5 sm:p-6 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs hover:border-[#a37a4c]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
         >
           <div>
-            <div class="flex items-center justify-between text-xs text-[#857f77] mb-4">
-              <span class="uppercase tracking-widest text-[10px] text-[#a37a4c] font-semibold">YouTube &bull; Long-form</span>
-              <span>Astro by Anisha</span>
+            <!-- YouTube Channel Banner Mockup -->
+            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full overflow-hidden bg-red-600 text-white flex items-center justify-center">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="flex items-center gap-1">
+                    <span class="font-semibold text-[#1c1917] dark:text-[#f8fafc] text-xs">Astro by Anisha</span>
+                    <span class="text-[10px] text-[#857f77]">&bull; 18.4K</span>
+                  </div>
+                  <span class="text-[10px] text-[#857f77] dark:text-[#a78bfa]">Official Channel</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
+                Subscribe
+              </span>
             </div>
-            <h4 class="font-serif text-lg sm:text-xl text-[#1c1917] font-medium leading-snug mb-2 group-hover:text-[#a37a4c] transition-colors">
+
+            <!-- YouTube Video Player Mockup -->
+            <div class="relative aspect-[16/9] rounded-lg overflow-hidden bg-[#1c1917] mb-3.5">
+              <img
+                src="/images/anisha.webp"
+                alt="Video preview: Understanding Your Lagna"
+                class="w-full h-full object-cover object-top opacity-85 group-hover:scale-105 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-black/35 flex items-center justify-center">
+                <div class="w-12 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                  <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
+              <span class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white bg-black/80 px-1.5 py-0.5 rounded">
+                18:42
+              </span>
+            </div>
+
+            <h4 class="font-serif text-base sm:text-lg text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-1 group-hover:text-[#a37a4c] transition-colors">
               Understanding Your Lagna & Current Dashas
             </h4>
-            <p class="text-xs text-[#57534e] font-light leading-relaxed">
-              In-depth contemplative video breakdowns exploring planetary seasons and self-inquiry.
+            <p class="text-xs text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed">
+              In-depth contemplative video breakdown exploring planetary seasons, Saturn cycles, and self-inquiry.
             </p>
           </div>
-          <div class="pt-4 border-t border-[#28231e]/10 text-[11px] font-semibold uppercase tracking-wider text-[#a37a4c] flex items-center justify-between mt-6">
+
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#a37a4c] dark:text-[#2dd4bf] flex items-center justify-between mt-4">
             <span>Watch on YouTube</span>
             <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
           </div>
         </a>
+
       </div>
 
     </div>
   </section>
 
-  <!-- 6. SELECTED ARTICLES -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] relative">
+  <!-- 7. SELECTED ARTICLES -->
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#fcfbf9] dark:bg-[#070512] relative border-t border-[#28231e]/10 dark:border-purple-500/20">
     <div class="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
         <div>
-          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-2">
+          <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-2">
             Essays & Reflections
           </span>
-          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] tracking-tight">
+          <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight">
             Articles by Anisha
           </h2>
         </div>
@@ -329,9 +391,9 @@ const articles = (await getCollection('articles')).slice(0, 3);
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10">
         {
           articles.map((art) => (
-            <article class="glass-card rounded-lg overflow-hidden border border-[#28231e]/10 bg-white/70 flex flex-col justify-between">
+            <article class="glass-card rounded-xl overflow-hidden border border-[#28231e]/10 dark:border-purple-500/20 bg-white/70 dark:bg-[#0f0b24]/70 flex flex-col justify-between">
               <div>
-                <div class="aspect-[16/10] overflow-hidden bg-[#eee8dc]">
+                <div class="aspect-[16/10] overflow-hidden bg-[#eee8dc] dark:bg-[#1b143a]">
                   <img
                     src={art.data.featuredImage}
                     alt={art.data.title}
@@ -340,24 +402,24 @@ const articles = (await getCollection('articles')).slice(0, 3);
                   />
                 </div>
                 <div class="p-5 sm:p-6">
-                  <div class="flex items-center gap-3 text-[10px] uppercase tracking-wider text-[#857f77] mb-2 font-medium">
-                    <span class="text-[#a37a4c]">{art.data.category}</span>
+                  <div class="flex items-center gap-3 text-[10px] uppercase tracking-wider text-[#857f77] dark:text-[#a78bfa] mb-2 font-medium">
+                    <span class="text-[#a37a4c] dark:text-[#2dd4bf]">{art.data.category}</span>
                     <span>&bull;</span>
                     <span>{art.data.readingTime}</span>
                   </div>
-                  <h3 class="font-serif text-lg sm:text-xl text-[#1c1917] font-medium leading-snug mb-2 hover:text-[#a37a4c] transition-colors">
+                  <h3 class="font-serif text-lg sm:text-xl text-[#1c1917] dark:text-[#f8fafc] font-medium leading-snug mb-2 hover:text-[#a37a4c] transition-colors">
                     <a href={`/articles/${art.id}`}>{art.data.title}</a>
                   </h3>
-                  <p class="text-xs text-[#57534e] font-light leading-relaxed line-clamp-2">
+                  <p class="text-xs text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed line-clamp-2">
                     {art.data.excerpt}
                   </p>
                 </div>
               </div>
 
-              <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#28231e]/5">
+              <div class="px-5 sm:px-6 pb-5 sm:pb-6 pt-2 border-t border-[#28231e]/5 dark:border-purple-500/15">
                 <a
                   href={`/articles/${art.id}`}
-                  class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] hover:text-[#a37a4c] transition-colors"
+                  class="text-xs font-semibold uppercase tracking-wider text-[#1c1917] dark:text-[#f8fafc] hover:text-[#a37a4c] dark:hover:text-[#2dd4bf] transition-colors"
                 >
                   Read Essay &rarr;
                 </a>
@@ -370,19 +432,19 @@ const articles = (await getCollection('articles')).slice(0, 3);
     </div>
   </section>
 
-  <!-- 7. FINAL CTA: Restrained & Elegant -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] border-t border-[#28231e]/10 text-center relative">
+  <!-- 8. FINAL CTA: Restrained & Elegant -->
+  <section class="py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 bg-gradient-to-b from-[#fcfbf9] to-[#f4eee4] dark:from-[#090716] dark:to-[#05030c] border-t border-[#28231e]/10 dark:border-purple-500/20 text-center relative">
     <div class="max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
       
-      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] font-semibold block mb-3">
+      <span class="text-xs uppercase tracking-[0.25em] text-[#a37a4c] dark:text-[#2dd4bf] font-semibold block mb-3">
         Take The Next Step
       </span>
 
-      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] tracking-tight leading-tight mb-5">
+      <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#1c1917] dark:text-[#f8fafc] tracking-tight leading-tight mb-5">
         Ready to explore your chart?
       </h2>
 
-      <p class="text-xs sm:text-sm md:text-base text-[#57534e] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg mx-auto">
+      <p class="text-xs sm:text-sm md:text-base text-[#57534e] dark:text-[#c4b5fd] font-light leading-relaxed mb-8 sm:mb-10 max-w-lg mx-auto">
         Step into an intelligent, confidential space dedicated to your clarity, life timing, and soul alignment with Anisha Banerji.
       </p>
 
@@ -395,7 +457,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
         <a
           href="#birth-chart"
-          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/70 hover:bg-[#1c1917] hover:text-white transition-all"
+          class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/70 dark:bg-purple-950/40 text-[#1c1917] dark:text-[#f8fafc] hover:bg-[#1c1917] hover:text-white dark:hover:bg-[#2dd4bf] dark:hover:text-[#0c091f] transition-all"
         >
           Calculate Chart Again
         </a>

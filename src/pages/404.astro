@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GlassButton from '../components/GlassButton.astro';
+---
+
+<Layout
+  title="Page Not Found — Astro by Anisha"
+  description="The celestial coordinate you are looking for does not exist or has shifted."
+  currentPath="/404"
+>
+  <section class="min-h-[70vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5]">
+    <div class="max-w-xl mx-auto text-center">
+      <span class="text-xs uppercase tracking-[0.3em] text-[#a37a4c] font-semibold block mb-4">
+        Celestial Coordinate Uncharted
+      </span>
+      <h1 class="font-serif text-6xl sm:text-7xl md:text-8xl text-[#1c1917] tracking-tight font-light mb-6">
+        404
+      </h1>
+      <p class="text-base sm:text-lg text-[#57534e] font-light leading-relaxed mb-8 max-w-md mx-auto">
+        The threshold you are seeking has shifted or remains unmapped. Return to familiar celestial ground or begin an inquiry.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <GlassButton href="/" variant="primary">
+          Return Home
+        </GlassButton>
+        <GlassButton href="/consultations" variant="secondary">
+          Book a Consultation
+        </GlassButton>
+      </div>
+    </div>
+  </section>
+</Layout>
