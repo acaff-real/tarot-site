@@ -72,23 +72,24 @@ const schemaData = {
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Dark Mode Anti-Flicker Initialization & Transition Preservation (Light Mode Default) -->
+    <!-- Dark Mode Anti-Flicker Initialization & Transition Preservation (Strict Light Mode Default) -->
     <script is:inline>
       function applyTheme() {
         try {
-          // Guarantee light mode is default for all visitors and reset any legacy localhost storage
-          if (!localStorage.getItem('astro_theme_v2_initialized')) {
-            localStorage.removeItem('theme');
-            localStorage.setItem('astro_theme_v2_initialized', 'true');
-            localStorage.setItem('theme', 'light');
-          }
-          const stored = localStorage.getItem('theme');
-          if (stored === 'dark') {
+          // Permanently purge any legacy dark mode keys in localStorage to prevent sticky dark mode
+          localStorage.removeItem('theme');
+          localStorage.removeItem('astro_theme_v2_initialized');
+
+          // Strict Light Mode Default: only activate dark if explicitly toggled in this active tab session
+          const sessionTheme = sessionStorage.getItem('astro_theme');
+          if (sessionTheme === 'dark') {
             document.documentElement.classList.add('dark');
           } else {
             document.documentElement.classList.remove('dark');
           }
-        } catch (e) {}
+        } catch (e) {
+          document.documentElement.classList.remove('dark');
+        }
       }
       applyTheme();
       document.addEventListener('astro:after-swap', applyTheme);

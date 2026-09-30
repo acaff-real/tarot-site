@@ -62,10 +62,16 @@ const { class: className = '', id = 'theme-toggle' } = Astro.props;
         const isDark = document.documentElement.classList.contains('dark');
         if (isDark) {
           document.documentElement.classList.remove('dark');
-          localStorage.setItem('theme', 'light');
+          try {
+            sessionStorage.setItem('astro_theme', 'light');
+            localStorage.removeItem('theme');
+          } catch (e) {}
         } else {
           document.documentElement.classList.add('dark');
-          localStorage.setItem('theme', 'dark');
+          try {
+            sessionStorage.setItem('astro_theme', 'dark');
+            localStorage.removeItem('theme');
+          } catch (e) {}
         }
       });
     });
