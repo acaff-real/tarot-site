@@ -7,7 +7,14 @@ export const prerender = false;
 
 // 1. Authentication Configuration & Session Checking
 const ADMIN_USER = process.env.ADMIN_USER || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'AstroAnisha2026!';
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || 'f81f684c3133388d356ba4c5ccca680aa351bd81bd211873950d0cad876ab55b';
+
+async function hashSha256(val: string): Promise<string> {
+  const buffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 // Check logout action
 const action = Astro.url.searchParams.get('action');
@@ -33,11 +40,38 @@ if (Astro.request.method === 'POST') {
     const username = formData.get('username')?.toString().trim();
     const password = formData.get('password')?.toString();
 
-    // Check credentials (supports 'admin' or 'anisha')
-    const isValidUser = username === ADMIN_USER || username === 'anisha';
-    const isValidPass = password === ADMIN_PASSWORD;
+    let isValid = false;
 
-    if (isValidUser && isValidPass) {
+    if (username && password) {
+      const inputHash = await hashSha256(password);
+
+      // Check Cloudflare D1 database if binding is available
+      const db = (Astro.locals as any)?.runtime?.env?.DB;
+      if (db) {
+        try {
+          const user = await db
+            .prepare('SELECT password_hash, role FROM users WHERE username = ?')
+            .bind(username)
+            .first();
+          if (user && user.password_hash === inputHash) {
+            isValid = true;
+          }
+        } catch (dbErr) {
+          console.error('D1 user lookup error:', dbErr);
+        }
+      }
+
+      // Fallback to environment/default hash verification (for standalone Node mode)
+      if (!isValid) {
+        const isUserMatch = username === ADMIN_USER || username === 'anisha';
+        const isPassMatch = inputHash === ADMIN_PASSWORD_HASH;
+        if (isUserMatch && isPassMatch) {
+          isValid = true;
+        }
+      }
+    }
+
+    if (isValid) {
       const sessionToken = crypto.randomUUID();
       const isHttps = Astro.url.protocol === 'https:';
 
