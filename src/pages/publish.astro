@@ -2,14 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import { getCollection } from 'astro:content';
-import { getDatabase, getEnv } from '../lib/db';
+import { getDatabase, getEnv, createSignedToken, verifySignedToken } from '../lib/db';
 
 export const prerender = false;
 
 // 1. Authentication Configuration & Session Checking
 const cfEnv = getEnv();
 const ADMIN_USER = (cfEnv.ADMIN_USER || process.env.ADMIN_USER || 'admin').trim();
-const ADMIN_PASSWORD_HASH = (cfEnv.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || 'f81f684c3133388d356ba4c5ccca680aa351bd81bd211873950d0cad876ab55b').trim();
+const ADMIN_PASSWORD_HASH = (cfEnv.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || '').trim();
 const ADMIN_PASSWORD = (cfEnv.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '').trim();
 
 async function hashSha256(val: string): Promise<string> {
@@ -32,7 +32,7 @@ let isAuthenticated = false;
 
 // Check existing session cookie
 const authCookie = Astro.cookies.get('astro_admin_auth')?.value || Astro.cookies.get('journalist_auth')?.value;
-if (authCookie && authCookie.length >= 16) {
+if (authCookie && await verifySignedToken(authCookie)) {
   isAuthenticated = true;
 }
 
@@ -82,7 +82,7 @@ if (Astro.request.method === 'POST') {
     }
 
     if (isValid) {
-      const sessionToken = crypto.randomUUID();
+      const sessionToken = await createSignedToken();
       const isHttps = Astro.url.protocol === 'https:';
 
       Astro.cookies.set('astro_admin_auth', sessionToken, {

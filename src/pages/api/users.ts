@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getDatabase } from '../../lib/db';
+import { getDatabase, verifySignedToken, checkOrigin } from '../../lib/db';
 
 export const prerender = false;
 
@@ -10,14 +10,15 @@ async function hashSha256(val: string): Promise<string> {
     .join('');
 }
 
-function checkAuth(cookies: any): boolean {
+async function checkAuth(cookies: any): Promise<boolean> {
   const token = cookies.get('astro_admin_auth')?.value || cookies.get('journalist_auth')?.value;
-  return Boolean(token && token.length >= 16);
+  if (!token) return false;
+  return verifySignedToken(token);
 }
 
 // GET: List all authorized publishing users
 export const GET: APIRoute = async ({ cookies }) => {
-  if (!checkAuth(cookies)) {
+  if (!await checkAuth(cookies)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -48,7 +49,14 @@ export const GET: APIRoute = async ({ cookies }) => {
 
 // POST: Create new user or update existing user's password / role
 export const POST: APIRoute = async ({ request, cookies }) => {
-  if (!checkAuth(cookies)) {
+  if (!checkOrigin(request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden: invalid origin' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!await checkAuth(cookies)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -122,8 +130,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 };
 
 // DELETE: Remove an authorized user
-export const DELETE: APIRoute = async ({ url, cookies }) => {
-  if (!checkAuth(cookies)) {
+export const DELETE: APIRoute = async ({ request, url, cookies }) => {
+  if (!checkOrigin(request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden: invalid origin' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!await checkAuth(cookies)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },

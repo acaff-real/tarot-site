@@ -7,6 +7,26 @@ import { getDatabase } from '../../lib/db';
 
 export const prerender = false;
 
+/** Sanitize HTML output from marked to prevent stored XSS */
+function sanitizeHtml(html: string): string {
+  return html
+    // Remove <script> tags and their contents
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    // Remove standalone <script> opening/closing tags
+    .replace(/<\/?script[^>]*>/gi, '')
+    // Remove on* event handlers (onclick, onerror, onload, etc.)
+    .replace(/\s+on[a-z]+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/\s+on[a-z]+\s*=\s*[^\s>]+/gi, '')
+    // Remove javascript: URLs in href/src/action attributes
+    .replace(/(href|src|action)\s*=\s*["']\s*javascript\s*:[^"']*["']/gi, '$1=""')
+    // Remove data: URLs in src (can execute JS in some contexts)
+    .replace(/src\s*=\s*["']\s*data\s*:[^"']*["']/gi, 'src=""')
+    // Remove <iframe>, <object>, <embed>, <form>, <base> tags
+    .replace(/<\/?(iframe|object|embed|form|base|meta|link|style)[^>]*>/gi, '')
+    // Remove <svg> with potential script execution
+    .replace(/<svg[\s\S]*?<\/svg>/gi, '');
+}
+
 const { slug } = Astro.params;
 const db = getDatabase();
 
@@ -36,7 +56,8 @@ if (db && slug) {
           tags: tagsArray,
         },
       };
-      htmlContent = await marked.parse(row.content || '');
+      const rawHtml = await marked.parse(row.content || '');
+      htmlContent = sanitizeHtml(rawHtml);
     }
   } catch (e) {
     console.error('D1 single article lookup error:', e);

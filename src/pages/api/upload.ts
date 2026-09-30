@@ -1,12 +1,42 @@
 import type { APIRoute } from 'astro';
-import { getBucket } from '../../lib/db';
+import { getBucket, verifySignedToken, checkOrigin } from '../../lib/db';
 
 export const prerender = false;
 
+// Allowed MIME types for upload — only safe image/document types
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/avif',
+  'image/bmp',
+  'image/tiff',
+  'application/pdf',
+]);
+
+// Blocked extensions that could execute code if served
+const BLOCKED_EXTENSIONS = new Set([
+  'html', 'htm', 'svg', 'xml', 'xhtml',
+  'js', 'mjs', 'cjs', 'ts', 'jsx', 'tsx',
+  'php', 'py', 'rb', 'sh', 'bat', 'cmd', 'ps1',
+  'exe', 'dll', 'so', 'wasm',
+]);
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
 export const POST: APIRoute = async ({ request, cookies }) => {
-  // Check auth session
+  // CSRF origin check
+  if (!checkOrigin(request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden: invalid origin' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Check auth session with HMAC verification
   const authCookie = cookies.get('astro_admin_auth')?.value || cookies.get('journalist_auth')?.value;
-  if (!authCookie || authCookie.length < 16) {
+  if (!authCookie || !await verifySignedToken(authCookie)) {
     return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
       status: 401,
       headers: { 'Content-Type': 'application/json' },
@@ -36,19 +66,45 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
+    // Enforce file size limit
+    if (file.size > MAX_FILE_SIZE) {
+      return new Response(
+        JSON.stringify({ success: false, error: `File too large. Maximum allowed size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate MIME type
+    const mimeType = (file.type || '').toLowerCase();
+    if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+      return new Response(
+        JSON.stringify({ success: false, error: `File type "${mimeType || 'unknown'}" is not allowed. Only images and PDFs are accepted.` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate file extension
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (BLOCKED_EXTENSIONS.has(ext)) {
+      return new Response(
+        JSON.stringify({ success: false, error: `File extension ".${ext}" is not allowed.` }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Sanitize file name
-    const ext = file.name.split('.').pop() || 'jpg';
     const cleanBaseName = file.name
       .replace(/\.[^/.]+$/, '')
       .replace(/[^a-zA-Z0-9_-]/g, '_')
       .toLowerCase();
-    const key = `uploads/${Date.now()}-${cleanBaseName}.${ext}`;
+    const safeExt = ext.replace(/[^a-z0-9]/g, '') || 'jpg';
+    const key = `uploads/${Date.now()}-${cleanBaseName}.${safeExt}`;
 
     const arrayBuffer = await file.arrayBuffer();
 
     await bucket.put(key, arrayBuffer, {
       httpMetadata: {
-        contentType: file.type || 'image/jpeg',
+        contentType: mimeType,
       },
     });
 
@@ -62,7 +118,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         url: publicUrl,
         label,
         size: file.size,
-        contentType: file.type,
+        contentType: mimeType,
       }),
       {
         status: 200,

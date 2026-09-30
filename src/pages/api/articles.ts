@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import fs from 'node:fs';
 import path from 'node:path';
-import { getDatabase } from '../../lib/db';
+import { getDatabase, verifySignedToken, checkOrigin } from '../../lib/db';
 
 export const prerender = false;
 
@@ -99,12 +99,23 @@ ${article.content.trim()}
   return frontmatter;
 }
 
-function checkAuth(request: Request) {
+async function checkAuth(request: Request): Promise<boolean> {
   const cookieHeader = request.headers.get('Cookie') || '';
-  const authHeader = request.headers.get('Authorization') || '';
-  const hasCookie = cookieHeader.includes('astro_admin_auth=') || cookieHeader.includes('journalist_auth=');
-  const hasBearer = authHeader.startsWith('Bearer ');
-  return hasCookie || hasBearer;
+  // Extract token value from cookie header
+  let token = '';
+  for (const part of cookieHeader.split(';')) {
+    const trimmed = part.trim();
+    if (trimmed.startsWith('astro_admin_auth=')) {
+      token = trimmed.substring('astro_admin_auth='.length);
+      break;
+    }
+    if (trimmed.startsWith('journalist_auth=')) {
+      token = trimmed.substring('journalist_auth='.length);
+      break;
+    }
+  }
+  if (!token) return false;
+  return verifySignedToken(token);
 }
 
 // GET /api/articles - List all articles or single article by ?slug=xxx
@@ -237,7 +248,17 @@ export const GET: APIRoute = async ({ url, locals }) => {
 // POST /api/articles - Create or update an article in D1 and local files
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    if (!checkAuth(request)) {
+    if (!checkOrigin(request)) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: invalid origin' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (!await checkAuth(request)) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to save or edit articles.' }),
         {
@@ -369,7 +390,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
 // DELETE /api/articles?slug=xxx
 export const DELETE: APIRoute = async ({ request, url, locals }) => {
   try {
-    if (!checkAuth(request)) {
+    if (!checkOrigin(request)) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: invalid origin' }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (!await checkAuth(request)) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized. Please sign in at /publish to delete articles.' }),
         {
