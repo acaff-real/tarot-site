@@ -11,7 +11,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "d1:init:local": "wrangler d1 execute astro-by-anisha-db --local --file=schema.sql",
+    "d1:init:remote": "wrangler d1 execute astro-by-anisha-db --remote --file=schema.sql"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.6",

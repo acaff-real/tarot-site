@@ -9,7 +9,8 @@ export const prerender = false;
 // 1. Authentication Configuration & Session Checking
 const cfEnv = getEnv();
 const ADMIN_USER = (cfEnv.ADMIN_USER || process.env.ADMIN_USER || 'admin').trim();
-const ADMIN_PASSWORD_HASH = (cfEnv.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || '').trim();
+const DEFAULT_ADMIN_HASH = 'f81f684c3133388d356ba4c5ccca680aa351bd81bd211873950d0cad876ab55b'; // SHA-256 for AstroAnisha2026!
+const ADMIN_PASSWORD_HASH = (cfEnv.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD_HASH || DEFAULT_ADMIN_HASH).trim();
 const ADMIN_PASSWORD = (cfEnv.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '').trim();
 
 async function hashSha256(val: string): Promise<string> {

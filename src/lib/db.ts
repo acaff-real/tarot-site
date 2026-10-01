@@ -96,6 +96,8 @@ export function checkOrigin(request: Request, allowedOrigins?: string[]): boolea
     'https://astrobyanisha.com',
     'https://www.astrobyanisha.com',
     'https://tarot-site.asssasincraft8.workers.dev',
+    'http://localhost:',
+    'http://127.0.0.1:',
   ];
 
   if (origin && allowed.some((a) => origin.startsWith(a))) return true;

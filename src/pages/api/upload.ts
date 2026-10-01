@@ -132,3 +132,50 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
   }
 };
+
+// DELETE /api/upload?key=uploads/...
+export const DELETE: APIRoute = async ({ request, url, cookies }) => {
+  if (!checkOrigin(request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden: invalid origin' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const authCookie = cookies.get('astro_admin_auth')?.value || cookies.get('journalist_auth')?.value;
+  if (!authCookie || !await verifySignedToken(authCookie)) {
+    return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const key = url.searchParams.get('key');
+  if (!key) {
+    return new Response(JSON.stringify({ success: false, error: 'Key parameter is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const bucket = getBucket();
+  if (!bucket) {
+    return new Response(JSON.stringify({ success: false, error: 'R2 bucket unavailable' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    await bucket.delete(key);
+    return new Response(JSON.stringify({ success: true, message: `Deleted ${key} from storage` }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ success: false, error: err.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};

@@ -11,6 +11,7 @@ const { currentPath = '/' } = Astro.props;
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
+  { label: 'Birth Chart', href: '/#birth-chart' },
   { label: 'About', href: '/about' },
   { label: 'Articles', href: '/articles' },
   { label: 'Contact', href: '/contact' },
@@ -29,7 +30,10 @@ const NAV_LINKS = [
     <nav class="hidden md:flex items-center gap-4 lg:gap-8 xl:gap-10">
       {
         NAV_LINKS.map((link) => {
-          const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
+          const isActive =
+            link.href === '/'
+              ? currentPath === '/'
+              : !link.href.includes('#') && currentPath.startsWith(link.href);
           return (
             <a
               href={link.href}
