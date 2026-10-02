@@ -4,22 +4,38 @@ import GlassButton from '../components/GlassButton.astro';
 ---
 
 <Layout
-  title="Contact — Astro by Anisha"
+  title="Contact — Astrology with Anisha"
   description="Connect with Anisha Banerji for consultation requests, press, podcast inquiries, and general correspondence."
   currentPath="/contact"
 >
   <!-- Header -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
-    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
-        Direct Communication
-      </span>
-      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
-        Begin a Conversation
-      </h1>
-      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
-        Whether you have questions regarding consultations or wish to explore a media collaboration with Anisha Banerji, we welcome your note.
-      </p>
+  <section class="pt-8 pb-10 sm:pt-12 sm:pb-14 md:pt-14 md:pb-16 lg:pt-16 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
+      <!-- Back to Home Link -->
+      <div class="mb-4 sm:mb-6 text-left">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to homepage"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Home</span>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
+          Direct Communication
+        </span>
+        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
+          Begin a Conversation
+        </h1>
+        <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
+          Whether you have questions regarding consultations or wish to explore a media collaboration with Anisha Banerji, we welcome your note.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -118,11 +134,10 @@ import GlassButton from '../components/GlassButton.astro';
               <div>
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Topic of Inquiry</label>
                 <select id="contact-topic" class="w-full px-4 py-3 rounded-md glass-input text-sm bg-white dark:bg-[#120d2c] cursor-pointer font-medium text-[#110f0d] dark:text-[#ffffff]">
-                  <option value="Consultation Booking Question">Consultation Booking Question</option>
-                  <option value="Vedic Birth Chart Assessment">Vedic Birth Chart Assessment</option>
-                  <option value="Numerology & Name Inquiry">Numerology & Name Inquiry</option>
-                  <option value="Speaking, Media or Podcast Invitation">Speaking, Media or Podcast Invitation</option>
-                  <option value="General Inquiry">General Inquiry</option>
+                  <option value="Consultation Booking Query">Consultation Booking Query</option>
+                  <option value="Speaking Engagement or Media query">Speaking Engagement or Media query</option>
+                  <option value="Podcast Invitation">Podcast Invitation</option>
+                  <option value="Collaboration Proposal">Collaboration Proposal</option>
                 </select>
               </div>
 
@@ -189,13 +204,30 @@ import GlassButton from '../components/GlassButton.astro';
     const gmailBtn = document.getElementById('contact-gmail-btn') as HTMLAnchorElement;
     const copyBtn = document.getElementById('contact-copy-btn');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const name = (document.getElementById('contact-name') as HTMLInputElement)?.value || '';
       const email = (document.getElementById('contact-email') as HTMLInputElement)?.value || '';
-      const topic = (document.getElementById('contact-topic') as HTMLSelectElement)?.value || 'General Inquiry';
+      const topic = (document.getElementById('contact-topic') as HTMLSelectElement)?.value || 'Consultation Booking Query';
       const msg = (document.getElementById('contact-message') as HTMLTextAreaElement)?.value || '';
+
+      // Asynchronously persist to D1 database
+      try {
+        await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'contact',
+            name,
+            email,
+            serviceOrTopic: topic,
+            notes: msg,
+          }),
+        });
+      } catch (err) {
+        console.warn('Backend persistence error (non-fatal):', err);
+      }
 
       const subject = `Inquiry: ${topic} — ${name}`;
       const body = `Dear Anisha,

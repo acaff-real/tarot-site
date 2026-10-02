@@ -3,6 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import { getCollection } from 'astro:content';
 import { getDatabase, getEnv, createSignedToken, verifySignedToken } from '../lib/db';
+import { getSocialSettings, DEFAULT_SOCIAL_SETTINGS } from '../lib/settings';
+import { getInquiries, type Inquiry } from '../lib/inquiries';
 
 export const prerender = false;
 
@@ -41,13 +43,17 @@ if (authCookie && await verifySignedToken(authCookie)) {
 if (Astro.request.method === 'POST') {
   try {
     const formData = await Astro.request.formData();
-    const username = formData.get('username')?.toString().trim();
-    const password = formData.get('password')?.toString();
+    const rawUsername = formData.get('username')?.toString() || '';
+    const rawPassword = formData.get('password')?.toString() || '';
+    const username = rawUsername.trim();
+    const password = rawPassword;
+    const trimmedPassword = rawPassword.trim();
 
     let isValid = false;
 
-    if (username && password) {
+    if (username && (password || trimmedPassword)) {
       const inputHash = await hashSha256(password);
+      const trimmedHash = await hashSha256(trimmedPassword);
       const lowerUsername = username.toLowerCase();
 
       // Check Cloudflare D1 database if binding is available
@@ -58,7 +64,7 @@ if (Astro.request.method === 'POST') {
             .prepare('SELECT password_hash, role FROM users WHERE LOWER(username) = LOWER(?)')
             .bind(lowerUsername)
             .first();
-          if (user && user.password_hash === inputHash) {
+          if (user && (user.password_hash === inputHash || user.password_hash === trimmedHash)) {
             isValid = true;
           }
         } catch (dbErr) {
@@ -71,10 +77,13 @@ if (Astro.request.method === 'POST') {
         const isUserMatch =
           lowerUsername === ADMIN_USER.toLowerCase() ||
           lowerUsername === 'anisha' ||
-          lowerUsername === 'admin';
+          lowerUsername === 'admin' ||
+          lowerUsername === 'anishabanerji' ||
+          lowerUsername === 'anishabanerji@gmail.com' ||
+          lowerUsername === 'anisha.banerji@gmail.com';
 
-        const isHashMatch = inputHash === ADMIN_PASSWORD_HASH;
-        const isPlainMatch = ADMIN_PASSWORD && password === ADMIN_PASSWORD;
+        const isHashMatch = inputHash === ADMIN_PASSWORD_HASH || trimmedHash === ADMIN_PASSWORD_HASH;
+        const isPlainMatch = Boolean(ADMIN_PASSWORD && (password === ADMIN_PASSWORD || trimmedPassword === ADMIN_PASSWORD));
 
         if (isUserMatch && (isHashMatch || isPlainMatch)) {
           isValid = true;
@@ -188,6 +197,22 @@ if (isAuthenticated) {
   initialArticles = Array.from(articlesMap.values());
 }
 
+let initialSocialSettings = DEFAULT_SOCIAL_SETTINGS;
+let initialInquiries: Inquiry[] = [];
+if (isAuthenticated) {
+  try {
+    initialSocialSettings = await getSocialSettings();
+  } catch (err) {
+    console.error('Error fetching social settings in publish:', err);
+  }
+
+  try {
+    initialInquiries = await getInquiries();
+  } catch (err) {
+    console.error('Error fetching inquiries in publish:', err);
+  }
+}
+
 const CATEGORIES = [
   'Vedic Astrology',
   'Intuitive Tarot',
@@ -208,8 +233,8 @@ const PRESET_IMAGES = [
 ---
 
 <Layout
-  title={isAuthenticated ? "Editorial Studio & CMS — Astro by Anisha" : "Sign In — Author Studio"}
-  description="Editorial CMS and publishing studio for Astro by Anisha."
+  title={isAuthenticated ? "Editorial Studio & CMS — Astrology with Anisha" : "Sign In — Author Studio"}
+  description="Editorial CMS and publishing studio for Astrology with Anisha."
   currentPath="/publish"
   hideNavFooter={true}
 >
@@ -236,7 +261,7 @@ const PRESET_IMAGES = [
             Author Studio
           </h1>
           <p class="text-xs uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold mt-1">
-            Astro by Anisha
+            Astrology with Anisha
           </p>
           <p class="mt-3 text-xs text-[#5a534b] dark:text-[#ded9d0] leading-relaxed">
             Sign in to access the editorial CMS, manage drafts, and publish articles.
@@ -250,7 +275,7 @@ const PRESET_IMAGES = [
         )}
 
         <!-- Login Form -->
-        <form method="POST" action="/publish" class="mt-6 space-y-5">
+        <form method="POST" action="/publish" data-astro-reload class="mt-6 space-y-5">
           <div class="space-y-1.5">
             <label for="username" class="block text-xs font-semibold text-[#110f0d] dark:text-[#ffffff]">
               Username
@@ -315,7 +340,7 @@ const PRESET_IMAGES = [
                 <path d="M32 5 L35.5 27.5 L59 32 L35.5 36.5 L32 59 L28.5 36.5 L5 32 L28.5 27.5 Z" />
               </svg>
               <span class="font-serif text-xl sm:text-2xl font-medium tracking-tight text-[#110f0d] dark:text-[#ffffff]">
-                Astro by Anisha
+                Astrology with Anisha
               </span>
             </a>
             <span class="hidden sm:inline-block px-2.5 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider bg-[#855b25]/10 dark:bg-purple-950/60 text-[#855b25] dark:text-[#e5c98f] border border-[#855b25]/20 dark:border-purple-500/30">
@@ -345,6 +370,7 @@ const PRESET_IMAGES = [
 
             <a
               href="/publish?action=logout"
+              data-astro-reload
               class="px-2.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider text-red-600/80 hover:text-red-600 hover:bg-red-500/10 transition-colors"
               title="End editorial session"
             >
@@ -404,6 +430,23 @@ const PRESET_IMAGES = [
           >
             <span>Team & Access</span>
             <span id="users-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-[#855b25]/15 dark:bg-purple-900/50 text-[#855b25] dark:text-[#e5c98f] font-mono">{initialUsers.length}</span>
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-socials"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <span>Featured Socials</span>
+          </button>
+
+          <button
+            type="button"
+            id="tab-btn-inquiries"
+            class="tab-btn px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <span>Inquiries & Bookings</span>
+            <span id="inquiries-count-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-[#855b25]/15 dark:bg-purple-900/50 text-[#855b25] dark:text-[#e5c98f] font-mono">{initialInquiries.length}</span>
           </button>
         </div>
 
@@ -951,20 +994,667 @@ const PRESET_IMAGES = [
           </div>
         </section>
 
+        <!-- TAB 6: FEATURED SOCIALS (INSTAGRAM & YOUTUBE) -->
+        <section id="view-socials" class="hidden space-y-8">
+          <!-- Header Card -->
+          <div class="p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold">Homepage Showcase</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#855b25]/10 dark:bg-purple-900/40 text-[#855b25] dark:text-[#e5c98f]">LIVE</span>
+              </div>
+              <h2 class="font-serif text-xl sm:text-2xl text-[#110f0d] dark:text-[#ffffff] font-medium">
+                Featured Socials & Video
+              </h2>
+              <p class="text-xs text-[#5a534b] dark:text-[#ded9d0] mt-1 max-w-2xl">
+                Update the 2 Instagram highlights and the featured YouTube forecast shown on the homepage. Changes are stored in Cloudflare D1 and update in real-time.
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <a
+                href="/#socials"
+                target="_blank"
+                class="px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] border border-[#28231e]/15 dark:border-purple-500/30 transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>View on Homepage</span>
+                <span>&nearr;</span>
+              </a>
+              <button
+                type="button"
+                id="btn-save-socials-top"
+                class="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] shadow-sm transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <span>💾 Save Socials</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Configuration Form Grid (3 Cards) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- 1. Instagram Post 1 (Featured Reel) -->
+            <div class="p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs flex flex-col justify-between space-y-4">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[#28231e]/10 dark:border-purple-500/15">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-pink-500/15 text-pink-600 dark:text-pink-400 flex items-center justify-center text-xs font-bold">1</span>
+                    <h3 class="text-sm font-semibold text-[#110f0d] dark:text-[#ffffff]">Instagram Reel / Video</h3>
+                  </div>
+                  <span class="text-[10px] uppercase font-bold tracking-wider text-[#855b25] dark:text-[#e5c98f] bg-[#855b25]/10 dark:bg-purple-900/40 px-2 py-0.5 rounded">Card 1</span>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Instagram Post or Reel URL
+                  </label>
+                  <input
+                    type="url"
+                    id="input-ig1-url"
+                    placeholder="https://www.instagram.com/reel/..."
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Detected Reel / Post ID
+                  </label>
+                  <input
+                    type="text"
+                    id="input-ig1-reelid"
+                    readonly
+                    placeholder="Auto-detected from Reel URL (e.g. Cxxxxxx)"
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#28231e]/5 dark:bg-black/40 font-mono text-[#855b25] dark:text-[#e5c98f] border border-[#28231e]/10 dark:border-purple-500/20"
+                  />
+                  <p class="text-[10px] text-[#5a534b] dark:text-[#a8a29a] mt-1">
+                    When a valid Reel or Post ID is detected, it will render as a playable Instagram player!
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Badge Label
+                    </label>
+                    <input
+                      type="text"
+                      id="input-ig1-type"
+                      placeholder="Reel"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Duration / Tag
+                    </label>
+                    <input
+                      type="text"
+                      id="input-ig1-duration"
+                      placeholder="0:58"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Thumbnail Image URL
+                  </label>
+                  <div class="flex gap-2">
+                    <input
+                      type="text"
+                      id="input-ig1-image"
+                      placeholder="/images/studio.jpg"
+                      class="flex-1 px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-2 flex-wrap text-[10px]">
+                    <span class="text-[#5a534b] dark:text-[#a8a29a]">Presets:</span>
+                    <button type="button" class="preset-ig1-btn px-2 py-0.5 rounded bg-[#28231e]/5 dark:bg-purple-900/30 hover:bg-[#855b25]/20 text-[#5a534b] dark:text-[#ded9d0] cursor-pointer" data-url="/images/studio.jpg">Studio</button>
+                    <button type="button" class="preset-ig1-btn px-2 py-0.5 rounded bg-[#28231e]/5 dark:bg-purple-900/30 hover:bg-[#855b25]/20 text-[#5a534b] dark:text-[#ded9d0] cursor-pointer" data-url="/images/anisha.webp">Portrait</button>
+                    <button type="button" class="preset-ig1-btn px-2 py-0.5 rounded bg-[#28231e]/5 dark:bg-purple-900/30 hover:bg-[#855b25]/20 text-[#5a534b] dark:text-[#ded9d0] cursor-pointer" data-url="/images/og-image.jpg">Celestial</button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Quotation / Reflection Caption
+                  </label>
+                  <textarea
+                    id="input-ig1-caption"
+                    rows="3"
+                    placeholder="Short quote or highlight text..."
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Instagram Post 2 (Archetype / Wisdom) -->
+            <div class="p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs flex flex-col justify-between space-y-4">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[#28231e]/10 dark:border-purple-500/15">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-pink-500/15 text-pink-600 dark:text-pink-400 flex items-center justify-center text-xs font-bold">2</span>
+                    <h3 class="text-sm font-semibold text-[#110f0d] dark:text-[#ffffff]">Instagram Wisdom / Post</h3>
+                  </div>
+                  <span class="text-[10px] uppercase font-bold tracking-wider text-[#855b25] dark:text-[#e5c98f] bg-[#855b25]/10 dark:bg-purple-900/40 px-2 py-0.5 rounded">Card 2</span>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Instagram Post URL
+                  </label>
+                  <input
+                    type="url"
+                    id="input-ig2-url"
+                    placeholder="https://www.instagram.com/p/..."
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Detected Reel / Post ID
+                  </label>
+                  <input
+                    type="text"
+                    id="input-ig2-reelid"
+                    readonly
+                    placeholder="Auto-detected from Reel/Post URL"
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#28231e]/5 dark:bg-black/40 font-mono text-[#855b25] dark:text-[#e5c98f] border border-[#28231e]/10 dark:border-purple-500/20"
+                  />
+                  <p class="text-[10px] text-[#5a534b] dark:text-[#a8a29a] mt-1">
+                    When an Instagram Reel or Post ID is detected, it will render as a playable Instagram player!
+                  </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Badge Label
+                    </label>
+                    <input
+                      type="text"
+                      id="input-ig2-type"
+                      placeholder="Tarot Archetypes"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Focal Title
+                    </label>
+                    <input
+                      type="text"
+                      id="input-ig2-title"
+                      placeholder="IX • The Hermit"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Graphic / Card Quote (Callout)
+                  </label>
+                  <input
+                    type="text"
+                    id="input-ig2-subtitle"
+                    placeholder="Silence is not empty; it is the ground of revelation."
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Optional Custom Image URL (Overrides Graphic Box)
+                  </label>
+                  <input
+                    type="text"
+                    id="input-ig2-image"
+                    placeholder="Leave empty for typographical card or enter image URL"
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                    Quotation / Reflection Caption
+                  </label>
+                  <textarea
+                    id="input-ig2-caption"
+                    rows="3"
+                    placeholder="Reflective explanation..."
+                    class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. YouTube Featured Video -->
+            <div class="p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs flex flex-col justify-between space-y-4">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-[#28231e]/10 dark:border-purple-500/15">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-red-600/15 text-red-600 flex items-center justify-center text-xs font-bold">3</span>
+                    <h3 class="text-sm font-semibold text-[#110f0d] dark:text-[#ffffff]">Featured YouTube Videos (Stacked)</h3>
+                  </div>
+                  <span class="text-[10px] uppercase font-bold tracking-wider text-[#855b25] dark:text-[#e5c98f] bg-[#855b25]/10 dark:bg-purple-900/40 px-2 py-0.5 rounded">Card 3</span>
+                </div>
+
+                <!-- Video 1 Inputs -->
+                <div class="space-y-3 p-3.5 rounded-xl bg-[#faf8f5]/60 dark:bg-[#060410]/50 border border-[#28231e]/10 dark:border-purple-500/20">
+                  <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-bold block">Featured Video 1</span>
+                  
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      YouTube Video URL / Embed / ID
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt-url"
+                      placeholder="https://www.youtube.com/watch?v=K5ePB4n7sNY"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Detected Video ID
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt-videoid"
+                      readonly
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#28231e]/5 dark:bg-black/40 font-mono text-[#855b25] dark:text-[#e5c98f] border border-[#28231e]/10 dark:border-purple-500/20"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Video Title
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt-title"
+                      placeholder="Virgo | 2026 Annual Astrology Horoscope Forecast"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Video Description
+                    </label>
+                    <textarea
+                      id="input-yt-desc"
+                      rows="2"
+                      placeholder="Annual planetary transits, major houses of growth..."
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <!-- Video 2 Inputs (fills empty vertical space) -->
+                <div class="space-y-3 p-3.5 rounded-xl bg-[#faf8f5]/60 dark:bg-[#060410]/50 border border-[#28231e]/10 dark:border-purple-500/20">
+                  <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-bold block">Featured Video 2 (Stacked in Empty Space)</span>
+                  
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      YouTube Video URL / Embed / ID
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt2-url"
+                      placeholder="https://www.youtube.com/watch?v=-YlwHI2DxiE"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Detected Video ID
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt2-videoid"
+                      readonly
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#28231e]/5 dark:bg-black/40 font-mono text-[#855b25] dark:text-[#e5c98f] border border-[#28231e]/10 dark:border-purple-500/20"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Video Title
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt2-title"
+                      placeholder="Pisces | 2026 Annual Astrology Horoscope Forecast"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Video Description
+                    </label>
+                    <textarea
+                      id="input-yt2-desc"
+                      rows="2"
+                      placeholder="Navigating deep transits, intuitive awakenings..."
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Channel Link
+                    </label>
+                    <input
+                      type="url"
+                      id="input-yt-channel"
+                      placeholder="https://www.youtube.com/tarotbyanisha"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-semibold text-[#5a534b] dark:text-[#a8a29a] uppercase tracking-wider mb-1">
+                      Channel Name
+                    </label>
+                    <input
+                      type="text"
+                      id="input-yt-channel-name"
+                      placeholder="Tarot by Anisha"
+                      class="w-full px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Controls -->
+          <div class="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="btn-save-socials-bottom"
+                class="px-5 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] shadow-sm transition-colors cursor-pointer flex items-center gap-2"
+              >
+                <span>💾 Save Featured Socials</span>
+              </button>
+              <button
+                type="button"
+                id="btn-reset-socials"
+                class="px-4 py-2.5 rounded-lg text-xs font-semibold uppercase tracking-wider text-red-600 hover:bg-red-500/10 border border-red-500/20 rounded-lg transition-colors cursor-pointer"
+              >
+                Reset to Defaults
+              </button>
+            </div>
+            <div class="text-[11px] text-[#5a534b] dark:text-[#a8a29a] flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span>Edits save straight to Cloudflare D1</span>
+            </div>
+          </div>
+
+          <!-- Live Preview Section -->
+          <div class="space-y-4 pt-4 border-t border-[#28231e]/10 dark:border-purple-500/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold">Live Preview</span>
+                <h3 class="font-serif text-lg text-[#110f0d] dark:text-[#ffffff] font-medium">Homepage Showcase Preview</h3>
+              </div>
+              <span class="text-xs text-[#5a534b] dark:text-[#a8a29a]">Updates dynamically as you edit above</span>
+            </div>
+
+            <!-- Mockup container matching index.astro -->
+            <div class="p-6 sm:p-8 rounded-2xl bg-[#faf8f5] dark:bg-[#070512] border border-[#28231e]/15 dark:border-purple-500/25">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Preview Card 1 -->
+                <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 border border-[#28231e]/15 dark:border-purple-500/25 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
+                      <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
+                          <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
+                        </div>
+                        <div>
+                          <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">tarotbyanisha</span>
+                          <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Anisha Banerji</span>
+                        </div>
+                      </div>
+                      <span id="prev-ig1-type" class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">Reel</span>
+                    </div>
+
+                    <!-- Playable Reel Preview (shown when Reel ID is detected) -->
+                    <div id="prev-ig1-embed-box" class="relative w-full h-[320px] rounded-lg overflow-hidden bg-black/5 dark:bg-purple-950/20 mb-3.5 shadow-sm border border-[#28231e]/10 dark:border-purple-500/20 hidden">
+                      <iframe id="prev-ig1-iframe" class="w-full h-full border-0" frameborder="0" scrolling="no" allowtransparency="true" allow="encrypted-media" loading="lazy"></iframe>
+                    </div>
+
+                    <!-- Graphic Thumbnail Preview (fallback when no Reel ID) -->
+                    <div id="prev-ig1-thumb-box" class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#110f0d] mb-4">
+                      <img id="prev-ig1-image" src="/images/studio.jpg" alt="Preview" class="w-full h-full object-cover opacity-85" />
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
+                        <div class="w-11 h-11 rounded-full bg-white/95 dark:bg-[#0c091f]/95 text-[#110f0d] dark:text-[#ffffff] flex items-center justify-center shadow-lg">
+                          <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                        </div>
+                      </div>
+                      <span id="prev-ig1-duration" class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white/90 bg-black/60 px-1.5 py-0.5 rounded">0:58</span>
+                    </div>
+
+                    <p id="prev-ig1-caption" class="font-serif text-sm text-[#110f0d] dark:text-[#ffffff] italic leading-snug mb-3"></p>
+                  </div>
+                  <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
+                    <span>Watch on Instagram</span>
+                    <span class="text-[#855b25] dark:text-[#e5c98f]">&rarr;</span>
+                  </div>
+                </div>
+
+                <!-- Preview Card 2 -->
+                <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 border border-[#28231e]/15 dark:border-purple-500/25 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
+                      <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
+                          <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
+                        </div>
+                        <div>
+                          <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">tarotbyanisha</span>
+                          <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Tarot Archetypes</span>
+                        </div>
+                      </div>
+                      <span id="prev-ig2-type" class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">Tarot Archetypes</span>
+                    </div>
+
+                    <!-- Playable Reel Preview for IG 2 (shown when Reel/Post ID is detected) -->
+                    <div id="prev-ig2-embed-box" class="relative w-full h-[320px] rounded-lg overflow-hidden bg-black/5 dark:bg-purple-950/20 mb-3.5 shadow-sm border border-[#28231e]/10 dark:border-purple-500/20 hidden">
+                      <iframe id="prev-ig2-iframe" class="w-full h-full border-0" frameborder="0" scrolling="no" allowtransparency="true" allow="encrypted-media" loading="lazy"></iframe>
+                    </div>
+
+                    <div id="prev-ig2-box" class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4">
+                      <div class="text-center">
+                        <span id="prev-ig2-title" class="text-[10px] uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-1">IX • The Hermit</span>
+                        <p id="prev-ig2-subtitle" class="font-serif italic text-sm text-[#110f0d] dark:text-[#ffffff] leading-snug">"Silence is not empty; it is the ground of revelation."</p>
+                      </div>
+                    </div>
+
+                    <p id="prev-ig2-caption" class="font-serif text-sm text-[#110f0d] dark:text-[#ffffff] italic leading-snug mb-3"></p>
+                  </div>
+                  <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
+                    <span>View on Instagram</span>
+                    <span class="text-[#855b25] dark:text-[#e5c98f]">&rarr;</span>
+                  </div>
+                </div>
+
+                <!-- Preview Card 3 (YouTube) -->
+                <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 border border-[#28231e]/15 dark:border-purple-500/25 flex flex-col justify-between sm:col-span-2 lg:col-span-1">
+                  <div>
+                    <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
+                      <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-red-600 text-white flex items-center justify-center">
+                          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-1">
+                            <span id="prev-yt-channel-name" class="font-semibold text-[#110f0d] dark:text-[#ffffff] text-xs">Tarot by Anisha</span>
+                            <span class="text-[10px] text-[#5a534b] dark:text-[#a8a29a]">&bull; YouTube</span>
+                          </div>
+                          <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Official Channel</span>
+                        </div>
+                      </div>
+                      <span class="text-[10px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">Subscribe</span>
+                    </div>
+
+                    <div class="space-y-3">
+                      <!-- Video 1 Preview -->
+                      <div>
+                        <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-black mb-1.5 shadow-sm">
+                          <iframe id="prev-yt-iframe" class="w-full h-full" src="https://www.youtube.com/embed/K5ePB4n7sNY" title="YouTube preview" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <h4 id="prev-yt-title" class="font-serif text-sm text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug line-clamp-1 mb-0.5">Virgo | 2026 Annual Astrology Horoscope Forecast</h4>
+                        <p id="prev-yt-desc" class="text-xs text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed line-clamp-2"></p>
+                      </div>
+
+                      <!-- Video 2 Preview -->
+                      <div id="prev-yt2-wrap" class="pt-2.5 border-t border-[#28231e]/10 dark:border-purple-500/15">
+                        <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-black mb-1.5 shadow-sm">
+                          <iframe id="prev-yt2-iframe" class="w-full h-full" src="https://www.youtube.com/embed/-YlwHI2DxiE" title="YouTube preview 2" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <h4 id="prev-yt2-title" class="font-serif text-sm text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug line-clamp-1 mb-0.5">Pisces | 2026 Annual Astrology Horoscope Forecast</h4>
+                        <p id="prev-yt2-desc" class="text-xs text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed line-clamp-2"></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] flex items-center justify-between mt-4">
+                    <span>Visit YouTube Channel</span>
+                    <span>&rarr;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 7: INQUIRIES & CONSULTATION BOOKINGS -->
+        <section id="view-inquiries" class="hidden space-y-6">
+          <!-- Header Card -->
+          <div class="p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[#855b25] dark:text-[#e5c98f] font-semibold">Client Inbox</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#855b25]/10 dark:bg-purple-900/40 text-[#855b25] dark:text-[#e5c98f]">D1 DATABASE</span>
+              </div>
+              <h2 class="font-serif text-xl sm:text-2xl text-[#110f0d] dark:text-[#ffffff] font-medium">
+                Client Inquiries & Consultation Bookings
+              </h2>
+              <p class="text-xs text-[#5a534b] dark:text-[#ded9d0] mt-1 max-w-2xl">
+                Review incoming consultation requests, client birth details, time zones, and messages submitted through the website.
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                type="button"
+                id="btn-refresh-inquiries"
+                class="px-3.5 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] border border-[#28231e]/15 dark:border-purple-500/30 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>↻ Refresh</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary Stats Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] font-semibold block">Total Inquiries</span>
+              <span id="stat-total-inquiries" class="text-2xl font-serif font-medium text-[#110f0d] dark:text-[#ffffff] mt-1 block">0</span>
+            </div>
+            <div class="p-4 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold block">Consultations</span>
+              <span id="stat-consultation-inquiries" class="text-2xl font-serif font-medium text-[#855b25] dark:text-[#e5c98f] mt-1 block">0</span>
+            </div>
+            <div class="p-4 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+              <span class="text-[10px] uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] font-semibold block">General Messages</span>
+              <span id="stat-contact-inquiries" class="text-2xl font-serif font-medium text-[#110f0d] dark:text-[#ffffff] mt-1 block">0</span>
+            </div>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-xl bg-white/80 dark:bg-[#0f0b24]/80 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs">
+            <div class="relative flex-1 max-w-md">
+              <input
+                type="text"
+                id="search-inquiries-input"
+                placeholder="Search by client name, email, service, birth details..."
+                class="w-full pl-9 pr-4 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25] dark:focus:ring-[#e5c98f]"
+              />
+              <svg class="w-4 h-4 absolute left-3 top-2.5 text-[#5a534b] dark:text-[#a8a29a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label for="filter-inquiries-type" class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-medium hidden md:inline">
+                Type:
+              </label>
+              <select
+                id="filter-inquiries-type"
+                class="px-3 py-2 rounded-lg text-xs bg-[#faf8f5] dark:bg-[#060410] border border-[#28231e]/15 dark:border-purple-500/30 text-[#110f0d] dark:text-[#ffffff] focus:outline-none focus:ring-1 focus:ring-[#855b25]"
+              >
+                <option value="ALL">All Inquiries</option>
+                <option value="consultation">Consultation Bookings</option>
+                <option value="contact">Contact Messages</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Inquiries Cards / List -->
+          <div id="inquiries-list-container" class="space-y-4">
+            <!-- Rendered dynamically via JavaScript -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="inquiries-empty-state" class="hidden p-12 text-center rounded-2xl bg-white/60 dark:bg-[#0f0b24]/60 border border-[#28231e]/10 dark:border-purple-500/20">
+            <div class="w-12 h-12 rounded-full bg-[#855b25]/10 dark:bg-purple-950/60 text-[#855b25] dark:text-[#e5c98f] flex items-center justify-center mx-auto mb-3 text-lg font-serif">
+              ✦
+            </div>
+            <h3 class="font-serif text-base text-[#110f0d] dark:text-[#ffffff] font-medium">No inquiries found</h3>
+            <p class="text-xs text-[#5a534b] dark:text-[#ded9d0] mt-1">Inquiries submitted through the consultation and contact forms will appear here.</p>
+          </div>
+        </section>
+
       </div>
 
       <!-- Client-Side State Management Script -->
-      <script is:inline define:vars={{ initialArticles, PRESET_IMAGES, initialUsers }}>
+      <script is:inline define:vars={{ initialArticles, PRESET_IMAGES, initialUsers, initialSocialSettings, initialInquiries }} data-astro-rerun>
         let articles = Array.isArray(initialArticles) ? initialArticles : [];
         let users = Array.isArray(initialUsers) ? initialUsers : [];
+        let socialSettings = initialSocialSettings || {};
+        let inquiries = Array.isArray(initialInquiries) ? initialInquiries : [];
         let currentEditingSlug = null;
         let autoSaveTimer = null;
+
+        function escapeHtml(str) {
+          if (!str) return '';
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
 
         const tabBtnList = document.getElementById('tab-btn-list');
         const tabBtnEditor = document.getElementById('tab-btn-editor');
         const tabBtnDrafts = document.getElementById('tab-btn-drafts');
         const tabBtnMedia = document.getElementById('tab-btn-media');
         const tabBtnUsers = document.getElementById('tab-btn-users');
+        const tabBtnSocials = document.getElementById('tab-btn-socials');
+        const tabBtnInquiries = document.getElementById('tab-btn-inquiries');
+        const inquiriesCountBadge = document.getElementById('inquiries-count-badge');
         const tabEditorBadge = document.getElementById('tab-editor-badge');
 
         const viewList = document.getElementById('view-list');
@@ -972,6 +1662,8 @@ const PRESET_IMAGES = [
         const viewDrafts = document.getElementById('view-drafts');
         const viewMedia = document.getElementById('view-media');
         const viewUsers = document.getElementById('view-users');
+        const viewSocials = document.getElementById('view-socials');
+        const viewInquiries = document.getElementById('view-inquiries');
 
         const tableBody = document.getElementById('articles-table-body');
         const searchInput = document.getElementById('search-articles-input');
@@ -1031,8 +1723,8 @@ const PRESET_IMAGES = [
         }
 
         function setTab(tabName) {
-          [viewList, viewEditor, viewDrafts, viewMedia, viewUsers].forEach((v) => v?.classList.add('hidden'));
-          [tabBtnList, tabBtnEditor, tabBtnDrafts, tabBtnMedia, tabBtnUsers].forEach((b) => {
+          [viewList, viewEditor, viewDrafts, viewMedia, viewUsers, viewSocials, viewInquiries].forEach((v) => v?.classList.add('hidden'));
+          [tabBtnList, tabBtnEditor, tabBtnDrafts, tabBtnMedia, tabBtnUsers, tabBtnSocials, tabBtnInquiries].forEach((b) => {
             b?.classList.remove('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
             b?.classList.add('text-[#5a534b]', 'dark:text-[#a8a29a]');
           });
@@ -1055,6 +1747,14 @@ const PRESET_IMAGES = [
             viewUsers.classList.remove('hidden');
             tabBtnUsers?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
             renderUsersTable();
+          } else if (tabName === 'socials' && viewSocials) {
+            viewSocials.classList.remove('hidden');
+            tabBtnSocials?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            updateSocialsPreview();
+          } else if (tabName === 'inquiries' && viewInquiries) {
+            viewInquiries.classList.remove('hidden');
+            tabBtnInquiries?.classList.add('bg-[#855b25]', 'text-white', 'dark:bg-[#e5c98f]', 'dark:text-[#060410]');
+            renderInquiries();
           }
         }
 
@@ -1063,6 +1763,8 @@ const PRESET_IMAGES = [
         tabBtnDrafts?.addEventListener('click', () => setTab('drafts'));
         tabBtnMedia?.addEventListener('click', () => setTab('media'));
         tabBtnUsers?.addEventListener('click', () => setTab('users'));
+        tabBtnSocials?.addEventListener('click', () => setTab('socials'));
+        tabBtnInquiries?.addEventListener('click', () => setTab('inquiries'));
         document.getElementById('btn-quick-new')?.addEventListener('click', () => {
           resetEditor();
           setTab('editor');
@@ -2295,6 +2997,612 @@ ${(art.content || '').trim()}
             showToast('Failed to refresh users', true);
           }
         });
+
+        // ----------------------------------------------------
+        // FEATURED SOCIALS MANAGEMENT
+        // ----------------------------------------------------
+        const inputIg1Url = document.getElementById('input-ig1-url');
+        const inputIg1ReelId = document.getElementById('input-ig1-reelid');
+        const inputIg1Type = document.getElementById('input-ig1-type');
+        const inputIg1Duration = document.getElementById('input-ig1-duration');
+        const inputIg1Image = document.getElementById('input-ig1-image');
+        const inputIg1Caption = document.getElementById('input-ig1-caption');
+
+        const inputIg2Url = document.getElementById('input-ig2-url');
+        const inputIg2ReelId = document.getElementById('input-ig2-reelid');
+        const inputIg2Type = document.getElementById('input-ig2-type');
+        const inputIg2Title = document.getElementById('input-ig2-title');
+        const inputIg2Subtitle = document.getElementById('input-ig2-subtitle');
+        const inputIg2Image = document.getElementById('input-ig2-image');
+        const inputIg2Caption = document.getElementById('input-ig2-caption');
+
+        const inputYtUrl = document.getElementById('input-yt-url');
+        const inputYtVideoId = document.getElementById('input-yt-videoid');
+        const inputYtTitle = document.getElementById('input-yt-title');
+        const inputYtDesc = document.getElementById('input-yt-desc');
+        const inputYtChannel = document.getElementById('input-yt-channel');
+        const inputYtChannelName = document.getElementById('input-yt-channel-name');
+        const inputYt2Url = document.getElementById('input-yt2-url');
+        const inputYt2VideoId = document.getElementById('input-yt2-videoid');
+        const inputYt2Title = document.getElementById('input-yt2-title');
+        const inputYt2Desc = document.getElementById('input-yt2-desc');
+
+        function parseInstagramId(input) {
+          if (!input) return null;
+          const trimmed = (input || '').trim();
+          const iframeSrc = trimmed.match(/src=["']([^"']+)["']/i);
+          const target = iframeSrc ? iframeSrc[1] : trimmed;
+          const match = target.match(/(?:instagram\.com\/(?:reel|p)\/|instagr\.am\/p\/)([\w-]+)/i);
+          if (match && match[1]) {
+            const isReel = target.includes('/reel/');
+            return { id: match[1], type: isReel ? 'reel' : 'p' };
+          }
+          if (/^[A-Za-z0-9_-]{9,20}$/.test(trimmed)) {
+            return { id: trimmed, type: 'reel' };
+          }
+          return null;
+        }
+
+        function parseYtId(input) {
+          if (!input) return 'K5ePB4n7sNY';
+          const trimmed = (input || '').trim();
+          if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+          const iframeSrc = trimmed.match(/src=["']([^"']+)["']/i);
+          const target = iframeSrc ? iframeSrc[1] : trimmed;
+          const match = target.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|live\/|shorts\/))([\w-]{11})/i);
+          return match && match[1] ? match[1] : trimmed;
+        }
+
+        function populateSocialsForm(data) {
+          if (!data) return;
+          if (data.instagram1) {
+            if (inputIg1Url) inputIg1Url.value = data.instagram1.url || '';
+            const parsedIg = parseInstagramId(data.instagram1.reelId || data.instagram1.url);
+            if (inputIg1ReelId) inputIg1ReelId.value = parsedIg ? parsedIg.id : (data.instagram1.reelId || '');
+            if (inputIg1Type) inputIg1Type.value = data.instagram1.type || 'Reel';
+            if (inputIg1Duration) inputIg1Duration.value = data.instagram1.duration || '0:58';
+            if (inputIg1Image) inputIg1Image.value = data.instagram1.image || '/images/studio.jpg';
+            if (inputIg1Caption) inputIg1Caption.value = data.instagram1.caption || '';
+          }
+          if (data.instagram2) {
+            if (inputIg2Url) inputIg2Url.value = data.instagram2.url || '';
+            const parsedIg2 = parseInstagramId(data.instagram2.reelId || data.instagram2.url);
+            if (inputIg2ReelId) inputIg2ReelId.value = parsedIg2 ? parsedIg2.id : (data.instagram2.reelId || '');
+            if (inputIg2Type) inputIg2Type.value = data.instagram2.type || (parsedIg2 ? (parsedIg2.type === 'reel' ? 'Reel' : 'Post') : 'Tarot Archetypes');
+            if (inputIg2Title) inputIg2Title.value = data.instagram2.title || 'IX • The Hermit';
+            if (inputIg2Subtitle) inputIg2Subtitle.value = data.instagram2.subtitle || '';
+            if (inputIg2Image) inputIg2Image.value = data.instagram2.image || '';
+            if (inputIg2Caption) inputIg2Caption.value = data.instagram2.caption || '';
+          }
+          if (data.youtube) {
+            if (inputYtUrl) inputYtUrl.value = data.youtube.url || `https://www.youtube.com/watch?v=${data.youtube.videoId || 'K5ePB4n7sNY'}`;
+            if (inputYtVideoId) inputYtVideoId.value = data.youtube.videoId || 'K5ePB4n7sNY';
+            if (inputYtTitle) inputYtTitle.value = data.youtube.title || '';
+            if (inputYtDesc) inputYtDesc.value = data.youtube.description || '';
+            if (inputYtChannel) inputYtChannel.value = data.youtube.channelUrl || 'https://www.youtube.com/tarotbyanisha';
+            if (inputYtChannelName) inputYtChannelName.value = data.youtube.channelTitle || 'Tarot by Anisha';
+          }
+          if (data.youtube2) {
+            if (inputYt2Url) inputYt2Url.value = data.youtube2.url || `https://www.youtube.com/watch?v=${data.youtube2.videoId || '-YlwHI2DxiE'}`;
+            if (inputYt2VideoId) inputYt2VideoId.value = data.youtube2.videoId || '-YlwHI2DxiE';
+            if (inputYt2Title) inputYt2Title.value = data.youtube2.title || '';
+            if (inputYt2Desc) inputYt2Desc.value = data.youtube2.description || '';
+          }
+          updateSocialsPreview();
+        }
+
+        function updateSocialsPreview() {
+          // Update IG 1
+          const prevIg1Type = document.getElementById('prev-ig1-type');
+          const prevIg1Duration = document.getElementById('prev-ig1-duration');
+          const prevIg1Image = document.getElementById('prev-ig1-image');
+          const prevIg1Caption = document.getElementById('prev-ig1-caption');
+          const prevIg1EmbedBox = document.getElementById('prev-ig1-embed-box');
+          const prevIg1Iframe = document.getElementById('prev-ig1-iframe');
+          const prevIg1ThumbBox = document.getElementById('prev-ig1-thumb-box');
+
+          const parsedIg = parseInstagramId(inputIg1Url?.value);
+          if (inputIg1ReelId) inputIg1ReelId.value = parsedIg ? parsedIg.id : '';
+
+          if (parsedIg) {
+            if (prevIg1EmbedBox) prevIg1EmbedBox.classList.remove('hidden');
+            if (prevIg1ThumbBox) prevIg1ThumbBox.classList.add('hidden');
+            if (prevIg1Iframe) {
+              const expectedSrc = `https://www.instagram.com/${parsedIg.type}/${parsedIg.id}/embed`;
+              if (!prevIg1Iframe.src || !prevIg1Iframe.src.includes(parsedIg.id)) {
+                prevIg1Iframe.src = expectedSrc;
+              }
+            }
+          } else {
+            if (prevIg1EmbedBox) prevIg1EmbedBox.classList.add('hidden');
+            if (prevIg1ThumbBox) prevIg1ThumbBox.classList.remove('hidden');
+          }
+
+          if (prevIg1Type) prevIg1Type.textContent = inputIg1Type?.value || (parsedIg ? (parsedIg.type === 'reel' ? 'Reel' : 'Post') : 'Reel');
+          if (prevIg1Duration) prevIg1Duration.textContent = inputIg1Duration?.value || '0:58';
+          if (prevIg1Image) prevIg1Image.src = inputIg1Image?.value || '/images/studio.jpg';
+          if (prevIg1Caption) prevIg1Caption.textContent = inputIg1Caption?.value || '';
+
+          // Update IG 2
+          const prevIg2Type = document.getElementById('prev-ig2-type');
+          const prevIg2Box = document.getElementById('prev-ig2-box');
+          const prevIg2Caption = document.getElementById('prev-ig2-caption');
+          const prevIg2EmbedBox = document.getElementById('prev-ig2-embed-box');
+          const prevIg2Iframe = document.getElementById('prev-ig2-iframe');
+
+          const parsedIg2 = parseInstagramId(inputIg2Url?.value);
+          if (inputIg2ReelId) inputIg2ReelId.value = parsedIg2 ? parsedIg2.id : '';
+
+          if (parsedIg2) {
+            if (prevIg2EmbedBox) prevIg2EmbedBox.classList.remove('hidden');
+            if (prevIg2Box) prevIg2Box.classList.add('hidden');
+            if (prevIg2Iframe) {
+              const expectedSrc2 = `https://www.instagram.com/${parsedIg2.type}/${parsedIg2.id}/embed`;
+              if (!prevIg2Iframe.src || !prevIg2Iframe.src.includes(parsedIg2.id)) {
+                prevIg2Iframe.src = expectedSrc2;
+              }
+            }
+          } else {
+            if (prevIg2EmbedBox) prevIg2EmbedBox.classList.add('hidden');
+            if (prevIg2Box) prevIg2Box.classList.remove('hidden');
+          }
+
+          if (prevIg2Type) prevIg2Type.textContent = inputIg2Type?.value || (parsedIg2 ? (parsedIg2.type === 'reel' ? 'Reel' : 'Post') : 'Tarot Archetypes');
+          if (prevIg2Caption) prevIg2Caption.textContent = inputIg2Caption?.value || '';
+
+          if (prevIg2Box && !parsedIg2) {
+            const customImg = (inputIg2Image?.value || '').trim();
+            if (customImg) {
+              prevIg2Box.innerHTML = `<img src="${customImg}" alt="Preview" class="w-full h-full object-cover">`;
+              prevIg2Box.className = 'relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 mb-4';
+            } else {
+              prevIg2Box.className = 'relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4';
+              prevIg2Box.innerHTML = `
+                <div class="text-center">
+                  <span class="text-[10px] uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-1">
+                    ${inputIg2Title?.value || 'IX • The Hermit'}
+                  </span>
+                  <p class="font-serif italic text-sm text-[#110f0d] dark:text-[#ffffff] leading-snug">
+                    ${inputIg2Subtitle?.value || ''}
+                  </p>
+                </div>
+              `;
+            }
+          }
+
+          // Update YT
+          const ytId = parseYtId(inputYtUrl?.value);
+          if (inputYtVideoId) inputYtVideoId.value = ytId;
+          const prevYtIframe = document.getElementById('prev-yt-iframe');
+          const prevYtTitle = document.getElementById('prev-yt-title');
+          const prevYtDesc = document.getElementById('prev-yt-desc');
+          const prevYtChannelName = document.getElementById('prev-yt-channel-name');
+
+          if (prevYtIframe && ytId && !prevYtIframe.src.includes(ytId)) {
+            prevYtIframe.src = `https://www.youtube.com/embed/${ytId}`;
+          }
+          if (prevYtTitle) prevYtTitle.textContent = inputYtTitle?.value || '';
+          if (prevYtDesc) prevYtDesc.textContent = inputYtDesc?.value || '';
+          if (prevYtChannelName) prevYtChannelName.textContent = inputYtChannelName?.value || 'Tarot by Anisha';
+
+          // Update YT 2
+          const yt2Id = parseYtId(inputYt2Url?.value);
+          if (inputYt2VideoId) inputYt2VideoId.value = yt2Id;
+          const prevYt2Wrap = document.getElementById('prev-yt2-wrap');
+          const prevYt2Iframe = document.getElementById('prev-yt2-iframe');
+          const prevYt2Title = document.getElementById('prev-yt2-title');
+          const prevYt2Desc = document.getElementById('prev-yt2-desc');
+
+          if (yt2Id) {
+            if (prevYt2Wrap) prevYt2Wrap.classList.remove('hidden');
+            if (prevYt2Iframe && !prevYt2Iframe.src.includes(yt2Id)) {
+              prevYt2Iframe.src = `https://www.youtube.com/embed/${yt2Id}`;
+            }
+            if (prevYt2Title) prevYt2Title.textContent = inputYt2Title?.value || '';
+            if (prevYt2Desc) prevYt2Desc.textContent = inputYt2Desc?.value || '';
+          } else {
+            if (prevYt2Wrap) prevYt2Wrap.classList.add('hidden');
+          }
+        }
+
+        // Preset image clicks for IG 1
+        document.querySelectorAll('.preset-ig1-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-url');
+            if (inputIg1Image && url) {
+              inputIg1Image.value = url;
+              updateSocialsPreview();
+            }
+          });
+        });
+
+        // Real-time update listeners
+        [
+          inputIg1Url, inputIg1Type, inputIg1Duration, inputIg1Image, inputIg1Caption,
+          inputIg2Url, inputIg2Type, inputIg2Title, inputIg2Subtitle, inputIg2Image, inputIg2Caption,
+          inputYtUrl, inputYtTitle, inputYtDesc, inputYtChannel, inputYtChannelName,
+          inputYt2Url, inputYt2Title, inputYt2Desc
+        ].forEach((el) => {
+          el?.addEventListener('input', updateSocialsPreview);
+          el?.addEventListener('change', updateSocialsPreview);
+        });
+
+        async function saveSocialsData() {
+          const payload = {
+            instagram1: {
+              url: inputIg1Url?.value || 'https://www.instagram.com/tarotbyanisha/',
+              reelId: inputIg1ReelId?.value || '',
+              type: inputIg1Type?.value || 'Reel',
+              duration: inputIg1Duration?.value || '0:58',
+              image: inputIg1Image?.value || '/images/studio.jpg',
+              caption: inputIg1Caption?.value || '',
+            },
+            instagram2: {
+              url: inputIg2Url?.value || 'https://www.instagram.com/tarotbyanisha/',
+              reelId: inputIg2ReelId?.value || '',
+              type: inputIg2Type?.value || 'Reel',
+              title: inputIg2Title?.value || 'IX • The Hermit',
+              subtitle: inputIg2Subtitle?.value || '',
+              image: inputIg2Image?.value || '',
+              caption: inputIg2Caption?.value || '',
+            },
+            youtube: {
+              url: inputYtUrl?.value || 'https://www.youtube.com/watch?v=K5ePB4n7sNY',
+              videoId: parseYtId(inputYtUrl?.value),
+              title: inputYtTitle?.value || '',
+              description: inputYtDesc?.value || '',
+              channelUrl: inputYtChannel?.value || 'https://www.youtube.com/tarotbyanisha',
+              channelTitle: inputYtChannelName?.value || 'Tarot by Anisha',
+            },
+            youtube2: {
+              url: inputYt2Url?.value || 'https://www.youtube.com/watch?v=-YlwHI2DxiE',
+              videoId: parseYtId(inputYt2Url?.value),
+              title: inputYt2Title?.value || '',
+              description: inputYt2Desc?.value || '',
+            },
+          };
+
+          try {
+            showToast('Saving featured socials to D1 database...');
+            const res = await fetch('/api/settings', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              socialSettings = data.settings || payload;
+              showToast('Featured social links and video updated successfully!');
+            } else {
+              showToast(data.error || 'Failed to save social settings', true);
+            }
+          } catch (err) {
+            showToast('Network error saving social settings', true);
+          }
+        }
+
+        document.getElementById('btn-save-socials-top')?.addEventListener('click', saveSocialsData);
+        document.getElementById('btn-save-socials-bottom')?.addEventListener('click', saveSocialsData);
+
+        document.getElementById('btn-reset-socials')?.addEventListener('click', () => {
+          if (confirm('Reset all featured social settings to their default values?')) {
+            populateSocialsForm({
+              instagram1: {
+                url: 'https://www.instagram.com/tarotbyanisha/',
+                type: 'Reel',
+                duration: '0:58',
+                image: '/images/studio.jpg',
+                caption: '"Saturn tests where your foundations were built on obligation rather than authenticity. Slow down and rebuild with truth."',
+              },
+              instagram2: {
+                url: 'https://www.instagram.com/tarotbyanisha/',
+                type: 'Tarot Archetypes',
+                title: 'IX • The Hermit',
+                subtitle: '"Silence is not empty; it is the ground of revelation."',
+                image: '',
+                caption: '"The Hermit invites you to step outside the noise of external counsel and listen to the voice that only speaks in stillness."',
+              },
+              youtube: {
+                url: 'https://www.youtube.com/watch?v=K5ePB4n7sNY',
+                videoId: 'K5ePB4n7sNY',
+                title: 'Virgo | 2026 Annual Astrology Horoscope Forecast',
+                description: 'Annual planetary transits, major houses of growth, and contemplative forecast with Anisha Banerji.',
+                channelUrl: 'https://www.youtube.com/tarotbyanisha',
+                channelTitle: 'Tarot by Anisha',
+              },
+              youtube2: {
+                url: 'https://www.youtube.com/watch?v=-YlwHI2DxiE',
+                videoId: '-YlwHI2DxiE',
+                title: 'Pisces | 2026 Annual Astrology Horoscope Forecast',
+                description: 'Navigating Neptune transits, career shifts, and intuitive awakenings with Anisha Banerji.',
+              },
+            });
+            showToast('Reset to defaults. Remember to click Save to persist.');
+          }
+        });
+
+        // ----------------------------------------------------
+        // CLIENT INQUIRIES & CONSULTATION BOOKINGS MANAGEMENT
+        // ----------------------------------------------------
+        const searchInquiriesInput = document.getElementById('search-inquiries-input');
+        const filterInquiriesType = document.getElementById('filter-inquiries-type');
+        const inquiriesContainer = document.getElementById('inquiries-list-container');
+        const inquiriesEmptyState = document.getElementById('inquiries-empty-state');
+        const statTotalInquiries = document.getElementById('stat-total-inquiries');
+        const statConsultationInquiries = document.getElementById('stat-consultation-inquiries');
+        const statContactInquiries = document.getElementById('stat-contact-inquiries');
+
+        function updateInquiriesBadges() {
+          const total = inquiries.length;
+          if (inquiriesCountBadge) inquiriesCountBadge.textContent = total;
+          if (statTotalInquiries) statTotalInquiries.textContent = total;
+          if (statConsultationInquiries) {
+            statConsultationInquiries.textContent = inquiries.filter((i) => i.type === 'consultation').length;
+          }
+          if (statContactInquiries) {
+            statContactInquiries.textContent = inquiries.filter((i) => i.type !== 'consultation').length;
+          }
+        }
+
+        function renderInquiries() {
+          if (!inquiriesContainer) return;
+          updateInquiriesBadges();
+
+          const query = (searchInquiriesInput?.value || '').toLowerCase().trim();
+          const typeFilter = filterInquiriesType?.value || 'ALL';
+
+          const filtered = inquiries.filter((item) => {
+            const matchesType = typeFilter === 'ALL' || item.type === typeFilter;
+            const matchesQuery =
+              !query ||
+              (item.name || '').toLowerCase().includes(query) ||
+              (item.email || '').toLowerCase().includes(query) ||
+              (item.phone || '').toLowerCase().includes(query) ||
+              (item.service_or_topic || '').toLowerCase().includes(query) ||
+              (item.birth_details || '').toLowerCase().includes(query) ||
+              (item.notes || '').toLowerCase().includes(query);
+            return matchesType && matchesQuery;
+          });
+
+          if (filtered.length === 0) {
+            inquiriesContainer.innerHTML = '';
+            inquiriesEmptyState?.classList.remove('hidden');
+            return;
+          }
+
+          inquiriesEmptyState?.classList.add('hidden');
+
+          inquiriesContainer.innerHTML = filtered
+            .map((inq) => {
+              const isConsultation = inq.type === 'consultation';
+              const formattedDate = inq.created_at
+                ? new Date(inq.created_at).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })
+                : 'Recent';
+
+              const emailSubject = encodeURIComponent(
+                isConsultation
+                  ? `Regarding your consultation request — Astrology with Anisha`
+                  : `Regarding your inquiry — Astrology with Anisha`
+              );
+              const emailBody = encodeURIComponent(
+                `Dear ${inq.name || 'Client'},\n\nThank you for reaching out to Astrology with Anisha.\n\nRegarding your inquiry:\n`
+              );
+              const mailtoUrl = `mailto:${encodeURIComponent(inq.email)}?subject=${emailSubject}&body=${emailBody}`;
+
+              return `
+                <div class="p-5 sm:p-6 rounded-2xl bg-white/90 dark:bg-[#0f0b24]/90 border border-[#28231e]/10 dark:border-purple-500/20 shadow-xs transition-all hover:border-[#855b25]/30 flex flex-col justify-between space-y-4" data-id="${inq.id}">
+                  <!-- Top Row: Client Name, Badge, Date -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                      <h3 class="font-serif text-base sm:text-lg font-medium text-[#110f0d] dark:text-[#ffffff]">
+                        ${escapeHtml(inq.name || 'Anonymous Client')}
+                      </h3>
+                      <span class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                        isConsultation
+                          ? 'bg-[#855b25]/15 text-[#855b25] dark:bg-purple-900/60 dark:text-[#e5c98f] border border-[#855b25]/20 dark:border-purple-500/30'
+                          : 'bg-[#5a534b]/15 text-[#5a534b] dark:bg-white/10 dark:text-[#ded9d0]'
+                      }">
+                        ${isConsultation ? 'Consultation Request' : 'General Contact'}
+                      </span>
+                    </div>
+                    <span class="text-xs text-[#5a534b] dark:text-[#a8a29a] font-mono">${formattedDate}</span>
+                  </div>
+
+                  <!-- Details Grid -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                    <div class="space-y-1">
+                      <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block">Email</span>
+                      <a href="${mailtoUrl}" class="text-[#855b25] dark:text-[#e5c98f] hover:underline font-medium break-all block">
+                        ${escapeHtml(inq.email)}
+                      </a>
+                    </div>
+
+                    <div class="space-y-1">
+                      <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block">Phone / Mobile</span>
+                      <span class="text-[#2c2722] dark:text-[#ded9d0] font-medium block">
+                        ${inq.phone ? `<a href="tel:${escapeHtml(inq.phone)}" class="hover:underline">${escapeHtml(inq.phone)}</a>` : '<span class="text-stone-400 italic">Not provided</span>'}
+                      </span>
+                    </div>
+
+                    <div class="space-y-1">
+                      <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block">Service / Topic</span>
+                      <span class="text-[#110f0d] dark:text-[#ffffff] font-medium block">
+                        ${escapeHtml(inq.service_or_topic || inq.service || inq.topic || 'General')}
+                      </span>
+                    </div>
+
+                    ${
+                      inq.preferred_schedule
+                        ? `
+                      <div class="space-y-1">
+                        <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block">Preferred Timing</span>
+                        <span class="text-[#2c2722] dark:text-[#ded9d0] font-medium block">
+                          ${escapeHtml(inq.preferred_schedule)}
+                        </span>
+                      </div>
+                    `
+                        : ''
+                    }
+
+                    ${
+                      inq.location_tz
+                        ? `
+                      <div class="space-y-1">
+                        <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block">Client Timezone / Location</span>
+                        <span class="text-[#2c2722] dark:text-[#ded9d0] font-medium block">
+                          ${escapeHtml(inq.location_tz)}
+                        </span>
+                      </div>
+                    `
+                        : ''
+                    }
+                  </div>
+
+                  ${
+                    inq.birth_details
+                      ? `
+                    <!-- Birth Details Callout -->
+                    <div class="p-3 rounded-lg bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 text-xs">
+                      <span class="text-[10px] uppercase font-semibold text-[#855b25] dark:text-[#e5c98f] tracking-wider block mb-1">
+                        Client Birth Information (Astrology Chart Intake)
+                      </span>
+                      <p class="font-mono text-xs text-[#110f0d] dark:text-[#ffffff]">
+                        ${escapeHtml(inq.birth_details)}
+                      </p>
+                    </div>
+                  `
+                      : ''
+                  }
+
+                  ${
+                    inq.notes
+                      ? `
+                    <!-- Notes / Message -->
+                    <div class="p-3.5 rounded-lg bg-stone-50/80 dark:bg-purple-950/20 border border-[#28231e]/5 dark:border-purple-500/10 text-xs text-[#2c2722] dark:text-[#ded9d0] leading-relaxed">
+                      <span class="text-[10px] uppercase font-semibold text-[#5a534b] dark:text-[#a8a29a] tracking-wider block mb-1">
+                        Message / Consultation Focus
+                      </span>
+                      <p class="whitespace-pre-wrap">${escapeHtml(inq.notes)}</p>
+                    </div>
+                  `
+                      : ''
+                  }
+
+                  <!-- Actions Bar -->
+                  <div class="pt-3 border-t border-[#28231e]/10 dark:border-purple-500/15 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2">
+                      <a
+                        href="${mailtoUrl}"
+                        class="px-3 py-1.5 rounded-lg bg-[#855b25] hover:bg-[#6c481b] dark:bg-[#e5c98f] dark:hover:bg-[#d8b56f] text-white dark:text-[#060410] font-semibold text-[11px] uppercase tracking-wider inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <span>✉ Reply via Email</span>
+                      </a>
+                      <button
+                        type="button"
+                        class="btn-copy-inquiry px-3 py-1.5 rounded-lg border border-[#28231e]/15 dark:border-purple-500/30 text-[#5a534b] dark:text-[#ded9d0] hover:text-[#110f0d] dark:hover:text-[#ffffff] text-[11px] font-medium tracking-wider transition-colors cursor-pointer"
+                        data-id="${inq.id}"
+                      >
+                        📋 Copy Details
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn-delete-inquiry px-2.5 py-1.5 text-[11px] text-red-600/80 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                      data-id="${inq.id}"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              `;
+            })
+            .join('');
+
+          // Attach listeners for actions
+          inquiriesContainer.querySelectorAll('.btn-copy-inquiry').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const id = parseInt(btn.getAttribute('data-id') || '0', 10);
+              const inq = inquiries.find((i) => i.id === id);
+              if (!inq) return;
+
+              const text = [
+                `--- Client Inquiry #${inq.id} ---`,
+                `Type: ${inq.type}`,
+                `Name: ${inq.name}`,
+                `Email: ${inq.email}`,
+                inq.phone ? `Phone: ${inq.phone}` : null,
+                inq.service_or_topic ? `Service: ${inq.service_or_topic}` : null,
+                inq.preferred_schedule ? `Preferred Timing: ${inq.preferred_schedule}` : null,
+                inq.birth_details ? `Birth Details: ${inq.birth_details}` : null,
+                inq.location_tz ? `Timezone: ${inq.location_tz}` : null,
+                inq.notes ? `Notes:\n${inq.notes}` : null,
+                `Date: ${inq.created_at}`,
+              ]
+                .filter(Boolean)
+                .join('\n');
+
+              navigator.clipboard.writeText(text).then(
+                () => showToast(`Copied details for ${inq.name} to clipboard!`),
+                () => showToast('Failed to copy to clipboard', true)
+              );
+            });
+          });
+
+          inquiriesContainer.querySelectorAll('.btn-delete-inquiry').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              const id = parseInt(btn.getAttribute('data-id') || '0', 10);
+              const inq = inquiries.find((i) => i.id === id);
+              if (!inq) return;
+
+              if (confirm(`Are you sure you want to delete inquiry #${id} from ${inq.name}?`)) {
+                try {
+                  const res = await fetch(`/api/inquiries?id=${id}`, { method: 'DELETE' });
+                  const data = await res.json();
+                  if (res.ok && data.success) {
+                    inquiries = inquiries.filter((i) => i.id !== id);
+                    renderInquiries();
+                    showToast(`Inquiry #${id} deleted.`);
+                  } else {
+                    showToast(data.error || 'Failed to delete inquiry', true);
+                  }
+                } catch (err) {
+                  showToast('Network error deleting inquiry', true);
+                }
+              }
+            });
+          });
+        }
+
+        searchInquiriesInput?.addEventListener('input', renderInquiries);
+        filterInquiriesType?.addEventListener('change', renderInquiries);
+
+        document.getElementById('btn-refresh-inquiries')?.addEventListener('click', async () => {
+          try {
+            showToast('Refreshing inquiries from D1...');
+            const res = await fetch('/api/inquiries');
+            const data = await res.json();
+            if (res.ok && data.success && Array.isArray(data.inquiries)) {
+              inquiries = data.inquiries;
+              renderInquiries();
+              showToast(`Loaded ${inquiries.length} inquiries.`);
+            } else {
+              showToast(data.error || 'Failed to load inquiries', true);
+            }
+          } catch (e) {
+            showToast('Network error fetching inquiries', true);
+          }
+        });
+
+        // Initialize views
+        populateSocialsForm(socialSettings);
+        renderInquiries();
 
         setTab('list');
         renderArticlesTable();

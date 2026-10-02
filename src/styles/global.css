@@ -33,6 +33,14 @@
     overflow-x: hidden;
     max-width: 100%;
     width: 100%;
+    scroll-behavior: smooth;
+  }
+
+  /* Snappy, responsive View Transitions (eliminates sluggish 400ms crossfade) */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.12s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   body {

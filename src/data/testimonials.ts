@@ -13,7 +13,7 @@ export const TESTIMONIALS: Testimonial[] = [
     client: 'Elena V.',
     role: 'Managing Director & Venture Partner',
     location: 'London & Geneva',
-    service: 'Vedic Astrology Consultation',
+    service: 'Individual Reading',
   },
   {
     quote:
@@ -21,14 +21,14 @@ export const TESTIMONIALS: Testimonial[] = [
     client: 'Marcus T.',
     role: 'Architect & Creative Founder',
     location: 'New York City',
-    service: 'Intuitive Tarot Consultation',
+    service: 'Relationship Reading',
   },
   {
     quote:
-      'When rebranding our global wellness studio, we consulted Anisha for a Chaldean numerology audit. The subtle phonetic and numerical refinement she recommended brought a measurable shift in our resonance and client engagement. Her depth of knowledge is truly extraordinary.',
+      'When exploring our family transitions, we consulted Anisha for a deeper chart reading. The subtle planetary timing and multi-chart insight she brought provided enormous peace and clarity across generations. Her depth of knowledge is truly extraordinary.',
     client: 'Priyanka & Rohan M.',
     role: 'Founders, SOMA Living',
     location: 'Mumbai & Singapore',
-    service: 'Numerology & Brand Consultation',
+    service: 'Family Reading',
   },
 ];

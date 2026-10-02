@@ -7,17 +7,23 @@ import NumerologyCalculator from '../components/NumerologyCalculator.astro';
 import TarotCardOfTheDay from '../components/TarotCardOfTheDay.astro';
 import { SERVICES } from '../data/services';
 import { getCollection } from 'astro:content';
+import { getSocialSettings, parseInstagramId } from '../lib/settings';
+
+export const prerender = false;
 
 const articles = (await getCollection('articles')).slice(0, 3);
+const socialSettings = await getSocialSettings();
+const ig1Embed = parseInstagramId(socialSettings.instagram1.reelId || socialSettings.instagram1.url);
+const ig2Embed = parseInstagramId(socialSettings.instagram2.reelId || socialSettings.instagram2.url);
 ---
 
 <Layout
-  title="Astro by Anisha — Vedic Astrology & Contemplative Tarot"
+  title="Astrology with Anisha — Vedic Astrology & Contemplative Tarot"
   description="Intelligent, grounded guidance by Anisha Banerji. High-precision Vedic and Western birth chart calculations, contemplative tarot, and personal timing consultations."
   currentPath="/"
 >
   <!-- 1. OPENING / HERO SECTION: About Anisha as the Opening Focus (Who I Am -> What I Do -> What You Can Do Next) -->
-  <section class="relative pt-8 pb-16 sm:pt-14 sm:pb-20 md:pt-18 md:pb-24 lg:pt-22 lg:pb-28 xl:pt-26 xl:pb-32 overflow-hidden border-b border-[#28231e]/10 dark:border-purple-500/20 bg-gradient-to-b from-[#fcfbf9] via-[#faf8f5] to-[#f5efe6]/40 dark:from-[#090716] dark:via-[#0c091f] dark:to-[#070512]">
+  <section id="top" class="relative pt-8 pb-16 sm:pt-14 sm:pb-20 md:pt-18 md:pb-24 lg:pt-22 lg:pb-28 xl:pt-26 xl:pb-32 overflow-hidden border-b border-[#28231e]/10 dark:border-purple-500/20 bg-gradient-to-b from-[#fcfbf9] via-[#faf8f5] to-[#f5efe6]/40 dark:from-[#090716] dark:via-[#0c091f] dark:to-[#070512]">
     <!-- Soft luminous background warmth -->
     <div class="absolute top-1/6 right-10 w-72 sm:w-96 lg:w-[26rem] h-72 sm:h-96 lg:h-[26rem] rounded-full bg-[#f4eee4]/60 dark:bg-purple-900/10 blur-3xl pointer-events-none"></div>
     <div class="absolute bottom-10 left-10 w-64 sm:w-80 lg:w-96 h-64 sm:h-80 lg:h-96 rounded-full bg-[#efe8dc]/40 dark:bg-teal-900/10 blur-3xl pointer-events-none"></div>
@@ -35,7 +41,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
             <div class="relative rounded-2xl overflow-hidden border border-[#28231e]/15 dark:border-purple-500/30 shadow-2xl bg-white dark:bg-[#120d2b] aspect-[4/5]">
               <img
                 src="/images/anisha.webp"
-                alt="Anisha Banerji — Founder of Astro by Anisha"
+                alt="Anisha Banerji — Founder of Astrology with Anisha"
                 class="w-full h-full object-cover object-[center_14%]"
                 loading="eager"
               />
@@ -57,7 +63,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
         <div class="md:col-span-7 lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left order-1 md:order-2">
           
           <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-[0.22em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
-            <span>Astro by Anisha</span>
+            <span>Astrology with Anisha</span>
           </div>
 
           <h1 class="font-serif text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl text-[#110f0d] dark:text-[#ffffff] font-medium tracking-tight leading-[1.12] mb-5 sm:mb-6">
@@ -70,7 +76,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
 
           <div class="space-y-4 text-sm sm:text-base text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed mb-8 max-w-2xl xl:max-w-3xl">
             <p>
-              I founded Astro by Anisha to bring intellectual rigor, psychological clarity, and quiet dignity back to traditional astrology and tarot.
+              I founded Astrology with Anisha to bring intellectual rigor, psychological clarity, and quiet dignity back to traditional astrology and tarot.
             </p>
             <p>
               Trained in the classical Parashari Vedic lineage and archetypal tarot symbolism, my consultations are thoughtful, collaborative dialogues. We explore your life timing, relationship dynamics, and career transitions without fatalism or superstition.
@@ -110,9 +116,7 @@ const articles = (await getCollection('articles')).slice(0, 3);
   </section>
 
   <!-- 2. BIRTH CHART SECTION: The Next Section When Scrolling Down -->
-  <section id="birth-chart" class="relative">
-    <BirthChartCalculator />
-  </section>
+  <BirthChartCalculator />
 
   <!-- 3. NUMEROLOGY CALCULATOR: Directly Below Birth Chart Calculator -->
   <NumerologyCalculator />
@@ -134,6 +138,9 @@ const articles = (await getCollection('articles')).slice(0, 3);
         </h2>
         <p class="mt-3 text-sm sm:text-base text-[#2c2722] dark:text-[#ded9d0] font-normal leading-relaxed">
           Structured, confidential sessions conducted online via private video worldwide.
+        </p>
+        <p class="mt-2 text-xs sm:text-sm text-[#5a534b] dark:text-[#a8a29a] font-medium leading-relaxed">
+          All readings include a combination of Western and Vedic astrology as well as a brief Tarot consultation
         </p>
       </div>
 
@@ -170,11 +177,25 @@ const articles = (await getCollection('articles')).slice(0, 3);
         }
       </div>
 
+      <!-- Subtle Back to Top -->
+      <div class="mt-10 sm:mt-12 flex justify-end">
+        <a
+          href="#top"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to top"
+        >
+          <span>Top</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </a>
+      </div>
+
     </div>
   </section>
 
   <!-- 6. CURATED SOCIAL CARDS: Instagram First (2 Cards/Reels) & YouTube Second (Scaled-down Embed) -->
-  <section class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] dark:bg-[#090716] border-t border-[#28231e]/10 dark:border-purple-500/20 relative">
+  <section id="socials" class="py-16 sm:py-20 md:py-24 lg:py-28 bg-[#faf8f5] dark:bg-[#090716] border-t border-[#28231e]/10 dark:border-purple-500/20 relative">
     <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
       
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-10 sm:mb-12">
@@ -199,119 +220,187 @@ const articles = (await getCollection('articles')).slice(0, 3);
         </div>
       </div>
 
-      <!-- Curated Social Cards (2 Instagram + 1 Scaled-down YouTube Embed) -->
+      <!-- Curated Social Cards (2 Instagram + 1 YouTube Embed) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        
-        <!-- Post 1: Instagram Reel Embed Card -->
-        <a
-          href="https://www.instagram.com/tarotbyanisha/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between"
-        >
+        <!-- Post 1: Instagram Reel / Post Showcase Card -->
+        <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between">
           <div>
             <!-- Header -->
             <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
-              <div class="flex items-center gap-2.5">
+              <a
+                href={socialSettings.instagram1.url || "https://www.instagram.com/tarotbyanisha/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2.5 group/ig"
+              >
                 <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
                   <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
-                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">tarotbyanisha</span>
+                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight group-hover/ig:text-[#855b25] dark:group-hover/ig:text-[#e5c98f] transition-colors">tarotbyanisha</span>
                   <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Anisha Banerji</span>
                 </div>
-              </div>
+              </a>
               <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">
-                Reel
+                {socialSettings.instagram1.type || 'Reel'}
               </span>
             </div>
 
-            <!-- Video Thumbnail Mockup -->
-            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#110f0d] mb-4">
-              <img
-                src="/images/studio.jpg"
-                alt="Planetary transit contemplation"
-                class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-500"
-              />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
-                <div class="w-11 h-11 rounded-full bg-white/95 dark:bg-[#0c091f]/95 text-[#110f0d] dark:text-[#ffffff] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
+            {ig1Embed ? (
+              <div class="relative w-full h-[440px] sm:h-[480px] rounded-lg overflow-hidden bg-black/5 dark:bg-purple-950/20 mb-3.5 shadow-sm border border-[#28231e]/10 dark:border-purple-500/20">
+                <iframe
+                  class="w-full h-full border-0"
+                  src={`https://www.instagram.com/${ig1Embed.type}/${ig1Embed.id}/embed`}
+                  title="Featured Instagram Reel by Anisha Banerji"
+                  frameborder="0"
+                  scrolling="no"
+                  allowtransparency="true"
+                  allow="encrypted-media"
+                  loading="lazy"
+                ></iframe>
               </div>
-              <span class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white/90 bg-black/60 px-1.5 py-0.5 rounded">
-                0:58
-              </span>
-            </div>
+            ) : (
+              <a
+                href={socialSettings.instagram1.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group/thumb block relative aspect-[4/3] rounded-lg overflow-hidden bg-[#110f0d] mb-4"
+              >
+                <img
+                  src={socialSettings.instagram1.image || '/images/studio.jpg'}
+                  alt="Instagram post preview"
+                  class="w-full h-full object-cover opacity-85 group-hover/thumb:scale-105 transition-transform duration-500"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-center justify-center">
+                  <div class="w-11 h-11 rounded-full bg-white/95 dark:bg-[#0c091f]/95 text-[#110f0d] dark:text-[#ffffff] flex items-center justify-center shadow-lg group-hover/thumb:scale-110 transition-transform">
+                    <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+                {socialSettings.instagram1.duration && (
+                  <span class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white/90 bg-black/60 px-1.5 py-0.5 rounded">
+                    {socialSettings.instagram1.duration}
+                  </span>
+                )}
+              </a>
+            )}
 
-            <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors mb-3">
-              "Saturn tests where your foundations were built on obligation rather than authenticity. Slow down and rebuild with truth."
-            </p>
+            {socialSettings.instagram1.caption && (
+              <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug mb-3">
+                {socialSettings.instagram1.caption}
+              </p>
+            )}
           </div>
 
-          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
-            <span>Watch on Instagram</span>
-            <span class="text-[#855b25] dark:text-[#e5c98f] group-hover:translate-x-1 transition-transform">&rarr;</span>
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] flex items-center justify-between">
+            <a
+              href={socialSettings.instagram1.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:underline flex items-center gap-1.5"
+            >
+              <span>Watch on Instagram</span>
+              <span>&rarr;</span>
+            </a>
           </div>
-        </a>
+        </div>
 
-        <!-- Post 2: Instagram Carousel Archetype Post -->
-        <a
-          href="https://www.instagram.com/tarotbyanisha/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between"
-        >
+        <!-- Post 2: Instagram Post / Reel Showcase Card -->
+        <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between">
           <div>
             <!-- Header -->
             <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
-              <div class="flex items-center gap-2.5">
+              <a
+                href={socialSettings.instagram2.url || "https://www.instagram.com/tarotbyanisha/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2.5 group/ig"
+              >
                 <div class="w-8 h-8 rounded-full overflow-hidden bg-[#e5d7c5] p-0.5 border border-[#855b25]/30">
                   <img src="/images/anisha.webp" alt="Avatar" class="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
-                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight">tarotbyanisha</span>
-                  <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Tarot Archetypes</span>
+                  <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] block leading-tight group-hover/ig:text-[#855b25] dark:group-hover/ig:text-[#e5c98f] transition-colors">tarotbyanisha</span>
+                  <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Anisha Banerji</span>
                 </div>
-              </div>
+              </a>
               <span class="text-[10px] uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] font-semibold px-2 py-0.5 rounded-full bg-[#855b25]/10 dark:bg-purple-900/40">
-                1/4
+                {socialSettings.instagram2.type || 'Reel'}
               </span>
             </div>
 
-            <!-- Post Graphic Preview -->
-            <div class="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4">
-              <div class="text-center">
-                <span class="text-[10px] uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-1">IX • The Hermit</span>
-                <p class="font-serif italic text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] leading-snug">
-                  "Silence is not empty; it is the ground of revelation."
-                </p>
+            {ig2Embed ? (
+              <div class="relative w-full h-[440px] sm:h-[480px] rounded-lg overflow-hidden bg-black/5 dark:bg-purple-950/20 mb-3.5 shadow-sm border border-[#28231e]/10 dark:border-purple-500/20">
+                <iframe
+                  class="w-full h-full border-0"
+                  src={`https://www.instagram.com/${ig2Embed.type}/${ig2Embed.id}/embed`}
+                  title="Featured Instagram Video by Anisha Banerji"
+                  frameborder="0"
+                  scrolling="no"
+                  allowtransparency="true"
+                  allow="encrypted-media"
+                  loading="lazy"
+                ></iframe>
               </div>
-            </div>
+            ) : socialSettings.instagram2.image ? (
+              <a
+                href={socialSettings.instagram2.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 mb-4 group/box"
+              >
+                <img src={socialSettings.instagram2.image} alt={socialSettings.instagram2.title || 'Instagram preview'} class="w-full h-full object-cover group-hover/box:scale-105 transition-transform duration-500" />
+              </a>
+            ) : (
+              <a
+                href={socialSettings.instagram2.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block relative aspect-[4/3] rounded-lg overflow-hidden bg-[#faf8f5] dark:bg-[#161036] border border-[#28231e]/10 dark:border-purple-500/20 p-4 flex items-center justify-center mb-4 group/box"
+              >
+                <div class="text-center">
+                  <span class="text-[10px] uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-1">
+                    {socialSettings.instagram2.title || 'Tarot Wisdom'}
+                  </span>
+                  <p class="font-serif italic text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] leading-snug">
+                    {socialSettings.instagram2.subtitle || ''}
+                  </p>
+                </div>
+              </a>
+            )}
 
-            <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors mb-3">
-              "The Hermit invites you to step outside the noise of external counsel and listen to the voice that only speaks in stillness."
-            </p>
+            {socialSettings.instagram2.caption && (
+              <p class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-normal italic leading-snug mb-3">
+                {socialSettings.instagram2.caption}
+              </p>
+            )}
           </div>
 
-          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#5a534b] dark:text-[#ded9d0] flex items-center justify-between">
-            <span>View on Instagram</span>
-            <span class="text-[#855b25] dark:text-[#e5c98f] group-hover:translate-x-1 transition-transform">&rarr;</span>
+          <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] flex items-center justify-between">
+            <a
+              href={socialSettings.instagram2.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:underline flex items-center gap-1.5"
+            >
+              <span>Watch on Instagram</span>
+              <span>&rarr;</span>
+            </a>
           </div>
-        </a>
+        </div>
 
-        <!-- Post 3: Scaled-down YouTube Channel & Video Embed Card -->
-        <a
-          href="https://www.youtube.com/tarotbyanisha"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1"
-        >
-          <div>
-            <!-- YouTube Channel Banner Mockup -->
-            <div class="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
-              <div class="flex items-center gap-2.5">
+        <!-- Post 3: Real YouTube Video Embed & Channel Link -->
+        <div class="rounded-xl bg-white/90 dark:bg-[#0f0b24]/90 p-5 sm:p-6 border border-[#28231e]/15 dark:border-purple-500/25 shadow-xs hover:border-[#855b25]/40 transition-all flex flex-col justify-between sm:col-span-2 lg:col-span-1">
+          <div class="space-y-4">
+            <!-- YouTube Channel Banner -->
+            <div class="flex items-center justify-between pb-3 border-b border-[#28231e]/10 dark:border-purple-500/15 text-xs">
+              <a
+                href={socialSettings.youtube.channelUrl || 'https://www.youtube.com/tarotbyanisha'}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-2.5 group/yt"
+              >
                 <div class="w-8 h-8 rounded-full overflow-hidden bg-red-600 text-white flex items-center justify-center">
                   <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -319,50 +408,99 @@ const articles = (await getCollection('articles')).slice(0, 3);
                 </div>
                 <div>
                   <div class="flex items-center gap-1">
-                    <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] text-xs">Tarot by Anisha</span>
+                    <span class="font-semibold text-[#110f0d] dark:text-[#ffffff] text-xs group-hover/yt:text-[#855b25] dark:group-hover/yt:text-[#e5c98f] transition-colors">{socialSettings.youtube.channelTitle || 'Tarot by Anisha'}</span>
                     <span class="text-[10px] text-[#5a534b] dark:text-[#a8a29a]">&bull; YouTube</span>
                   </div>
                   <span class="text-[10px] text-[#5a534b] dark:text-[#ded9d0]">Official Channel</span>
                 </div>
-              </div>
-              <span class="text-[10px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
+              </a>
+              <a
+                href={`${socialSettings.youtube.channelUrl || 'https://www.youtube.com/tarotbyanisha'}?sub_confirmation=1`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[10px] font-semibold text-white bg-red-600 hover:bg-red-700 px-2.5 py-1 rounded-full transition-colors"
+              >
                 Subscribe
-              </span>
+              </a>
             </div>
 
-            <!-- YouTube Video Player Mockup -->
-            <div class="relative aspect-[16/9] rounded-lg overflow-hidden bg-[#110f0d] mb-3.5">
-              <img
-                src="/images/anisha.webp"
-                alt="Video preview: Understanding Your Lagna"
-                class="w-full h-full object-cover object-top opacity-85 group-hover:scale-105 transition-transform duration-500"
-              />
-              <div class="absolute inset-0 bg-black/35 flex items-center justify-center">
-                <div class="w-12 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
+            <!-- Video 1 -->
+            <div>
+              <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-black mb-2 shadow-xs">
+                <iframe
+                  class="w-full h-full"
+                  src={`https://www.youtube.com/embed/${socialSettings.youtube.videoId}`}
+                  title={socialSettings.youtube.title}
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                  loading="lazy"
+                ></iframe>
               </div>
-              <span class="absolute bottom-2 right-2 text-[10px] font-mono font-medium text-white bg-black/80 px-1.5 py-0.5 rounded">
-                18:42
-              </span>
+              <h3 class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug line-clamp-1">
+                {socialSettings.youtube.title}
+              </h3>
+              {socialSettings.youtube.description && (
+                <p class="text-[11px] text-[#5a534b] dark:text-[#ded9d0] font-normal leading-relaxed line-clamp-2 mt-0.5">
+                  {socialSettings.youtube.description}
+                </p>
+              )}
             </div>
 
-            <h4 class="font-serif text-base sm:text-lg text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug mb-1 group-hover:text-[#855b25] dark:group-hover:text-[#e5c98f] transition-colors">
-              Understanding Your Lagna & Current Dashas
-            </h4>
-            <p class="text-xs text-[#38322c] dark:text-[#ded9d0] font-normal leading-relaxed">
-              In-depth contemplative video breakdown exploring planetary seasons, Saturn cycles, and self-inquiry.
-            </p>
+            <!-- Video 2 -->
+            {socialSettings.youtube2?.videoId && (
+              <div class="pt-3 border-t border-[#28231e]/10 dark:border-purple-500/15">
+                <div class="relative w-full aspect-video rounded-lg overflow-hidden bg-black mb-2 shadow-xs">
+                  <iframe
+                    class="w-full h-full"
+                    src={`https://www.youtube.com/embed/${socialSettings.youtube2.videoId}`}
+                    title={socialSettings.youtube2.title}
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                    loading="lazy"
+                  ></iframe>
+                </div>
+                <h3 class="font-serif text-sm sm:text-base text-[#110f0d] dark:text-[#ffffff] font-medium leading-snug line-clamp-1">
+                  {socialSettings.youtube2.title}
+                </h3>
+                {socialSettings.youtube2.description && (
+                  <p class="text-[11px] text-[#5a534b] dark:text-[#ded9d0] font-normal leading-relaxed line-clamp-2 mt-0.5">
+                    {socialSettings.youtube2.description}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div class="pt-3.5 border-t border-[#28231e]/10 dark:border-purple-500/15 text-[11px] font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] flex items-center justify-between mt-4">
-            <span>Watch on YouTube</span>
-            <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+            <a
+              href={socialSettings.youtube.channelUrl || 'https://www.youtube.com/tarotbyanisha'}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 hover:underline"
+            >
+              <span>Visit YouTube Channel</span>
+              <span>&rarr;</span>
+            </a>
           </div>
-        </a>
+        </div>
+      </div>
 
+      <!-- Subtle Back to Top -->
+      <div class="mt-10 sm:mt-12 flex justify-end">
+        <a
+          href="#top"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to top"
+        >
+          <span>Top</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </a>
       </div>
 
     </div>
@@ -429,6 +567,20 @@ const articles = (await getCollection('articles')).slice(0, 3);
         }
       </div>
 
+      <!-- Subtle Back to Top -->
+      <div class="mt-10 sm:mt-12 flex justify-end">
+        <a
+          href="#top"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to top"
+        >
+          <span>Top</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </a>
+      </div>
+
     </div>
   </section>
 
@@ -460,6 +612,20 @@ const articles = (await getCollection('articles')).slice(0, 3);
           class="glass-pill-btn text-xs font-semibold uppercase tracking-wider py-3.5 sm:py-4 px-5 sm:px-6 bg-white/90 dark:bg-purple-950/60 text-[#110f0d] dark:text-[#ffffff] hover:bg-[#110f0d] hover:text-white dark:hover:bg-[#e5c98f] dark:hover:text-[#0c091f] transition-all"
         >
           Calculate Chart Again
+        </a>
+      </div>
+
+      <!-- Subtle Back to Top -->
+      <div class="mt-12 sm:mt-14 flex justify-end">
+        <a
+          href="#top"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to top"
+        >
+          <span>Top</span>
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
         </a>
       </div>
 

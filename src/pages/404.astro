@@ -4,11 +4,24 @@ import GlassButton from '../components/GlassButton.astro';
 ---
 
 <Layout
-  title="Page Not Found — Astro by Anisha"
+  title="Page Not Found — Astrology with Anisha"
   description="The celestial coordinate you are looking for does not exist or has shifted."
   currentPath="/404"
 >
-  <section class="min-h-[70vh] flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5]">
+  <section class="min-h-[70vh] flex flex-col justify-center py-20 px-4 sm:px-6 lg:px-8 bg-[#faf8f5]">
+    <div class="max-w-xl mx-auto w-full mb-6 text-left">
+      <a
+        href="/"
+        class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+        aria-label="Back to homepage"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Home</span>
+      </a>
+    </div>
+
     <div class="max-w-xl mx-auto text-center">
       <span class="text-xs uppercase tracking-[0.3em] text-[#a37a4c] font-semibold block mb-4">
         Celestial Coordinate Uncharted

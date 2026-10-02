@@ -15,7 +15,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 Consult [README.md](file:///C:/Users/vi/Desktop/agy/personal/tarot/README.md) for full project architecture and technical specifications.
 
 ### Strict Rules:
-1. **Brand Name**: **Astro by Anisha** (NOT "Astrology by Anisha").
+1. **Brand Name**: **Astrology with Anisha** (NOT "Astro by Anisha" or "Astrology by Anisha").
 2. **Practitioner**: **Anisha Banerji** (NOT "Sharma").
 3. **Navigation Tabs**: Strict 4-tab structure: `Home` (`/`), `About` (`/about`), `Articles` (`/articles`), `Contact` (`/contact`), with primary action **"Book a Consultation"** (same for the footer).
 4. **Copy Consistency**: Always use **"Book a Consultation"** (NEVER "Book a session").

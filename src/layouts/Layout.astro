@@ -13,7 +13,7 @@ interface Props {
 }
 
 const {
-  title = 'Astro by Anisha — Vedic Astrology & Contemplative Tarot',
+  title = 'Astrology with Anisha — Vedic Astrology & Contemplative Tarot',
   description = 'High-precision Vedic birth chart calculations, contemplative tarot consultations, and grounded guidance by Anisha Banerji. Intelligent, modern spiritual clarity.',
   currentPath = Astro.url.pathname,
   image = '/images/og-image.jpg',
@@ -27,8 +27,8 @@ const isArticle = currentPath.startsWith('/articles/') && currentPath !== '/arti
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Astro by Anisha',
-  alternateName: ['Astro By Anisha', 'Anisha Banerji Astrology'],
+  name: 'Astrology with Anisha',
+  alternateName: ['Astrology With Anisha', 'Anisha Banerji Astrology', 'Astro by Anisha'],
   url: 'https://astrobyanisha.com',
   description: 'Contemporary Vedic astrology, high-precision astronomical birth chart calculations, and contemplative tarot consultations with Anisha Banerji.',
   publisher: {
@@ -40,7 +40,7 @@ const websiteSchema = {
 const professionalServiceSchema = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  name: 'Astro by Anisha',
+  name: 'Astrology with Anisha',
   url: 'https://astrobyanisha.com',
   logo: 'https://astrobyanisha.com/favicon.svg',
   image: 'https://astrobyanisha.com/images/og-image.jpg',
@@ -71,7 +71,7 @@ const professionalServiceSchema = {
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -103,8 +103,8 @@ const professionalServiceSchema = {
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1376" />
     <meta property="og:image:height" content="768" />
-    <meta property="og:image:alt" content="Astro by Anisha — Vedic Astrology & Contemplative Tarot" />
-    <meta property="og:site_name" content="Astro by Anisha" />
+    <meta property="og:image:alt" content="Astrology with Anisha — Vedic Astrology & Contemplative Tarot" />
+    <meta property="og:site_name" content="Astrology with Anisha" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter / X Card -->
@@ -115,7 +115,7 @@ const professionalServiceSchema = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="Astro by Anisha — Vedic Astrology & Contemplative Tarot" />
+    <meta name="twitter:image:alt" content="Astrology with Anisha — Vedic Astrology & Contemplative Tarot" />
 
     <!-- Structured Data (JSON-LD) for Search Engine Rich Results -->
     <script type="application/ld+json" is:inline set:html={JSON.stringify(websiteSchema)} />

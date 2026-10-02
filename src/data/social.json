@@ -1,0 +1,35 @@
+{
+  "instagram1": {
+    "url": "https://www.instagram.com/p/DW26WAOktMR/",
+    "reelId": "DW26WAOktMR",
+    "type": "Reel",
+    "caption": "Tarot by Anisha — Intuitive reflections and cosmic timing.",
+    "image": "/images/studio.jpg",
+    "duration": ""
+  },
+  "instagram2": {
+    "url": "https://www.instagram.com/p/DWGBrbESA3L/",
+    "reelId": "DWGBrbESA3L",
+    "type": "Reel",
+    "title": "Tarot Wisdom",
+    "subtitle": "Cosmic timing and contemplative insight.",
+    "caption": "Daily intuitive tarot guidance by Anisha Banerji.",
+    "image": ""
+  },
+  "youtube": {
+    "url": "https://www.youtube.com/watch?v=K5ePB4n7sNY",
+    "videoId": "K5ePB4n7sNY",
+    "title": "Virgo | 2026 Annual Astrology Horoscope Forecast",
+    "description": "Annual planetary transits, major houses of growth, and contemplative forecast with Anisha Banerji.",
+    "channelUrl": "https://www.youtube.com/tarotbyanisha",
+    "channelTitle": "Tarot by Anisha"
+  },
+  "youtube2": {
+    "url": "https://www.youtube.com/watch?v=-YlwHI2DxiE",
+    "videoId": "-YlwHI2DxiE",
+    "title": "Pisces | 2026 Annual Astrology Horoscope Forecast",
+    "description": "Navigating deep transits, intuitive awakenings, and major personal timing with Anisha Banerji.",
+    "channelUrl": "https://www.youtube.com/tarotbyanisha",
+    "channelTitle": "Tarot by Anisha"
+  }
+}

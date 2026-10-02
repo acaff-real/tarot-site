@@ -5,22 +5,38 @@ import GlassButton from '../components/GlassButton.astro';
 ---
 
 <Layout
-  title="Numerology & Name Analysis — Astro by Anisha"
+  title="Numerology & Name Analysis — Astrology with Anisha"
   description="Discover Chaldean numerology with Anisha Banerji. Decode the phonetic sound vibrations of your legal name, business brand, and life path numbers."
   currentPath="/numerology"
 >
   <!-- Header -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
-    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
-        <span>Phonetic Resonance & Alignment</span>
+  <section class="pt-8 pb-10 sm:pt-12 sm:pb-14 md:pt-14 md:pb-16 lg:pt-16 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
+      <!-- Back to Home Link -->
+      <div class="mb-4 sm:mb-6 text-left">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to homepage"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Home</span>
+        </a>
       </div>
-      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
-        Chaldean Numerology
-      </h1>
-      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
-        In Vedic science, <em>Nama</em> (name) and <em>Rupa</em> (form) are intrinsically linked. The sound vibration of your name continuously pulses an acoustic frequency through your energetic field.
-      </p>
+
+      <div class="text-center">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-md text-xs font-semibold uppercase tracking-[0.2em] bg-white/90 dark:bg-purple-950/60 border border-[#28231e]/15 dark:border-purple-500/30 text-[#855b25] dark:text-[#e5c98f] mb-4 shadow-xs">
+          <span>Phonetic Resonance & Alignment</span>
+        </div>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
+          Chaldean Numerology
+        </h1>
+        <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
+          In Vedic science, <em>Nama</em> (name) and <em>Rupa</em> (form) are intrinsically linked. The sound vibration of your name continuously pulses an acoustic frequency through your energetic field.
+        </p>
+      </div>
     </div>
   </section>
 

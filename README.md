@@ -1,4 +1,4 @@
-# Astro by Anisha ✦
+# Astrology with Anisha ✦
 
 > An editorial luxury digital platform for Vedic astrology, contemplative tarot, and Chaldean numerology by **Anisha Banerji**. Engineered with [Astro 5+](https://astro.build), [Tailwind CSS v4](https://tailwindcss.com), and the high-precision [Astronomy Engine](https://github.com/cosinekitty/astronomy) ephemeris library.
 
@@ -8,7 +8,7 @@
 
 > [!IMPORTANT]
 > **Key Rules for Agents Working on This Repository:**
-> 1. **Brand & Identity**: The platform is **Astro by Anisha**. The practitioner is **Anisha Banerji** (NEVER "Sharma").
+> 1. **Brand & Identity**: The platform is **Astrology with Anisha**. The practitioner is **Anisha Banerji** (NEVER "Sharma").
 > 2. **Navigation Tabs**: Strict 4-tab structure: `Home` (`/`), `About` (`/about`), `Articles` (`/articles`), `Contact` (`/contact`), plus primary CTA `Book a Consultation` (same for footer).
 > 3. **Copy Consistency**: Always use **"Book a Consultation"** (NEVER "Book a session").
 > 4. **No Consultation Prices**: Never display prices on the website. All CTAs route to the direct Gmail enquiry flow.
@@ -107,7 +107,7 @@ C:\Users\vi\Desktop\agy\personal\tarot/
 ├── src/
 │   ├── components/
 │   │   ├── BirthChartCalculator.astro   # Dual-system (Vedic/Western) form & Parashar SVG
-│   │   ├── BrandLogo.astro              # Vector SVG brand lockup (Astro by Anisha)
+│   │   ├── BrandLogo.astro              # Vector SVG brand lockup (Astrology with Anisha)
 │   │   ├── Footer.astro                 # Simplified single-tier essential footer
 │   │   ├── GlassButton.astro            # Tactile frosted glass button with arrow
 │   │   ├── Navbar.astro                 # 4-tab navigation + Book Consultation CTA
@@ -261,4 +261,4 @@ Trigger Direct Gmail Flow
 
 ## ✦ Rights & Ownership
 
-Proprietary platform created for **Anisha Banerji** (Astro by Anisha). All rights reserved.
+Proprietary platform created for **Anisha Banerji** (Astrology with Anisha). All rights reserved.

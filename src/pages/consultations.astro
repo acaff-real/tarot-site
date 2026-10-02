@@ -2,25 +2,47 @@
 import Layout from '../layouts/Layout.astro';
 import GlassButton from '../components/GlassButton.astro';
 import { SERVICES } from '../data/services';
+import { POPULAR_CITIES } from '../lib/vedic/cities';
+
+const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort();
 ---
 
 <Layout
-  title="Consultations — Astro by Anisha"
+  title="Consultations — Astrology with Anisha"
   description="Private 1-on-1 consultations in Vedic astrology, intuitive tarot, and numerology with Anisha Banerji. Reserve your appointment directly."
   currentPath="/consultations"
 >
   <!-- Header -->
-  <section class="pt-12 pb-10 sm:pt-16 sm:pb-14 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
-    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8 text-center">
-      <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
-        1-on-1 Appointments
-      </span>
-      <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
-        Consultation Offerings
-      </h1>
-      <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
-        Confidential, collaborative sessions designed to illuminate your life timing and pivotal crossroads with Anisha Banerji. Conducted via private high-definition video worldwide.
-      </p>
+  <section class="pt-8 pb-10 sm:pt-12 sm:pb-14 md:pt-14 md:pb-16 lg:pt-16 lg:pb-20 bg-[#fcfbf9] dark:bg-[#090716] border-b border-[#28231e]/10 dark:border-purple-500/20">
+    <div class="max-w-4xl xl:max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
+      <!-- Back to Home Link -->
+      <div class="mb-4 sm:mb-6 text-left">
+        <a
+          href="/"
+          class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+          aria-label="Back to homepage"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span>Home</span>
+        </a>
+      </div>
+
+      <div class="text-center">
+        <span class="text-xs uppercase tracking-[0.25em] text-[#855b25] dark:text-[#e5c98f] font-semibold block mb-3">
+          1-on-1 Appointments
+        </span>
+        <h1 class="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#110f0d] dark:text-[#ffffff] tracking-tight leading-tight font-medium">
+          Consultation Offerings
+        </h1>
+        <p class="mt-4 text-base sm:text-lg md:text-xl text-[#2c2722] dark:text-[#f0ebe1] font-normal max-w-2xl xl:max-w-3xl mx-auto leading-relaxed">
+          Structured, confidential sessions conducted online via private video worldwide.
+        </p>
+        <p class="mt-2 text-xs sm:text-sm text-[#5a534b] dark:text-[#a8a29a] font-medium leading-relaxed">
+          All readings include a combination of Western and Vedic astrology as well as a brief Tarot consultation
+        </p>
+      </div>
     </div>
   </section>
 
@@ -138,9 +160,10 @@ import { SERVICES } from '../data/services';
             <div>
               <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Select Consultation</label>
               <select id="booking-service" class="w-full px-4 py-3 rounded-md glass-input text-sm bg-white dark:bg-[#120d2c] cursor-pointer font-medium text-[#110f0d] dark:text-[#ffffff]">
-                <option value="Vedic Astrology Consultation">Vedic Astrology Consultation (75 Min)</option>
-                <option value="Intuitive Tarot Reading">Intuitive Tarot Reading (50 Min)</option>
-                <option value="Numerology & Name Consultation">Numerology & Name Consultation (60 Min)</option>
+                <option value="Individual Reading">Individual Reading</option>
+                <option value="Relationship Reading">Relationship Reading</option>
+                <option value="Family Reading">Family Reading</option>
+                <option value="Custom">Custom</option>
               </select>
             </div>
             <div>
@@ -160,9 +183,76 @@ import { SERVICES } from '../data/services';
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">Birth Details (Date, Exact Time, Place of Birth)</label>
-            <input type="text" id="booking-birth" class="w-full px-4 py-3 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff]" placeholder="e.g. 18 April 1996, 14:30, New Delhi, India" />
+          <!-- Separated Birth Details (Matching Birth Chart Generator) -->
+          <div class="pt-2 border-t border-[#28231e]/10 dark:border-purple-500/20">
+            <span class="text-xs font-semibold uppercase tracking-wider text-[#855b25] dark:text-[#e5c98f] block mb-3">
+              Birth Details (For Chart Pre-Calculation)
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label for="booking-birth-date" class="block text-[11px] font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  id="booking-birth-date"
+                  class="w-full px-4 py-2.5 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff] bg-white dark:bg-[#120d2c]"
+                />
+              </div>
+
+              <div>
+                <label for="booking-birth-time" class="block text-[11px] font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">
+                  Exact Time (24h)
+                </label>
+                <input
+                  type="time"
+                  id="booking-birth-time"
+                  class="w-full px-4 py-2.5 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff] bg-white dark:bg-[#120d2c]"
+                />
+              </div>
+
+              <div>
+                <label for="booking-birth-country" class="block text-[11px] font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0] mb-1.5">
+                  Country of Birth
+                </label>
+                <select
+                  id="booking-birth-country"
+                  class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white dark:bg-[#120d2c] cursor-pointer text-[#110f0d] dark:text-[#ffffff]"
+                >
+                  {
+                    COUNTRIES.map((cty) => (
+                      <option value={cty} selected={cty === 'India'}>
+                        {cty}
+                      </option>
+                    ))
+                  }
+                  <option value="Other">Other / Worldwide</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label for="booking-birth-city" class="block text-[11px] font-semibold uppercase tracking-wider text-[#2c2722] dark:text-[#ded9d0]">
+                    City of Birth
+                  </label>
+                  <span class="text-[10px] text-[#5a534b] dark:text-[#a8a29a]">Free text</span>
+                </div>
+                <input
+                  type="text"
+                  id="booking-birth-city"
+                  list="booking-cities-datalist"
+                  placeholder="e.g. New Delhi, London..."
+                  class="w-full px-4 py-2.5 rounded-md glass-input text-sm text-[#110f0d] dark:text-[#ffffff] bg-white dark:bg-[#120d2c]"
+                  autocomplete="off"
+                />
+                <datalist id="booking-cities-datalist">
+                  <!-- Populated via script -->
+                </datalist>
+              </div>
+            </div>
+            <p class="text-[11px] text-[#5a534b] dark:text-[#a8a29a] mt-2">
+              If exact time is unknown, please provide approximate time or 12:00 PM noon.
+            </p>
           </div>
 
           <div>
@@ -218,14 +308,40 @@ import { SERVICES } from '../data/services';
 </Layout>
 
 <script>
+  import { POPULAR_CITIES } from '../lib/vedic/cities';
+
   function initConsultationBooking() {
     const form = document.getElementById('consultation-enquiry-form') as HTMLFormElement;
     if (!form) return;
 
     const serviceSelect = document.getElementById('booking-service') as HTMLSelectElement;
+    const countrySelect = document.getElementById('booking-birth-country') as HTMLSelectElement;
+    const cityInput = document.getElementById('booking-birth-city') as HTMLInputElement;
+    const citiesDatalist = document.getElementById('booking-cities-datalist') as HTMLDataListElement;
+
     const successBox = document.getElementById('booking-success-box');
     const gmailDirectBtn = document.getElementById('gmail-direct-btn') as HTMLAnchorElement;
     const copyDetailsBtn = document.getElementById('copy-details-btn');
+
+    // Populate cities datalist based on selected country
+    function updateCitiesDatalist(countryName: string) {
+      if (!citiesDatalist) return;
+      citiesDatalist.innerHTML = '';
+      const filtered = POPULAR_CITIES.filter((c) => c.country === countryName);
+      filtered.forEach((c) => {
+        const opt = document.createElement('option');
+        opt.value = c.city;
+        citiesDatalist.appendChild(opt);
+      });
+    }
+
+    countrySelect?.addEventListener('change', () => {
+      updateCitiesDatalist(countrySelect.value);
+    });
+
+    if (countrySelect) {
+      updateCitiesDatalist(countrySelect.value);
+    }
 
     // Preset service if clicked from card
     document.querySelectorAll('[data-service-select]').forEach((btn) => {
@@ -233,7 +349,7 @@ import { SERVICES } from '../data/services';
         const serviceName = (e.currentTarget as HTMLElement).getAttribute('data-service-select');
         if (serviceName && serviceSelect) {
           for (let i = 0; i < serviceSelect.options.length; i++) {
-            if (serviceSelect.options[i].text.includes(serviceName)) {
+            if (serviceSelect.options[i].text.toLowerCase().includes(serviceName.toLowerCase())) {
               serviceSelect.selectedIndex = i;
               break;
             }
@@ -242,17 +358,49 @@ import { SERVICES } from '../data/services';
       });
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const name = (document.getElementById('booking-name') as HTMLInputElement)?.value || '';
       const email = (document.getElementById('booking-email') as HTMLInputElement)?.value || '';
-      const service = serviceSelect?.value || 'Consultation';
+      const service = serviceSelect?.value || 'Individual Reading';
       const phone = (document.getElementById('booking-phone') as HTMLInputElement)?.value || 'Not provided';
       const schedule = (document.getElementById('booking-schedule') as HTMLInputElement)?.value || 'Flexible';
       const tz = (document.getElementById('booking-tz') as HTMLInputElement)?.value || 'Not provided';
-      const birth = (document.getElementById('booking-birth') as HTMLInputElement)?.value || 'To be shared';
+      
+      const birthDate = (document.getElementById('booking-birth-date') as HTMLInputElement)?.value || '';
+      const birthTime = (document.getElementById('booking-birth-time') as HTMLInputElement)?.value || '';
+      const birthCountry = countrySelect?.value || '';
+      const birthCity = cityInput?.value || '';
       const notes = (document.getElementById('booking-notes') as HTMLTextAreaElement)?.value || 'None';
+
+      const birthParts = [];
+      if (birthDate) birthParts.push(`DOB: ${birthDate}`);
+      if (birthTime) birthParts.push(`Time: ${birthTime}`);
+      if (birthCity) birthParts.push(`City: ${birthCity}`);
+      if (birthCountry && birthCountry !== 'Other') birthParts.push(`Country: ${birthCountry}`);
+      const birthInfo = birthParts.length > 0 ? birthParts.join(' • ') : 'To be shared';
+
+      // Asynchronously persist to D1 database
+      try {
+        await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'consultation',
+            name,
+            email,
+            phone,
+            serviceOrTopic: service,
+            preferredSchedule: schedule,
+            locationTz: tz,
+            birthDetails: birthInfo,
+            notes,
+          }),
+        });
+      } catch (err) {
+        console.warn('Backend persistence error (non-fatal):', err);
+      }
 
       const subject = `Consultation Inquiry: ${service} — ${name}`;
       const body = `Dear Anisha,
@@ -265,7 +413,7 @@ I would like to book a consultation with you. Here are my details:
 • Consultation Type: ${service}
 • Preferred Date / Time: ${schedule}
 • Location / Timezone: ${tz}
-• Birth Information: ${birth}
+• Birth Information: ${birthInfo}
 
 Focus Areas / Questions:
 ${notes}
@@ -277,7 +425,7 @@ ${name}`;
       const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       const gmailWebUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-      // Show success box
+      // Show success confirmation box
       if (successBox) successBox.classList.remove('hidden');
       if (gmailDirectBtn) gmailDirectBtn.href = gmailWebUrl;
 

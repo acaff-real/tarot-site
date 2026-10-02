@@ -12,22 +12,24 @@ const { currentPath = '/' } = Astro.props;
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Birth Chart', href: '/#birth-chart' },
+  { label: 'Tarot Card of the Day', href: '/#tarot-card-of-day' },
   { label: 'About', href: '/about' },
   { label: 'Articles', href: '/articles' },
+  { label: 'Socials', href: '/#socials' },
   { label: 'Contact', href: '/contact' },
 ];
 ---
 
 <header id="site-header" class="sticky top-0 z-50 w-full backdrop-blur-md bg-[#fcfbf9]/90 dark:bg-[#0c091f]/90 border-b border-[#28231e]/5 dark:border-purple-500/20 transition-all duration-300">
-  <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 h-18 sm:h-20 lg:h-22 flex items-center justify-between">
+  <div class="max-w-[1440px] 2xl:max-w-[1560px] mx-auto px-4 sm:px-6 md:px-8 lg:px-8 xl:px-12 h-18 sm:h-20 lg:h-22 flex items-center justify-between">
     
     <!-- Brand: Vector SVG Brand Logo -->
-    <a href="/" class="flex items-center group text-left pr-3 sm:pr-6 py-1 select-none" aria-label="Astro by Anisha — Homepage">
+    <a href="/" class="flex items-center group text-left pr-2 sm:pr-4 py-1 select-none flex-shrink-0" aria-label="Astrology with Anisha — Homepage">
       <BrandLogo />
     </a>
 
-    <!-- Desktop Navigation Links: Restrained & airy across md, lg, xl -->
-    <nav class="hidden md:flex items-center gap-4 lg:gap-8 xl:gap-10">
+    <!-- Desktop Navigation Links: Restrained & airy across lg, xl, 2xl -->
+    <nav class="hidden lg:flex items-center gap-3.5 xl:gap-6 2xl:gap-8">
       {
         NAV_LINKS.map((link) => {
           const isActive =
@@ -37,7 +39,7 @@ const NAV_LINKS = [
           return (
             <a
               href={link.href}
-              class={`text-[11.5px] lg:text-[12.5px] uppercase tracking-[0.12em] lg:tracking-[0.16em] font-medium transition-colors duration-150 py-2 ${
+              class={`text-[11px] xl:text-[12px] uppercase tracking-[0.08em] xl:tracking-[0.14em] font-medium whitespace-nowrap transition-colors duration-150 py-2 ${
                 isActive
                   ? 'text-[#855b25] dark:text-[#e5c98f] font-semibold border-b border-[#855b25]/60 dark:border-[#e5c98f]/60'
                   : 'text-[#2c2722] dark:text-[#ded9d0] hover:text-[#110f0d] dark:hover:text-[#ffffff]'
@@ -51,7 +53,7 @@ const NAV_LINKS = [
     </nav>
 
     <!-- Right Side Actions: Dedicated Consultation Booking & Theme Switcher -->
-    <div class="hidden md:flex items-center gap-3 lg:gap-5 pl-2 lg:pl-4">
+    <div class="hidden lg:flex items-center gap-2.5 xl:gap-4 pl-2 flex-shrink-0">
       <GlassButton
         text="Book a Consultation"
         href="/consultations"
@@ -62,7 +64,7 @@ const NAV_LINKS = [
     </div>
 
     <!-- Mobile Hamburger Toggle & Primary Booking Action -->
-    <div class="flex md:hidden items-center gap-2 sm:gap-3">
+    <div class="flex lg:hidden items-center gap-2 sm:gap-3">
       <ThemeToggle id="theme-toggle-mobile" />
       <div class="hidden sm:block">
         <GlassButton
@@ -93,7 +95,7 @@ const NAV_LINKS = [
   <!-- Mobile Drawer (Smooth Animated Accordion) -->
   <div
     id="mobile-menu"
-    class="md:hidden overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-out border-b border-transparent bg-[#fcfbf9]/98 dark:bg-[#0c091f]/98 backdrop-blur-xl px-8"
+    class="lg:hidden overflow-hidden max-h-0 opacity-0 transition-all duration-300 ease-out border-b border-transparent bg-[#fcfbf9]/98 dark:bg-[#0c091f]/98 backdrop-blur-xl px-8"
     aria-hidden="true"
   >
     <div class="py-6 flex flex-col gap-5">
@@ -122,7 +124,7 @@ const NAV_LINKS = [
 <!-- Mobile Drawer Backdrop Overlay -->
 <div
   id="mobile-backdrop"
-  class="fixed inset-0 bg-black/45 backdrop-blur-xs z-40 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
+  class="fixed inset-0 bg-black/45 backdrop-blur-xs z-40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
   aria-hidden="true"
 ></div>
 

@@ -115,18 +115,28 @@ const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort
             </select>
           </div>
 
-          <!-- City Dropdown -->
+          <!-- City Free-Text Input with Autocomplete Datalist -->
           <div>
-            <label for="chart-city-select" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e] mb-1.5">
-              City of Birth
-            </label>
-            <select
-              id="chart-city-select"
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="chart-city-input" class="block text-[11px] font-semibold uppercase tracking-wider text-[#57534e]">
+                City of Birth
+              </label>
+              <span class="text-[10px] text-[#857f77]">Free text / Any city</span>
+            </div>
+            <input
+              type="text"
+              id="chart-city-input"
               name="city"
-              class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white cursor-pointer"
-            >
-              <!-- Populated via script according to selected country -->
-            </select>
+              list="chart-cities-datalist"
+              placeholder="e.g. New Delhi, Mumbai, London..."
+              value="New Delhi"
+              required
+              class="w-full px-4 py-2.5 rounded-md glass-input text-sm bg-white text-[#1c1917]"
+              autocomplete="off"
+            />
+            <datalist id="chart-cities-datalist">
+              <!-- Populated dynamically with city suggestions -->
+            </datalist>
           </div>
         </div>
 
@@ -333,18 +343,33 @@ const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort
 
     </div>
 
+    <!-- Subtle Back to Top -->
+    <div class="mt-8 flex justify-end">
+      <a
+        href="#top"
+        class="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-[#5a534b] dark:text-[#a8a29a] hover:text-[#110f0d] dark:hover:text-[#ffffff] transition-colors font-medium select-none"
+        aria-label="Back to top"
+      >
+        <span>Top</span>
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </a>
+    </div>
+
   </div>
 </section>
 
 <script>
-  import { POPULAR_CITIES } from '../lib/vedic/cities';
+  import { POPULAR_CITIES, COUNTRY_DEFAULTS } from '../lib/vedic/cities';
 
   function initBirthChartCalculator() {
     const form = document.getElementById('chart-form') as HTMLFormElement;
     if (!form) return;
 
     const countrySelect = document.getElementById('chart-country-select') as HTMLSelectElement;
-    const citySelect = document.getElementById('chart-city-select') as HTMLSelectElement;
+    const cityInput = document.getElementById('chart-city-input') as HTMLInputElement;
+    const citiesDatalist = document.getElementById('chart-cities-datalist') as HTMLDataListElement;
     const systemSelect = document.getElementById('chart-system') as HTMLSelectElement;
 
     const toggleCoordsBtn = document.getElementById('toggle-coords-btn');
@@ -360,58 +385,93 @@ const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort
     const svgWrapper = document.getElementById('chart-svg-wrapper');
     const planetsTbody = document.getElementById('planets-tbody');
 
-    // Populate cities based on selected country
+    // Populate datalist suggestions based on selected country
     function populateCitiesForCountry(countryName: string) {
-      if (!citySelect) return;
-      citySelect.innerHTML = '';
+      if (!citiesDatalist) return;
+      citiesDatalist.innerHTML = '';
 
       const filtered = POPULAR_CITIES.filter((c) => c.country === countryName);
-      if (filtered.length > 0) {
-        filtered.forEach((c, idx) => {
-          const opt = document.createElement('option');
-          opt.value = JSON.stringify(c);
-          opt.textContent = `${c.city} (${c.label})`;
-          if (idx === 0) opt.selected = true;
-          citySelect.appendChild(opt);
-        });
-      } else {
-        // Fallback for "Other"
+      filtered.forEach((c) => {
         const opt = document.createElement('option');
-        opt.value = JSON.stringify({ city: 'Custom City', country: countryName, latitude: 28.6139, longitude: 77.209, timezone: 5.5, label: 'Custom Location' });
-        opt.textContent = 'Custom City (Use coordinates below)';
-        citySelect.appendChild(opt);
+        opt.value = c.city;
+        citiesDatalist.appendChild(opt);
+      });
+
+      const def = COUNTRY_DEFAULTS[countryName] || COUNTRY_DEFAULTS['Other'];
+      if (cityInput) {
+        // If empty or value was from another country's defaults, update value
+        const isCurrentCityInCountry = filtered.some((c) => c.city.toLowerCase() === cityInput.value.trim().toLowerCase());
+        if (!cityInput.value.trim() || !isCurrentCityInCountry) {
+          cityInput.value = def.city;
+        }
       }
-      syncCoordinatesFromCity();
+
+      syncCoordinatesFromCity(cityInput?.value || def.city, countryName);
     }
 
-    function syncCoordinatesFromCity() {
-      if (!citySelect) return;
-      try {
-        const cityData = JSON.parse(citySelect.value);
-        if (customLat) customLat.value = cityData.latitude.toString();
-        if (customLon) customLon.value = cityData.longitude.toString();
+    function syncCoordinatesFromCity(cityName: string, countryName?: string) {
+      const country = countryName || (countrySelect ? countrySelect.value : 'India');
+      const cleanCity = (cityName || '').trim().toLowerCase();
+
+      // 1. Look for exact city match in selected country first
+      let matched = POPULAR_CITIES.find(
+        (c) => c.country === country && c.city.toLowerCase() === cleanCity
+      );
+      // 2. If not found in selected country, search any city in POPULAR_CITIES
+      if (!matched) {
+        matched = POPULAR_CITIES.find(
+          (c) => c.city.toLowerCase() === cleanCity
+        );
+      }
+      // 3. If still not matched, check prefix
+      if (!matched && cleanCity.length > 2) {
+        matched = POPULAR_CITIES.find(
+          (c) => c.country === country && c.city.toLowerCase().startsWith(cleanCity)
+        );
+      }
+
+      if (matched) {
+        if (customLat) customLat.value = matched.latitude.toString();
+        if (customLon) customLon.value = matched.longitude.toString();
         if (customTzSelect) {
-          const tzStr = cityData.timezone.toString();
-          // Find matching option or set value
-          let found = false;
-          for (let i = 0; i < customTzSelect.options.length; i++) {
-            if (parseFloat(customTzSelect.options[i].value) === cityData.timezone) {
-              customTzSelect.selectedIndex = i;
-              found = true;
-              break;
-            }
-          }
-          if (!found) customTzSelect.value = tzStr;
+          syncTimezoneSelect(matched.timezone);
         }
-      } catch (e) {}
+      } else {
+        // Fall back to country default
+        const def = COUNTRY_DEFAULTS[country] || COUNTRY_DEFAULTS['Other'];
+        if (def) {
+          if (customLat) customLat.value = def.latitude.toString();
+          if (customLon) customLon.value = def.longitude.toString();
+          if (customTzSelect) {
+            syncTimezoneSelect(def.timezone);
+          }
+        }
+      }
+    }
+
+    function syncTimezoneSelect(tzOffset: number) {
+      if (!customTzSelect) return;
+      let found = false;
+      for (let i = 0; i < customTzSelect.options.length; i++) {
+        if (parseFloat(customTzSelect.options[i].value) === tzOffset) {
+          customTzSelect.selectedIndex = i;
+          found = true;
+          break;
+        }
+      }
+      if (!found) customTzSelect.value = tzOffset.toString();
     }
 
     countrySelect?.addEventListener('change', () => {
       populateCitiesForCountry(countrySelect.value);
     });
 
-    citySelect?.addEventListener('change', () => {
-      syncCoordinatesFromCity();
+    cityInput?.addEventListener('input', () => {
+      syncCoordinatesFromCity(cityInput.value, countrySelect?.value);
+    });
+
+    cityInput?.addEventListener('change', () => {
+      syncCoordinatesFromCity(cityInput.value, countrySelect?.value);
     });
 
     // Initial population
@@ -440,14 +500,15 @@ const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort
       const time = (document.getElementById('chart-time') as HTMLInputElement).value;
       const system = systemSelect ? systemSelect.value : 'vedic';
 
-      let cityData = { city: 'New Delhi', country: 'India', label: 'New Delhi, India', latitude: 28.6139, longitude: 77.209, timezone: 5.5 };
-      try {
-        cityData = JSON.parse(citySelect.value);
-      } catch (err) {}
+      const cityNameVal = cityInput ? cityInput.value.trim() : 'New Delhi';
+      const countryVal = countrySelect ? countrySelect.value : 'India';
+      const formattedCityName = countryVal === 'Other' || !countryVal || cityNameVal.toLowerCase().includes(countryVal.toLowerCase())
+        ? cityNameVal
+        : `${cityNameVal}, ${countryVal}`;
 
-      const lat = customLat ? parseFloat(customLat.value) : cityData.latitude;
-      const lon = customLon ? parseFloat(customLon.value) : cityData.longitude;
-      const tz = customTzSelect ? parseFloat(customTzSelect.value) : cityData.timezone;
+      const lat = customLat ? parseFloat(customLat.value) : 28.6139;
+      const lon = customLon ? parseFloat(customLon.value) : 77.209;
+      const tz = customTzSelect ? parseFloat(customTzSelect.value) : 5.5;
 
       loadingEl?.classList.remove('hidden');
       resultEl?.classList.add('hidden');
@@ -463,7 +524,7 @@ const COUNTRIES = Array.from(new Set(POPULAR_CITIES.map((c) => c.country))).sort
             latitude: lat,
             longitude: lon,
             timezone: tz,
-            cityName: `${cityData.city}, ${cityData.country}`,
+            cityName: formattedCityName,
             zodiacSystem: system,
           }),
         });
